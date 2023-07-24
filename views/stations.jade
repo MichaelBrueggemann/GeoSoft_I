@@ -1,8 +1,30 @@
 extends layout
 
-
 block scripts
-  script(src='/javascripts/stations.js' defer='')
+  script(type="module" src='/javascripts/stations.js' defer='')
+  link(rel='stylesheet', href='/stylesheets/popUp2.css')
 block content
   h1= title
   p Auf dieser Seite kannst du die aktuell geladenen Stationen ansehen, diese anpassen oder neue Stationen ergänzen.
+
+  dialog#modal.modal
+      h1 Test
+      button(class="close-button" id="close-button") &times;
+ 
+
+  .container-fluid 
+    .row 
+        .col-sm-12.col-md-8
+            #map1
+        .col-sm-12.col-md-4 
+            h3 Station hinzufügen
+            textarea#add_stationGeoJSON(rows='25' cols='45' style='resize:none')
+            button#submit_station(type='submit') Station hinzufügen
+  .container-fluid
+    table#station_table
+      thead
+        th Name
+        th Aktionen
+      tbody 
+   
+  
