@@ -8,6 +8,30 @@ let tour_collection = {}
 let id_counter = 0
 
 
+// Debugging
+
+let test_station = {
+  type: "Feature",
+  properties:
+  {
+    name: "Teststation",
+    description: "Ich bin eine Teststation",
+    url: "https://www.youtube.com/watch?v=o-YBDTqX_ZU"
+  },
+  geometry:
+  {
+    coordinates: 
+    [
+      7.595732042580437,
+      51.96943649024783
+    ],
+    type: "Point"
+  }
+}
+
+add_item(test_station, station_collection)
+
+
 // ------------------- DB-Functions -------------------
 /**
  * Adds an item to the desired database collection.
