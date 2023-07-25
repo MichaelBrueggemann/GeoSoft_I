@@ -1,0 +1,66 @@
+extends layout
+
+block scripts
+
+
+  // leaflet-CSS
+  link(rel='stylesheet' href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css' integrity='sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H' crossorigin='anonymous')
+  // Leaflet-Draw-CSS
+  link(rel='stylesheet' href='https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw-src.css' integrity='sha384-quNM/f53oDRhXgM7ssHUgW3xiBudB1t+xgO5LsfeIzK/kfBmxRxsYWBPq9WgTx8C' crossorigin='anonymous')
+  // external scripts
+  // Leaflet
+  script(src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js' integrity='sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH' crossorigin='anonymous' defer='')
+  // Leaflet-Draw
+  script(src='https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw-src.js' integrity='sha384-MA1IhQ/VEJVbmWe+tykQsf7opyy3/bI+tzAEk/+xAzS9qvSad+SPEkJ1+p7RRD2a' crossorigin='anonymous' defer='')
+  // Leaflet-SubGroups
+  script(src='https://unpkg.com/leaflet.featuregroup.subgroup@1.0.1/dist/leaflet.featuregroup.subgroup-src.js' integrity='sha384-jbTL/zsueVL4bMZERISP/PzASzooTdHjfAEmvij+Xmj5m41EDGfE4Ym9gT6Hvho1' crossorigin='anonymous' defer='')
+  
+  // internal scripts
+  script(src='/javascripts/stations.js' defer='')
+  
+
+block content
+  h1= title
+  p Auf dieser Seite kannst du die aktuell geladenen Stationen ansehen, diese anpassen oder neue Stationen ergänzen. Hierzu kannst du entweder eine Station direkt auf der Karte einzeichnen oder du trägst eine Station direkt in das Textfeld ein. Die Koordinaten kannst du dir direkt über "www.geojson.io" besorgen.
+
+  .container-fluid 
+    .row 
+        .col-sm-12.col-md-8
+            #map1
+        .col-sm-12.col-md-4 
+            h3 Station hinzufügen
+            textarea#add_stationGeoJSON(rows='25' cols='45' style='resize:none')
+            button#submit_station(type='submit') Station hinzufügen
+            button#upload_station(type="button") GeoJSON hochladen
+  .container-fluid
+    table(width="100%")#station_table
+      thead
+        th Name
+        th(align="center") Aktionen
+      tbody 
+  
+  #edit_station_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
+    .modal-dialog.modal-dialog-centered(role='document')
+      .modal-content
+        .modal-header
+          h5.modal-title Station bearbeiten
+          button.close(type='button' data-dismiss='modal' aria-label='Close')
+            span(aria-hidden='true') ×
+        .modal-body(align="center")
+          textarea#update_stationGeoJSON(rows='25' cols='45' style='resize:none')
+        .modal-footer
+          button.btn.btn-secondary(type='button' data-dismiss='modal') Schließen
+          button#update_station.btn.btn-primary(type="button" data-dismiss='modal') Aktualisieren
+          
+  #upload_station_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
+      .modal-dialog.modal-dialog-centered(role='document')
+        .modal-content
+          .modal-header
+            h5.modal-title Stationsdatei hochladen 
+            button.close(type='button' data-dismiss='modal' aria-label='Close')
+              span(aria-hidden='true') ×
+          .modal-body(align="center")
+            p Hier kannst du eine GeoJSON-Datei mit deiner Station hochladen. Bitte nur eine Station pro Datei hochladen
+          .modal-footer
+            button.btn.btn-secondary(type='button' data-dismiss='modal') Schließen
+            button#upload_station.btn.btn-primary(type="button" data-dismiss='modal') Datei hochladen
