@@ -1,8 +1,8 @@
-const closeButton = document.getElementById("close-button")
-const modal = document.getElementById("modal")
+const CLOSE_BUTTON = document.getElementById("close-button")
+const MODAL = document.getElementById("edit_popUp")
 
-closeButton.addEventListener("click", () => 
+CLOSE_BUTTON.addEventListener("click", () => 
 {
-    modal.close()
+    MODAL.close()
 })
 

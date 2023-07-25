@@ -16,9 +16,10 @@ block scripts
   script(src='https://unpkg.com/leaflet.featuregroup.subgroup@1.0.1/dist/leaflet.featuregroup.subgroup-src.js' integrity='sha384-jbTL/zsueVL4bMZERISP/PzASzooTdHjfAEmvij+Xmj5m41EDGfE4Ym9gT6Hvho1' crossorigin='anonymous' defer='')
   
   // internal scripts
-  script(src='/javascripts/stations.js' defer='')
+  link(rel='stylesheet', href='/stylesheets/popUp.css')
   script(src='/javascripts/popUp.js' defer='')
-  link(rel='stylesheet', href='/stylesheets/popUp2.css')
+  script(src='/javascripts/stations.js' defer='')
+  
 
 block content
   h1= title
@@ -39,8 +40,8 @@ block content
         th(align="center") Aktionen
       tbody 
    
-   dialog#modal.modal
-      h1 Test
-      button(class="close-button" id="close-button") &times;
+  dialog#edit_popUp.modal
+    h1 Test
+    button(class="close-button" id="close-button")
   
  

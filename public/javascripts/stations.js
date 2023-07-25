@@ -59,7 +59,7 @@ async function update_table() {
     for(const [id, {geojson}] of Object.entries(station_collection)) 
     {
         let row = tbody.insertRow()
-        
+        console.log(geojson)
         let station_name = document.createElement("td")
         station_name.innerText = geojson.properties.name
         station_name.id = `station_name${id}`
@@ -70,8 +70,8 @@ async function update_table() {
         edit_station_button.setAttribute("type", "button")
         edit_station_button.addEventListener("click", () => {
             // opens a PopUp to later update the station data
-            const modal = document.getElementById("modal")
-            modal.showModal()
+            const POPUP = document.getElementById("edit_popUp")
+            POPUP.showModal()
         })
         row.insertCell().appendChild(edit_station_button)
 
@@ -82,7 +82,7 @@ async function update_table() {
         {
             delete_station(id)
         })
-        row.appendChild(delete_station_button)
+        row.insertCell().appendChild(delete_station_button)
     }
     
     table.tBodies[0].replaceWith(tbody);
