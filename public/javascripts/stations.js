@@ -16,14 +16,23 @@ async function api_call(route, body) {
 }
 
 // ----------------- submit-field -----------------
-let submit_button = document.getElementById("submit_station")
-submit_button.addEventListener("click", () => 
 {
-    const GEOJSON = JSON.parse(document.getElementById(`add_stationGeoJSON`).value);
-    add_new_station(GEOJSON)
+const SUBMIT_BUTTON = document.getElementById("submit_station")
+SUBMIT_BUTTON.setAttribute("class", "btn btn-primary")
+SUBMIT_BUTTON.addEventListener("click", () => 
+{
+    const STATION_DATA = JSON.parse(document.getElementById(`add_stationGeoJSON`).value);
+    add_new_station(STATION_DATA)
 })
+}
 
+{
+    const UPLOAD_BUTTON = document.getElementById("upload_station")
+    UPLOAD_BUTTON.setAttribute("class", "btn btn-primary")
+    UPLOAD_BUTTON.setAttribute("data-toggle", "modal")
+    UPLOAD_BUTTON.setAttribute("data-target", "#upload_station_popup")
 
+}
 
 /**
  * Deletes a station from the DB
@@ -35,6 +44,10 @@ async function delete_station(id) {
     await update_table();
 }
 
+/**
+ * Adds a new station to the DB
+ * @param {*} geojson - GeoJSON Object defining the station
+ */
 async function add_new_station(geojson) {
     
     await api_call("add_station", geojson);
@@ -42,8 +55,29 @@ async function add_new_station(geojson) {
     await update_table()
 }
 
+/**
+ * Updates a station in the DB
+ * @param {*} id - ID of the station that should be updated
+ * @param {*} geojson - GeoJSON file with data of the station
+ */
+async function update_station(id, geojson) 
+{
+
+    await api_call("update_station", {
+            id: id,
+            geojson: geojson,
+        });
+
+    await update_table();
+}
+
 // ----------------- stations-table -----------------
 
+function listen_to_updates(id)
+{
+    const UPDATED_STATION = JSON.parse(document.getElementById(`update_stationGeoJSON`).value);
+    update_station(id, UPDATED_STATION)
+}
 
 
 
@@ -68,21 +102,34 @@ async function update_table() {
         let edit_station_button = document.createElement("button")
         edit_station_button.innerText = "Bearbeiten"
         edit_station_button.setAttribute("type", "button")
+        edit_station_button.setAttribute("class", "btn btn-primary")
+        edit_station_button.setAttribute("data-toggle", "modal")
+        edit_station_button.setAttribute("data-target", "#edit_station_popup")
+        
         edit_station_button.addEventListener("click", () => {
-            // opens a PopUp to later update the station data
-            const POPUP = document.getElementById("edit_popUp")
-            POPUP.showModal()
+            // populate popUp with station data
+            let station_update_textarea = document.getElementById("update_stationGeoJSON")
+            station_update_textarea.value = JSON.stringify(geojson, null, 2)
+
+            // this button isn't directly added to the table, but is added to a Pop-Up instead.
+            let update_station_button = document.getElementById("update_station")
+
+            // overwriting the "onclick" attribute instead of using "addEventListener" fixes the problem, that the "Aktualisieren" Button also updates every other Station in the DB.
+            update_station_button.setAttribute("onclick", `listen_to_updates(${id})`)
         })
         row.insertCell().appendChild(edit_station_button)
 
         let delete_station_button = document.createElement("button")
         delete_station_button.innerText = "Löschen"
         delete_station_button.setAttribute("type", "button")
+        delete_station_button.setAttribute("class", "btn btn-primary")
         delete_station_button.addEventListener("click",() => 
         {
             delete_station(id)
         })
         row.insertCell().appendChild(delete_station_button)
+
+        
     }
     
     table.tBodies[0].replaceWith(tbody);

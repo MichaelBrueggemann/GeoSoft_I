@@ -16,8 +16,6 @@ block scripts
   script(src='https://unpkg.com/leaflet.featuregroup.subgroup@1.0.1/dist/leaflet.featuregroup.subgroup-src.js' integrity='sha384-jbTL/zsueVL4bMZERISP/PzASzooTdHjfAEmvij+Xmj5m41EDGfE4Ym9gT6Hvho1' crossorigin='anonymous' defer='')
   
   // internal scripts
-  link(rel='stylesheet', href='/stylesheets/popUp.css')
-  script(src='/javascripts/popUp.js' defer='')
   script(src='/javascripts/stations.js' defer='')
   
 
@@ -33,15 +31,36 @@ block content
             h3 Station hinzufügen
             textarea#add_stationGeoJSON(rows='25' cols='45' style='resize:none')
             button#submit_station(type='submit') Station hinzufügen
+            button#upload_station(type="button") GeoJSON hochladen
   .container-fluid
     table(width="100%")#station_table
       thead
         th Name
         th(align="center") Aktionen
       tbody 
-   
-  dialog#edit_popUp.modal
-    h1 Test
-    button(class="close-button" id="close-button")
   
- 
+  #edit_station_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
+    .modal-dialog.modal-dialog-centered(role='document')
+      .modal-content
+        .modal-header
+          h5.modal-title Station bearbeiten
+          button.close(type='button' data-dismiss='modal' aria-label='Close')
+            span(aria-hidden='true') ×
+        .modal-body(align="center")
+          textarea#update_stationGeoJSON(rows='25' cols='45' style='resize:none')
+        .modal-footer
+          button.btn.btn-secondary(type='button' data-dismiss='modal') Schließen
+          button#update_station.btn.btn-primary(type="button" data-dismiss='modal') Aktualisieren
+          
+  #upload_station_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
+      .modal-dialog.modal-dialog-centered(role='document')
+        .modal-content
+          .modal-header
+            h5.modal-title Stationsdatei hochladen 
+            button.close(type='button' data-dismiss='modal' aria-label='Close')
+              span(aria-hidden='true') ×
+          .modal-body(align="center")
+            p Hier kannst du eine GeoJSON-Datei mit deiner Station hochladen. Bitte nur eine Station pro Datei hochladen
+          .modal-footer
+            button.btn.btn-secondary(type='button' data-dismiss='modal') Schließen
+            button#upload_station.btn.btn-primary(type="button" data-dismiss='modal') Datei hochladen
