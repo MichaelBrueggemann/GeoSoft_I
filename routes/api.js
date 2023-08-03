@@ -34,13 +34,6 @@ async function initializeDB()
     console.log(`Erfolgreich mit '${DBNAME}.${COLLECTIONNAMESTATIONS}' verbunden`);
     tour_collection = db.collection(COLLECTIONNAMETOURS);
     console.log(`Erfolgreich mit '${DBNAME}.${COLLECTIONNAMETOURS}' verbunden`);
-
-    //Test-Data
-    add_item(test_station, station_collection)
-    add_item(test_station2, station_collection)
-    
-    add_item(test_tour,tour_collection);
-    
   }
   catch (err)
   {
@@ -49,53 +42,6 @@ async function initializeDB()
 }
 
 initializeDB()
-
-// Debugging
-
-let test_station = {
-  type: "Feature",
-  properties:
-  {
-    name: "GEO1",
-    description: "Ich bin eine Teststation",
-    url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-  },
-  geometry:
-  {
-    coordinates: 
-    [
-      7.597732042580437,
-      51.96943649024783
-    ],
-    type: "Point"
-  }
-}
-
-
-let test_station2 = {
-  "type": "Feature",
-  "properties": {
-    "name": "Teststation 2",
-    "description": "Ich bin eine Teststation vom Typ Polygon",
-    "url": "https://www.youtube.com/watch?v=o-YBDTqX_ZU"
-  },
-  "geometry": {
-    "coordinates": [
-      [
-        [7.595732042580437, 51.96943649024783],
-        [7.595016612243652, 51.96851431845511],
-        [7.594695972442627, 51.96851431845511],
-        [7.595732042580437, 51.96943649024783]
-      ]
-    ],
-    "type": "Polygon"
-  }}
-
-let test_tour = {
-  stations: [{_id: "64c8cea86b64b7fa471727c0"}, {_id: "64c8cea86b64b7fa471727c1"}]
-}
-
-
 
 // ------------------- DB-Functions -------------------
 /**
