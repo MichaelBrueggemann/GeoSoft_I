@@ -107,7 +107,7 @@ async function update_table() {
 
         //Show-Button
         let show_tour_button = document.createElement("button")
-        show_tour_button.innerText = "Anzeigen"
+        show_tour_button.innerText = "Informationen"
         show_tour_button.setAttribute("type", "button")
         show_tour_button.setAttribute("class", "btn btn-primary")
         show_tour_button.setAttribute("data-toggle", "modal")
