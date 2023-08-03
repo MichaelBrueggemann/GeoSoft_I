@@ -98,7 +98,7 @@ async function update_table() {
     let table = document.getElementById("tour_table")
     let tbody = document.createElement('tbody')
     
-    tours_collection.forEach(({ _id, stations }) => {
+    tours_collection.forEach(({ _id, stations, instructions, distance }) => {
         //id
         let row = tbody.insertRow()
         let tour_id = document.createElement("td")
@@ -120,11 +120,14 @@ async function update_table() {
                     infotext += "<br>" + properties.name;
             })
             
-            infotext += "<br><br>Zu fahrende Route:"
-            //ERGÄNZEN!
+            infotext += "<br><br>Anleitung zur Tour:"
+            instructions.forEach((instruction) => {
+                    infotext += "<br>" + instruction.text + " and follow the path for " + Math.round(instruction.distance) + " metres";
+            })
+            console.log(instructions)
 
-            infotext+="<br><br>Gesamtlänge:"
-            //ERGÄNZEN!
+            infotext+="<br><br>Gesamtlänge: "
+            infotext+= distance + "m";
 
             document.getElementById("infoText").innerHTML = infotext;
         })
@@ -318,14 +321,13 @@ UPDATEBUTTON.addEventListener("click", async () =>
     if (route.hasOwnProperty("message")) {
         $('#routing_error_popup').modal('show');
         let errorstatement = "Leider konnte mit den ausgewählten Stationen keine Tour erstellt werden. <br>";
-        errorstatement += "Dies könnte beispielsweise daran liegen, dass eine falsche Anzahl von Stationen ausgewählt wurde (min. 2). <br>";
+        errorstatement += "Dies könnte beispielsweise daran liegen, dass eine falsche Anzahl von Stationen ausgewählt wurde (min. 2) oder die Stationen nicht via Fahhrad zu verbinden sind. <br>";
         errorstatement += "Aber auch andere Fehler können auftreten und wir bitten um Entschuldigung, dass es nicht geklappt hat. <br>";
         errorstatement += "<br><br>Bitte überprüfen Sie ihre aktuelle Stationenauswahl und versuchen Sie es erneut."
         document.getElementById("errorstatement").innerHTML = errorstatement;
     }
     else {
     //Slicing tour in segments for each waypoint
-    console.log(route)
     let tour_segments = slice_tour(route.paths[0].points.coordinates, route.paths[0].snapped_waypoints.coordinates);
     //save Tour in DB
     if (current_tour_id == null) add_new_tour(current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
