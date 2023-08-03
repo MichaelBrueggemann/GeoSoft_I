@@ -224,7 +224,10 @@ ROUTER.post('/delete_tour', function(req, res) {
 ROUTER.post('/update_tour', function(req, res) {
   const ID = req.body.id;
   let newData = {
-    stations: req.body.stations
+    stations: req.body.stations,
+    segments: req.body.segments,
+    instructions: req.body.instructions,
+    distance: req.body.distance
   };
     
     update_item(ID, newData, tour_collection);

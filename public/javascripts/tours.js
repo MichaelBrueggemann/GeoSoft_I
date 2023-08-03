@@ -49,9 +49,12 @@ async function api_call(route, body) {
  * Adds a new tour to the DB
  * @param {*} newstations - Array with station-objects
  */
-async function add_new_tour(newstations) {
+async function add_new_tour(new_stations, new_segments, new_instructions, new_distance) {
     let tour = {
-        stations: newstations
+        stations: new_stations,
+        segments: new_segments,
+        instructions: new_instructions,
+        distance: new_distance
     }
     await api_call("add_tour", tour);
 
@@ -63,12 +66,15 @@ async function add_new_tour(newstations) {
  * @param {*} id - ID of the station that should be updated
  * @param {*} newstations - Array with station-objects
  */
-async function update_tour(id, newstations) 
+async function update_tour(id, new_stations, new_segments, new_instructions, new_distance) 
 {
 
     await api_call("update_tour", {
             id: id,
-            stations: newstations,
+            stations: new_stations,
+            segments: new_segments,
+            instructions: new_instructions,
+            distance: new_distance
         });
 
     await update_table();
@@ -139,7 +145,7 @@ async function update_table() {
             let resmap = await map;
             let idTrue = false;
             let pointTrue = false;
-            resmap.eachLayer((layer) => {
+            resmap.eachLayer((layer) => {console.log(layer)
                 if (idTrue) {
                     layer.options.color = "violet";
                     layer.setStyle({color: "violet"});
@@ -295,9 +301,6 @@ const UPDATEBUTTON = document.getElementById("calculate_tour");
 UPDATEBUTTON.setAttribute("class", "btn btn-primary")
 UPDATEBUTTON.addEventListener("click", async () => 
 {
-    //save Tour in DB
-    if (current_tour_id == null) add_new_tour(current_stations);
-    else update_tour(current_tour_id, current_stations)
     //calculate Tour 
     let waypoints = current_stations.map((station) => {
         if (station.geometry.type == "Point"){
@@ -312,7 +315,6 @@ UPDATEBUTTON.addEventListener("click", async () =>
     });
     let route = await res.json();
     //Check result
-    console.log(await route)
     if (route.hasOwnProperty("message")) {
         $('#routing_error_popup').modal('show');
         let errorstatement = "Leider konnte mit den ausgewählten Stationen keine Tour erstellt werden. <br>";
@@ -322,16 +324,19 @@ UPDATEBUTTON.addEventListener("click", async () =>
         document.getElementById("errorstatement").innerHTML = errorstatement;
     }
     else {
-    //change Working Modi
-    stopWorkingModi();
-    //Route anzeigen 
-    let tour_segments = slice_route(route.paths[0].points.coordinates, route.paths[0].snapped_waypoints.coordinates);
-    console.log(tour_segments);
+    //Slicing tour in segments for each waypoint
+    console.log(route)
+    let tour_segments = slice_tour(route.paths[0].points.coordinates, route.paths[0].snapped_waypoints.coordinates);
+    //save Tour in DB
+    if (current_tour_id == null) add_new_tour(current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
+    else update_tour(current_tour_id, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
+    //Show Tour on Map
     let resmap = await map;
     tour_segments.forEach(segment => {
         let polyline = L.polyline(segment).addTo(resmap);
     });
-
+     //change Working Modi
+     stopWorkingModi();
     }
 })
 
@@ -359,7 +364,7 @@ function calculateCentroid(polygon){
  * @param {*} snapped_waypoints - Snapped Waypoints of the Tour
  * @returns {*} - Coordinates of Toursegments
  */
-function slice_route(route, snapped_waypoints){ 
+function slice_tour(route, snapped_waypoints){ 
     let segments = [[[route[0][1],route[0][0]]]];
     for (let i = 1, j = 1; i < route.length -1; i++){
         segments[j-1].push([route[i][1],route[i][0]]);
