@@ -1,12 +1,12 @@
 "use strict"
 
-const REDMARKER = new L.Icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+const PURPLE_MARKER = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
   }); 
-  const BLUEMARKER  = L.icon({
+  const BLUE_MARKER  = L.icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
@@ -109,15 +109,12 @@ async function update_table() {
         
         show_tour_button.addEventListener("click", () => {
             // populate popUp with tour information
-            let infotext = "Stationen:"
-            stations.forEach( ({_id}) => {
-                let stationid = _id;
-                stat_collection.forEach(({ _id, properties }) => {
-                    if (_id==stationid) infotext += "<br>" + properties.name;
-                })
+            let infotext = "Stationen:";
+            stations.forEach( ({properties}) => {
+                    infotext += "<br>" + properties.name;
             })
             
-            infotext+= "<br><br>Zu fahrende Route:"
+            infotext += "<br><br>Zu fahrende Route:"
             //ERGÄNZEN!
 
             infotext+="<br><br>Gesamtlänge:"
@@ -144,12 +141,12 @@ async function update_table() {
             let pointTrue = false;
             resmap.eachLayer((layer) => {
                 if (idTrue) {
-                    layer.options.color = "red";
-                    layer.setStyle({color: "red"});
+                    layer.options.color = "violet";
+                    layer.setStyle({color: "violet"});
                     idTrue = false;
                     if (pointTrue)
                     {
-                        layer.getLayers()[0].setIcon(REDMARKER);
+                        layer.getLayers()[0].setIcon(PURPLE_MARKER);
                         pointTrue = false;
                     }
                 }
@@ -169,8 +166,7 @@ async function update_table() {
         delete_tour_button.innerText = "Löschen"
         delete_tour_button.setAttribute("type", "button")
         delete_tour_button.setAttribute("class", "btn btn-primary")
-        delete_tour_button.addEventListener("click",() => 
-        {
+        delete_tour_button.addEventListener("click",() => {
             delete_tour(_id)
         })
         
@@ -202,14 +198,14 @@ async function initializeMap()
        mapstation.on("click", (event) => {
         if (tourbearbeitsmodi){
             if (mapstation.options.color == "blue"){
-                mapstation.options.color = "red";
-                mapstation.setStyle({color: "red"});
-                if (station.geometry.type == "Point") mapstation.getLayers()[0].setIcon(REDMARKER);
+                mapstation.options.color = "violet";
+                mapstation.setStyle({color: "violet"});
+                if (station.geometry.type == "Point") mapstation.getLayers()[0].setIcon(PURPLE_MARKER);
             }
             else {
                 mapstation.options.color = "blue";
                 mapstation.setStyle({color: "blue"});
-                if (station.geometry.type == "Point") mapstation.getLayers()[0].setIcon(BLUEMARKER);
+                if (station.geometry.type == "Point") mapstation.getLayers()[0].setIcon(BLUE_MARKER);
            }
             update_stationtable([station]);
         }
@@ -230,14 +226,11 @@ async function update_stationtable(stations) {
     });
     let table = document.getElementById("selectedStation_table")
     let tbody = document.createElement('tbody')
-    current_stations.forEach(({_id}) => {
+    current_stations.forEach(({properties}) => {
         let row = tbody.insertRow()
         let station_name = document.createElement("td")
         row.insertCell().appendChild(station_name)
-        let stationid = _id;
-                stat_collection.forEach(({ _id, properties }) => {
-                    if (_id==stationid) station_name.innerText = properties.name;
-                })
+        station_name.innerText = properties.name;
     })
     table.tBodies[0].replaceWith(tbody);
 }
@@ -271,7 +264,7 @@ async function stopWorkingModi() {
             layer.setStyle({color: "blue"});
         }
         else if (layer instanceof L.Marker){
-            layer.setIcon(BLUEMARKER);
+            layer.setIcon(BLUE_MARKER);
         }
     })
     let table = document.getElementById("selectedStation_table")
@@ -324,8 +317,7 @@ UPDATEBUTTON.addEventListener("click", async () =>
         $('#routing_error_popup').modal('show');
         let errorstatement = "Leider konnte mit den ausgewählten Stationen keine Tour erstellt werden. <br>";
         errorstatement += "Dies könnte beispielsweise daran liegen, dass eine falsche Anzahl von Stationen ausgewählt wurde (min. 2). <br>";
-        errorstatement += "Aber auch andere Fehler können auftreten. Diese Errormessage könnte helfen: <br>";
-        errorstatement += route.message;
+        errorstatement += "Aber auch andere Fehler können auftreten und wir bitten um Entschuldigung, dass es nicht geklappt hat. <br>";
         errorstatement += "<br><br>Bitte überprüfen Sie ihre aktuelle Stationenauswahl und versuchen Sie es erneut."
         document.getElementById("errorstatement").innerHTML = errorstatement;
     }

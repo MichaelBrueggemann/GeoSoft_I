@@ -62,7 +62,7 @@ async function add_item(item, collection)
 
 /**
  * Returns all items from the desired database collection.
- * @param {*} collection - DB Collection which Data should be returnt.
+ * @param {*} collection - DB Collection which Data should be returned.
  * @returns {*} - Items from the DB Collection
  */
 async function get_items(collection) {
