@@ -145,10 +145,10 @@ async function update_table() {
             current_tour_id = _id;
             await update_stationtable(stations);
             //set Highlighting on stations in Tour
-            let resmap = await map;
+            let map = await mappromise;
             let idTrue = false;
             let pointTrue = false;
-            resmap.eachLayer((layer) => {console.log(layer)
+            map.eachLayer((layer) => {console.log(layer)
                 if (idTrue) {
                     layer.options.color = "violet";
                     layer.setStyle({color: "violet"});
@@ -245,7 +245,7 @@ async function update_stationtable(stations) {
 }
 
 // ----------------- start Working - Modi -----------------
-function startWorkingModi() {
+async function startWorkingModi() {
     let statdiv = document.getElementById("station_div")
     statdiv.style.display = 'block';
     let tourdiv = document.getElementById("tour_div")
@@ -253,6 +253,12 @@ function startWorkingModi() {
     let newTourButton = document.getElementById("new_tour")
     newTourButton.style.display = 'none';
     working_on_tour_mode = true;
+    let map = await mappromise;
+    map.eachLayer((layer) => {
+        if(layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
+            map.removeLayer(layer);
+        }
+    });
 }
 
 // ----------------- stop Working - Modi -----------------
@@ -266,8 +272,8 @@ async function stopWorkingModi() {
     working_on_tour_mode = false;
     current_stations = [];
     current_tour_id = null;
-    let resmap = await map;
-    resmap.eachLayer((layer) => {
+    let map = await mappromise;
+    map.eachLayer((layer) => {
         if (layer instanceof L.GeoJSON) {  
             layer.options.color = "blue";
             layer.setStyle({color: "blue"});
@@ -333,9 +339,9 @@ UPDATEBUTTON.addEventListener("click", async () =>
     if (current_tour_id == null) add_new_tour(current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
     else update_tour(current_tour_id, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
     //Show Tour on Map
-    let resmap = await map;
+    let map = await mappromise;
     tour_segments.forEach(segment => {
-        let polyline = L.polyline(segment).addTo(resmap);
+        let polyline = L.polyline(segment).addTo(map);
     });
      //change Working Modi
      stopWorkingModi();
@@ -381,5 +387,5 @@ function slice_tour(route, snapped_waypoints){
     return segments;
 }
 
-let map = initializeMap()
+let mappromise = initializeMap()
 update_table()
