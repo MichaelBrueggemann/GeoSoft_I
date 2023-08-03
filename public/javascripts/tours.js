@@ -14,7 +14,7 @@ const PURPLE_MARKER = new L.Icon({
   });
 
 //this site has two modi (edit tours & show stations/tours) in which some elements should behave diffrently
-let tourbearbeitsmodi = false;
+let working_on_tour_mode = false;
 
 let current_stations = [];
 let current_tour_id = null;
@@ -196,7 +196,7 @@ async function initializeMap()
        mapstation.bindPopup(station.properties.name);
        mapstation.on("mouseover", (event) => {mapstation.openPopup();});
        mapstation.on("click", (event) => {
-        if (tourbearbeitsmodi){
+        if (working_on_tour_mode){
             if (mapstation.options.color == "blue"){
                 mapstation.options.color = "violet";
                 mapstation.setStyle({color: "violet"});
@@ -243,7 +243,7 @@ function startWorkingModi() {
     tourdiv.style.display = 'none';
     let newTourButton = document.getElementById("new_tour")
     newTourButton.style.display = 'none';
-    tourbearbeitsmodi = true;
+    working_on_tour_mode = true;
 }
 
 // ----------------- stop Working - Modi -----------------
@@ -254,7 +254,7 @@ async function stopWorkingModi() {
     tourdiv.style.display = 'block';
     let newTourButton = document.getElementById("new_tour")
     newTourButton.style.display = 'block';
-    tourbearbeitsmodi = false;
+    working_on_tour_mode = false;
     current_stations = [];
     current_tour_id = null;
     let resmap = await map;
