@@ -1,4 +1,6 @@
 "use strict"
+import {zip_array_and_leaflet_layergroup, highlight, default_style, add_station_metadata} from "./map_helper.js"
+
 
 let station_collection = {};
 
@@ -85,14 +87,14 @@ export async function update_table() {
         let row = tbody.insertRow()
         row.addEventListener("click", function(event) 
         {
-            if (!(event.target.tagName === "BUTTON")) // only activates click event, if no button of the row is pressed
+            if (event.target.tagName !== "BUTTON") // only activates click event, if no button of the row is pressed
             {
                 // reset styling of each layer
                 stations_layer_group.eachLayer(function(layer)
                 {
-                    default_styling(layer)
+                    default_style(layer)
                 })
-                highlight_station(layer)
+                highlight(layer)
             }
             
         })
@@ -200,7 +202,7 @@ function initializeMap()
 /**
  * Updates the stations displayed on the map (markers and Pop-Ups)
  */
-export async function update_map()
+async function update_map()
 {
     // TODO: evtl so anpassen, dass nur die ausgewählte Station auf der Karte angezeigt wird
     station_collection = await fetch("/api/stations")
@@ -233,93 +235,7 @@ export async function update_map()
 
 // ----------------- Map Helperfunctions -----------------
 
-/**
- * Zips together an array and a leaflet layergroup
- * @param {*} array - Arbitrary javascript array
- * @param {*} leaflet_layergroup - Leaflet LayerGroup
- * @returns Array containing the zipped data.
- */
-function zip_array_and_leaflet_layergroup(array, leaflet_layergroup)
-{
-    let counter = 0
-    leaflet_layergroup.eachLayer(function(layer)
-    {
-        array[counter].push(layer)
-        counter += 1
-    })
 
-    return array
-}
-
-/**
- * This function sets the styling of the station to the default styling
- * @param {*} station - Leaflet Layer Object
- */
-function default_styling(station)
-{
-    if (station instanceof L.Polygon)
-    {
-        station.setStyle({color: "#3388ff"}) // leaflets default color
-    }
-    else if (station instanceof L.Marker)
-    {
-        let old_icon = station.options.icon
-        let highlight_icon = L.icon({
-            // TODO: Discuss if this should be made independent of current leaflet version?
-            iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-            shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-            // reuse default styling
-            shadowSize: old_icon.options.shadowSize,
-            iconSize: old_icon.options.iconSize,
-            iconAnchor: old_icon.options.iconAnchor,
-            popupAnchor: old_icon.options.popupAnchor
-        })
-        station.setIcon(highlight_icon)
-    }
-}
-
-/**
- * This function highlights the choosen station.
- * @param {} station - Leaflet Layer Object
- */
-function highlight_station(station) 
-{
-    if (station instanceof L.Polygon)
-    {
-        station.setStyle({color: "#9C2BCB"})
-    }
-    else if (station instanceof L.Marker)
-    {
-        let old_icon = station.options.icon
-        let highlight_icon = L.icon({
-            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
-            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-            // reuse default styling
-            shadowSize: old_icon.options.shadowSize,
-            iconSize: old_icon.options.iconSize,
-            iconAnchor: old_icon.options.iconAnchor,
-            popupAnchor: old_icon.options.popupAnchor
-        })
-        station.setIcon(highlight_icon)
-    }
-    
-}
-
-
-/**
- * This functions binds a Pop-Up to the leaflet object. The content for the Pop-Up is drawn from the station, which is stored in the DB.
- * @param {*} station - Station from the "station_collection"
- * @param {*} leaflet_object - Leaflet Object where the metadata should be added to
- */
-function add_station_metadata(station, leaflet_object)
-{
-    let popupcontent = `<strong> Name: </strong> ${station.geojson.properties.name}  <br> <strong> Beschreibung: </strong> ${station.geojson.properties.description}  <br>`
-    if (station.geojson.properties.url) // append only if exisitng, as its an optional parameter
-    {
-        popupcontent += `<strong> URL: </strong> <a href="${station.geojson.properties.url}" target="_blank"> ${station.geojson.properties.url} </a> `
-    }
-    leaflet_object.bindPopup(popupcontent)
-}
 
 // ----------------- Script Start -----------------
 
@@ -336,6 +252,7 @@ document.getElementById('file_upload_geoJSON').addEventListener('change', functi
 {
     console.log(event.target)
     let file = event.target.files[0]
+
     // if no file is inputed
     if (!file) return
   
@@ -374,15 +291,6 @@ SUBMIT_BUTTON.addEventListener("click", (event) =>
     drawnItems.clearLayers() // resets all elements drawn with the draw-tool
 })
 }
-
-// // set in own scope to prevent unwanted global variables
-// // button functionality is set in "update_table()"
-// {
-// const UPLOAD_BUTTON = document.getElementById("upload_station")
-// UPLOAD_BUTTON.setAttribute("class", "btn btn-primary")
-// UPLOAD_BUTTON.setAttribute("data-toggle", "modal")
-// UPLOAD_BUTTON.setAttribute("data-target", "#upload_station_popup")
-// }
 
 update_map()
 update_table()
