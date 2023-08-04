@@ -80,9 +80,9 @@ export async function update_table() {
     let table = document.getElementById("station_table")
     let tbody = document.createElement('tbody')
 
-    let stations_data = zip_array_and_leaflet_layergroup(Object.entries(station_collection), stations_layer_group)
+    let stations_data = zip_array_and_leaflet_layergroup(Object.values(station_collection), stations_layer_group)
     
-    for (const [id, {geojson}, layer] of stations_data) 
+    for (const [STATION, LEAFLET_LAYER] of stations_data) 
     {
         let row = tbody.insertRow()
         row.addEventListener("click", function(event) 
@@ -90,17 +90,17 @@ export async function update_table() {
             if (event.target.tagName !== "BUTTON") // only activates click event, if no button of the row is pressed
             {
                 // reset styling of each layer
-                stations_layer_group.eachLayer(function(layer)
+                stations_layer_group.eachLayer(function(LEAFLET_LAYER)
                 {
-                    default_style(layer)
+                    default_style(LEAFLET_LAYER)
                 })
-                highlight(layer)
+                highlight(LEAFLET_LAYER)
             }
             
         })
         let station_name = document.createElement("td")
-        station_name.innerText = geojson.properties.name
-        station_name.id = `station_name${id}` // TODO: evtl löschen, da nicht genutzt
+        station_name.innerText = STATION.properties.name
+        station_name.id = `station_name${STATION._id}` // TODO: evtl löschen, da nicht genutzt
         row.insertCell().appendChild(station_name)
 
         let edit_station_button = document.createElement("button")
@@ -110,17 +110,23 @@ export async function update_table() {
         edit_station_button.setAttribute("data-toggle", "modal")
         edit_station_button.setAttribute("data-target", "#edit_station_popup")
         
-        edit_station_button.addEventListener("click", () => {
+        edit_station_button.addEventListener("click", function()
+        {
             // populate popUp with station data
             let station_update_textarea = document.getElementById("update_stationGeoJSON")
-            station_update_textarea.value = JSON.stringify(geojson, null, 2)
+            station_update_textarea.value = JSON.stringify(
+                {
+                    type: STATION.type,
+                    geometry: STATION.geometry,
+                    properties: STATION.properties
+                }, null, 2)
 
             // this button isn't directly added to the table, but is added to a Pop-Up instead.
             let update_station_button = document.getElementById("update_station")
 
             /* overwriting the "onclick" attribute instead of using "addEventListener" fixes 
             the problem, that the "Aktualisieren" Button also updates every other Station in the DB.*/
-            update_station_button.setAttribute("onclick", `listen_to_updates(${id})`)
+            update_station_button.setAttribute("onclick", `listen_to_updates(${STATION._id})`)
         })
         row.insertCell().appendChild(edit_station_button)
 
@@ -128,7 +134,7 @@ export async function update_table() {
         delete_station_button.innerText = "Löschen"
         delete_station_button.setAttribute("type", "button")
         delete_station_button.setAttribute("class", "btn btn-primary")
-        delete_station_button.addEventListener("click",() => 
+        delete_station_button.addEventListener("click", function() 
         {
             delete_station(id)
         })
@@ -216,15 +222,15 @@ async function update_map()
 
     for (const STATION of Object.values(station_collection))
     {
-        if (STATION.geojson.geometry.type === "Point")
+        if (STATION.geometry.type === "Point")
         {
-            let marker = L.marker([STATION.geojson.geometry.coordinates[1], STATION.geojson.geometry.coordinates[0]]).addTo(stations_layer_group)
+            let marker = L.marker([STATION.geometry.coordinates[1], STATION.geometry.coordinates[0]]).addTo(stations_layer_group)
             add_station_metadata(STATION, marker)
         }
-        else if (STATION.geojson.geometry.type === "Polygon")
+        else if (STATION.geometry.type === "Polygon")
         {
             // "coordinates" are accessed at index "0" because geoJSOn wrappes the coordinates in an extra array
-            let polygon = L.polygon(STATION.geojson.geometry.coordinates[0].map(function(coord) // used to change coords from lng/lat to lat/lng
+            let polygon = L.polygon(STATION.geometry.coordinates[0].map(function(coord) // used to change coords from lng/lat to lat/lng
             {
                 return [coord[1], coord[0]]
             })).addTo(stations_layer_group)

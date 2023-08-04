@@ -8,6 +8,9 @@
  */
 export function zip_array_and_leaflet_layergroup(array, leaflet_layergroup)
 {
+    // Wrap each element in an array
+    array = array.map(element => [element])
+    
     let counter = 0
     leaflet_layergroup.eachLayer(function(layer)
     {
@@ -80,10 +83,10 @@ export function highlight(feature)
  */
 export function add_station_metadata(station, leaflet_object)
 {
-    let popupcontent = `<strong> Name: </strong> ${station.geojson.properties.name}  <br> <strong> Beschreibung: </strong> ${station.geojson.properties.description}  <br>`
-    if (station.geojson.properties.url) // append only if exisitng, as its an optional parameter
+    let popupcontent = `<strong> Name: </strong> ${station.properties.name}  <br> <strong> Beschreibung: </strong> ${station.properties.description}  <br>`
+    if (station.properties.url) // append only if exisitng, as its an optional parameter
     {
-        popupcontent += `<strong> URL: </strong> <a href="${station.geojson.properties.url}" target="_blank"> ${station.geojson.properties.url} </a> `
+        popupcontent += `<strong> URL: </strong> <a href="${station.properties.url}" target="_blank"> ${station.properties.url} </a> `
     }
     leaflet_object.bindPopup(popupcontent)
 }
