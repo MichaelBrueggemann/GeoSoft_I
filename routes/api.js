@@ -3,10 +3,6 @@
 const EXPRESS = require('express');
 const ROUTER = EXPRESS.Router();
 const DOTENV = require('dotenv');
-const MULTER  = require('multer')
-const UPLOAD = MULTER({ dest: '../public/data/uploads' }) // store files send to the API and make them accessible
-const FS = require('fs') // Read files from the file system
-
 
 // --------------- DATABASE INITIALIZATION ---------------
 
@@ -151,25 +147,6 @@ ROUTER.post('/add_station', function(req, res) {
 
   res.send()
 });
-
-ROUTER.post('/upload_geojson_station', UPLOAD.single("file"), function(req, res) {
-
-  // Read the file from file system 
-  FS.readFile(req.file.path, 'utf8', function(err, data){
-    if (err) {
-      console.error(err);
-      return res.status(500).send('Beim Lesen der Datei is ein Fehler aufgetreten')
-    }
-    // Parse the file content to a JavaScript object
-    const FILE_CONTENT = JSON.parse(data);
-    
-    // add file content to DB
-    add_item(FILE_CONTENT, station_collection)
-    res.status(200).send({ success: true, message: 'Upload Completed!' })
-  })
-  
-})
-
 
 ROUTER.post('/delete_station', function(req, res) {
   const ID = req.body.id;
