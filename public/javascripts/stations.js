@@ -49,28 +49,16 @@ async function add_new_station(geojson) {
  */
 async function update_station(id, geojson) 
 {
-
     await api_call("update_station", {
             id: id,
             geojson: geojson,
         });
 
-    
     await update_map()
     await update_table()
-    
 }
 
 // ----------------- Stations Table -----------------
-/**
- * Updates station data in the DB.
- * @param {*} id - ID of the station that should be updated
- */
-function listen_to_updates(id)
-{
-    const UPDATED_STATION = JSON.parse(document.getElementById(`update_stationGeoJSON`).value);
-    update_station(id, UPDATED_STATION)
-}
 
 export async function update_table() {
     station_collection = await fetch("/api/stations")
@@ -114,19 +102,14 @@ export async function update_table() {
         {
             // populate popUp with station data
             let station_update_textarea = document.getElementById("update_stationGeoJSON")
+            // station-id set for later "onclick" event to update the edited station
+            station_update_textarea.setAttribute("data-station_id", `${STATION._id}`)
             station_update_textarea.value = JSON.stringify(
                 {
                     type: STATION.type,
                     geometry: STATION.geometry,
                     properties: STATION.properties
                 }, null, 2)
-
-            // this button isn't directly added to the table, but is added to a Pop-Up instead.
-            let update_station_button = document.getElementById("update_station")
-
-            /* overwriting the "onclick" attribute instead of using "addEventListener" fixes 
-            the problem, that the "Aktualisieren" Button also updates every other Station in the DB.*/
-            update_station_button.setAttribute("onclick", `listen_to_updates(${STATION._id})`)
         })
         row.insertCell().appendChild(edit_station_button)
 
@@ -136,11 +119,11 @@ export async function update_table() {
         delete_station_button.setAttribute("class", "btn btn-primary")
         delete_station_button.addEventListener("click", function() 
         {
-            delete_station(id)
+            delete_station(STATION._id)
         })
         row.insertCell().appendChild(delete_station_button)
     }
-    table.tBodies[0].replaceWith(tbody);
+    table.tBodies[0].replaceWith(tbody)
 }
 
 // ----------------- Map -----------------
@@ -152,13 +135,13 @@ function initializeMap()
 
     // initialize base map
     let osmLayer = new L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-        {attribution:'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'});
+        {attribution:'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'})
 
     osmLayer.addTo(map)
 
     // FeatureGroup is to store editable layers
-    let drawnItems = new L.FeatureGroup();
-    map.addLayer(drawnItems);
+    let drawnItems = new L.FeatureGroup()
+    map.addLayer(drawnItems)
 
     // LayerGroup to later store stations
     let stations_layer_group = L.layerGroup()
@@ -196,7 +179,7 @@ function initializeMap()
 
         // adds the geojson of the layer to the textarea, so that users can edit the metadata
         let textarea = document.getElementById("textarea_geoJSON")
-        textarea.value = JSON.stringify(layer.toGeoJSON(), null, 2);
+        textarea.value = JSON.stringify(layer.toGeoJSON(), null, 2)
     })
     return {
         map: map,
@@ -239,17 +222,23 @@ async function update_map()
     }
 }
 
-// ----------------- Map Helperfunctions -----------------
-
-
-
 // ----------------- Script Start -----------------
 
 let map_init = initializeMap()
-let map = map_init.map
 let stations_layer_group = map_init.stations_layer_group
 let drawnItems = map_init.drawnItems
 
+/* Use "event delegation" to bind an event to a detached button. The button "#update_station" is first attached to the DOM, if the modal "'edit_station_popup"
+ is opened (the button is part of the modal), therefore pre-existing events for this button might get lost.*/
+document.body.addEventListener('click', function(event) {
+    // set/overwrite event on button "#update_station"
+    if (event.target.id === 'update_station') {
+        const UPDATE_STATION_TEXTAREA = document.getElementById(`update_stationGeoJSON`)
+        const UPDATED_STATION = JSON.parse(UPDATE_STATION_TEXTAREA.value)
+        const STATION_ID = UPDATE_STATION_TEXTAREA.dataset.station_id
+        update_station(STATION_ID, UPDATED_STATION)  
+    }
+})
 
 // ----------------- Submit Field -----------------
 
@@ -274,7 +263,7 @@ document.getElementById('file_upload_geoJSON').addEventListener('change', functi
 //set in own scope to prevent unwanted global variables
 {
 const SUBMIT_BUTTON = document.getElementById("submit_station")
-SUBMIT_BUTTON.addEventListener("click", (event) => 
+SUBMIT_BUTTON.addEventListener("click", function(event)
 {
     event.preventDefault()
     let form = document.getElementById('station_upload_form')
@@ -291,7 +280,6 @@ SUBMIT_BUTTON.addEventListener("click", (event) =>
         },
         geometry: JSON.parse(formData.get("textarea_geoJSON")).geometry
     }
-    console.log(request_body)
     add_new_station(request_body)
     form.reset()
     drawnItems.clearLayers() // resets all elements drawn with the draw-tool

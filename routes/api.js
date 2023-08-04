@@ -99,10 +99,23 @@ async function delete_item(id, collection) {
  */
 async function update_item(id, newData, collection) {
   try {
-    const result = await collection.updateOne(
-      { _id: new ObjectId(id) }, 
-      { $set: newData } 
-    );
+    // the collections need different kinds of updates
+    // TODO: @Tim: bitte erklären, warum
+    let result = null
+    if (collection === station_collection)
+    {
+      result = await collection.updateOne(
+        { _id: new ObjectId(id) }, 
+        { $set: newData.geojson } 
+      );
+    }
+    else if (collection === tour_collection)
+    {
+      result = await collection.updateOne(
+        { _id: new ObjectId(id) }, 
+        { $set: newData } 
+      );
+    }
 
     if (result.modifiedCount === 1) {
       return { message: 'Datensatz erfolgreich aktualisiert' };
