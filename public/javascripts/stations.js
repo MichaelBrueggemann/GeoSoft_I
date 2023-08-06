@@ -192,7 +192,6 @@ function initializeMap()
 
         // the drawn layer
         let layer = event.layer
-        
 
         // adds drawn layer to the editable layers
         drawnItems.addLayer(layer)
@@ -201,6 +200,27 @@ function initializeMap()
         let textarea = document.getElementById("textarea_geoJSON")
         textarea.value = JSON.stringify(layer.toGeoJSON(), null, 2)
     })
+
+    map.on(L.Draw.Event.EDITED, function (event) 
+    {
+        let textarea = document.getElementById("textarea_geoJSON")
+
+        // the edited layer
+        console.log(event)
+        let layer = Object.values(event.layers._layers)[0]
+
+        // updates data in the textarea
+        textarea.value = JSON.stringify(layer.toGeoJSON(), null, 2)
+    })
+
+    map.on(L.Draw.Event.DELETED, function (event) 
+    {
+        // reset content of textarea
+        let textarea = document.getElementById("textarea_geoJSON")
+        textarea.value = ""
+    })
+
+
     return {
         map: map,
         stations_layer_group: stations_layer_group,
