@@ -46,6 +46,8 @@ export function default_style(feature)
         })
         feature.setIcon(highlight_icon)
     }
+    
+    feature.highlighted = false
 }
 
 /**
@@ -72,6 +74,7 @@ export function highlight(feature)
         })
         feature.setIcon(highlight_icon)
     }
+    feature.highlighted = true
     
 }
 
