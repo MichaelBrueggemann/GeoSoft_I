@@ -83,8 +83,17 @@ export async function update_table() {
                     default_style(LEAFLET_LAYER)
                 })
                 highlight(LEAFLET_LAYER)
-            }
-            
+                // set map zoom on the highlighted feature
+                if (LEAFLET_LAYER instanceof L.Polygon)
+                {
+                    map.setView(LEAFLET_LAYER.getCenter(), 30)
+                }
+                else if (LEAFLET_LAYER instanceof L.Marker)
+                {
+                    map.setView(LEAFLET_LAYER.getLatLng(), 30)
+                }
+                
+            } 
         })
         let station_name = document.createElement("td")
         station_name.innerText = STATION.properties.name
@@ -225,6 +234,7 @@ async function update_map()
 // ----------------- Script Start -----------------
 
 let map_init = initializeMap()
+let map = map_init.map
 let stations_layer_group = map_init.stations_layer_group
 let drawnItems = map_init.drawnItems
 
