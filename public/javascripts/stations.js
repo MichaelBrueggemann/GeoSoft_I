@@ -72,19 +72,39 @@ export async function update_table() {
     
     for (const [STATION, LEAFLET_LAYER] of stations_data) 
     {
+        // give Layer a property for later highlighting
+        //LEAFLET_LAYER["highlighted"] = false
+
         let row = tbody.insertRow()
         row.addEventListener("click", function(event) 
         {
             if (event.target.tagName !== "BUTTON") // only activates click event, if no button of the row is pressed
             {
-                // reset styling of each layer
-                stations_layer_group.eachLayer(function(LEAFLET_LAYER)
+                if (LEAFLET_LAYER.highlighted)
                 {
                     default_style(LEAFLET_LAYER)
-                })
-                highlight(LEAFLET_LAYER)
-            }
-            
+                }
+                else
+                {
+                    // reset styling of each layer
+                    stations_layer_group.eachLayer(function(LEAFLET_LAYER)
+                    {
+                        default_style(LEAFLET_LAYER)
+                    })
+
+                    highlight(LEAFLET_LAYER)
+
+                    // set map zoom on the highlighted feature
+                    if (LEAFLET_LAYER instanceof L.Polygon)
+                    {
+                        map.setView(LEAFLET_LAYER.getCenter(), 30)
+                    }
+                    else if (LEAFLET_LAYER instanceof L.Marker)
+                    {
+                        map.setView(LEAFLET_LAYER.getLatLng(), 30)
+                    }
+                }
+            } 
         })
         let station_name = document.createElement("td")
         station_name.innerText = STATION.properties.name
@@ -172,7 +192,6 @@ function initializeMap()
 
         // the drawn layer
         let layer = event.layer
-        //let type = event.layerType
 
         // adds drawn layer to the editable layers
         drawnItems.addLayer(layer)
@@ -181,6 +200,27 @@ function initializeMap()
         let textarea = document.getElementById("textarea_geoJSON")
         textarea.value = JSON.stringify(layer.toGeoJSON(), null, 2)
     })
+
+    map.on(L.Draw.Event.EDITED, function (event) 
+    {
+        let textarea = document.getElementById("textarea_geoJSON")
+
+        // the edited layer
+        console.log(event)
+        let layer = Object.values(event.layers._layers)[0]
+
+        // updates data in the textarea
+        textarea.value = JSON.stringify(layer.toGeoJSON(), null, 2)
+    })
+
+    map.on(L.Draw.Event.DELETED, function (event) 
+    {
+        // reset content of textarea
+        let textarea = document.getElementById("textarea_geoJSON")
+        textarea.value = ""
+    })
+
+
     return {
         map: map,
         stations_layer_group: stations_layer_group,
@@ -225,6 +265,7 @@ async function update_map()
 // ----------------- Script Start -----------------
 
 let map_init = initializeMap()
+let map = map_init.map
 let stations_layer_group = map_init.stations_layer_group
 let drawnItems = map_init.drawnItems
 
