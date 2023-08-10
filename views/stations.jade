@@ -32,35 +32,93 @@ block content
     .row 
         .col-sm-12.col-md-8
             #map1
-        .col-sm-12.col-md-4 
-            form#station_upload_form
-              p.note(align="right")
-                span(style='color: red;') *
-                |  Pflichtfeld
-              h3 Stationsmetadaten
-              .form-group
-                label.required.font-weight-bold(for='exampleInputEmail1') Name
-                input#input_name.form-control(type='text' name="input_name" placeholder='Name eingeben' required)
-              .form-group
-                label.required.font-weight-bold(for='input_description') Beschreibung
-                input#input_description.form-control(type='text' name="input_description" placeholder='Beschreibung eingeben' required)
-              .form-group
-                label.font-weight-bold(for='input_url') URL
-                input#input_url.form-control(type='url' name="input_url" placeholder='URL eingeben')
-              hr.hr
-              h3.required Stations-GeoJSON
-              .form-group 
-                label.font-weight-bold(for="textarea_geoJSON") GeoJSON eingeben
-                textarea#textarea_geoJSON.form-control(cols="30" rows="10" style='resize:none' name="textarea_geoJSON" placeholder='Gib hier die Stationsdaten im GeoJSON-Format an.' required)
-              .form-group 
-                p.text-center.text-weight-light
-                  u oder
-              .form-group
-                label.font-weight-bold(for='file_upload_geoJSON') GeoJSON-Datei hochladen
-                // This field doesn't have the attribute "name" as it's not supposed to be send with the form.
-                input#file_upload_geoJSON.form-control-file(type='file')
-              hr.hr
-              button#submit_station.btn.btn-primary(type='button') Daten absenden
+        .col-sm-12.col-md-4
+          div#add_station_button_area
+            .row.justify-content-center.p-3
+              button#open_map_form.btn.btn-primary(type="button") über Karte
+            .row.justify-content-center.p-3
+              button#open_geojson_textarea_form.btn.btn-primary(type="button") über Textfeld
+            .row.justify-content-center.p-3
+              button#open_geojson_upload_form.btn.btn-primary(type="button") über Dateipload
+
+          form#map_form(style="display:none")
+            p.note(align="right")
+              span(style='color: red;') *
+              |  Pflichtfeld
+            h3 Stationsmetadaten
+            p Hier musst du über die Karte den Ort deiner Station auswählen. Die Daten zu deiner Station gibts du dann über die untenstehenden Eingabefelder an.
+            .form-group
+              label.required.font-weight-bold(for='exampleInputEmail1') Name
+              input#input_name.form-control(type='text' name="input_name" placeholder='Name eingeben' required)
+            .form-group
+              label.required.font-weight-bold(for='input_description') Beschreibung
+              input#input_description.form-control(type='text' name="input_description" placeholder='Beschreibung eingeben' required)
+            .form-group
+              label.font-weight-bold(for='input_url') URL
+              input#input_url.form-control(type='url' name="input_url" placeholder='URL eingeben')
+            .form-group(style="display:none")
+              // Falls dieses Feld fehlt, hinweis an User, dass eine Station ausgewählt werden muss.
+              textarea#hidden_geojson_data_from_map_feature(style="display:none" name="hidden_geojson_data_from_map_feature" required)
+            hr.hr
+            button#submit_map_form.btn.btn-primary.m-1(type='button') Daten absenden
+            button#cancel_map_form.btn.btn-primary.m-1(type='button') Abbrechen
+            textarea#hidden_geojson_data_from_map_feature(style="display:none")
+
+          form#geojson_textarea_form(style="display:none")
+            p.note(align="right")
+              span(style='color: red;') *
+              |  Pflichtfeld
+            h3.required Stations-GeoJSON
+            p Hier kannst du eine Station hochladen, indem du eine GeoJSON mit allen nötigen Daten hochlädst. Bei Problemen, schau dir gerne das Beispiel an.
+              button#show_sample_geojson.btn.btn-secondary.m-1(type='button') Beispiel
+            .form-group 
+              label.font-weight-bold(for="textarea_geoJSON") GeoJSON eingeben
+              textarea#textarea_geoJSON.form-control(cols="30" rows="10" style='resize:none' name="textarea_geoJSON" placeholder='Gib hier die Stationsdaten vollständig im GeoJSON-Format an.' required)
+            hr.hr
+            button#submit_geojson_textarea_form.btn.btn-primary.m-1(type='button') Daten absenden
+            button#cancel_geojson_textarea_form.btn.btn-primary.m-1(type='button') Abbrechen
+
+          form#geojson_upload_form(style="display:none")
+            p.note(align="right")
+              span(style='color: red;') *
+              |  Pflichtfeld
+            h3.required Stations-GeoJSON
+            .form-group
+              label.font-weight-bold(for='file_upload_geoJSON') GeoJSON-Datei hochladen
+              input#file_upload_geoJSON.form-control-file(type='file' accept="application/JSON, .json")
+            hr.hr
+            button#submit_geojson_upload_form.btn.btn-primary.m-1(type='button') Daten absenden
+            button#cancel_geojson_upload_form.btn.btn-primary.m-1(type='button') Abbrechen
+
+
+          //- form#station_upload_form(style="display:none")
+          //-   p.note(align="right")
+          //-     span(style='color: red;') *
+          //-     |  Pflichtfeld
+          //-   h3 Stationsmetadaten
+          //-   .form-group
+          //-     label.required.font-weight-bold(for='exampleInputEmail1') Name
+          //-     input#input_name.form-control(type='text' name="input_name" placeholder='Name eingeben' required)
+          //-   .form-group
+          //-     label.required.font-weight-bold(for='input_description') Beschreibung
+          //-     input#input_description.form-control(type='text' name="input_description" placeholder='Beschreibung eingeben' required)
+          //-   .form-group
+          //-     label.font-weight-bold(for='input_url') URL
+          //-     input#input_url.form-control(type='url' name="input_url" placeholder='URL eingeben')
+          //-   hr.hr
+          //-   h3.required Stations-GeoJSON
+          //-   .form-group 
+          //-     label.font-weight-bold(for="textarea_geoJSON") GeoJSON eingeben
+          //-     textarea#textarea_geoJSON.form-control(cols="30" rows="10" style='resize:none' name="textarea_geoJSON" placeholder='Gib hier die Stationsdaten im GeoJSON-Format an.' required)
+          //-   .form-group 
+          //-     p.text-center.text-weight-light
+          //-       u oder
+          //-   .form-group
+          //-     label.font-weight-bold(for='file_upload_geoJSON') GeoJSON-Datei hochladen
+          //-     // This field doesn't have the attribute "name" as it's not supposed to be send with the form.
+          //-     input#file_upload_geoJSON.form-control-file(type='file' accept="application/JSON, .json")
+          //-   hr.hr
+          //-   button#submit_station.btn.btn-primary(type='button') Daten absenden
 
   hr.hr
   .container-fluid
