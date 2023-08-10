@@ -90,6 +90,7 @@ block content
               .form-group
                 label.font-weight-bold(for='file_upload_geoJSON') GeoJSON-Datei hochladen
                 input#file_upload_geoJSON.form-control-file(type='file' accept="application/JSON, .json")
+                textarea#hidden_geojson_data_from_upload(style="display:none" name="hidden_geojson_data_from_from_upload" required)
             hr.hr
             .row.justify-content-center
               button#submit_geojson_upload_form.btn.btn-primary.m-1(type='button') Daten absenden
