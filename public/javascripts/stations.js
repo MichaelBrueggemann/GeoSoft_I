@@ -309,6 +309,7 @@ function leave_add_station_mode(form)
  * */ 
 function prepare_form_buttons()
 {
+    //TODO: evntuell die einzelnen Buttons pro Form in Funktion wrappen
     
     // open_map_form button
     document.getElementById("open_map_form").addEventListener("click", function()
