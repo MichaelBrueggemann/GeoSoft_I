@@ -346,18 +346,24 @@ function prepare_form_buttons()
 
         // resets all elements drawn with the draw-tool
         drawnItems.clearLayers() 
-        leave_add_station_mode(this.parentElement)
+
+        let map_form = document.getElementById("map_form")
+
+        // hide coressponding form element
+        leave_add_station_mode(map_form)
     })
 
 
     // cancel_map_form button
     document.getElementById("cancel_map_form").addEventListener("click", function()
     {
-        // hide coressponding form element
-        leave_add_station_mode(this.parentElement)
-
         // deactivate draw control on map
         map.removeControl(drawControl)
+
+        let map_form = document.getElementById("map_form")
+
+        // hide coressponding form element
+        leave_add_station_mode(map_form)
     })
 
     // open_geojson_textarea_form button
@@ -372,11 +378,14 @@ function prepare_form_buttons()
     // cancel_geojson_textarea_form button
     document.getElementById("cancel_geojson_textarea_form").addEventListener("click", function()
     {
-        // hide coressponding form element
-        let coressponding_form = this.parentElement
-        leave_add_station_mode(coressponding_form)
+        
+        let geojson_textarea_form = document.getElementById("geojson_textarea_form")
+
         // reset form
-        coressponding_form.reset()
+        geojson_textarea_form.reset()
+
+        // hide coressponding form element
+        leave_add_station_mode(geojson_textarea_form)
     })
 
     // show_sample_geojson button
@@ -413,9 +422,26 @@ function prepare_form_buttons()
     // cancel_geojson_upload_form button
     document.getElementById("cancel_geojson_upload_form").addEventListener("click", function()
     {
+        let geojson_upload_form = document.getElementById("geojson_upload_form")
+
         // hide coressponding form element
-        leave_add_station_mode(this.parentElement)
+        leave_add_station_mode(geojson_upload_form)
     })
+
+    // show sample geojson in form
+    document.getElementById("sample_geojson").value = JSON.stringify(
+    {
+        "type": "",
+        "properties": {
+            "name": "",
+            "description": "",
+            "url": ""
+        },
+        "geometry": {
+            "coordinates": [],
+            "type": ""
+        }
+    }, null, 2) 
  
 }
 

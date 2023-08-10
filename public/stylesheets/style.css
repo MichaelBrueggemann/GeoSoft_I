@@ -10,7 +10,7 @@ a {
 
 #map2 { height: 800px; }
 
-#map1 { height: 500px }
+#map1 { height: 800px }
 
 .required:after {
   content:"*";

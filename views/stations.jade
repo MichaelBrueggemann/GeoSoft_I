@@ -23,9 +23,10 @@ block scripts
 
 block content
   h1= title
-  p Auf dieser Seite kannst du die aktuell geladenen Stationen ansehen, diese anpassen oder neue Stationen ergänzen. Hierzu kannst du entweder eine Station direkt auf der Karte einzeichnen oder du trägst eine Station direkt in das Textfeld ein. Die Koordinaten kannst du dir direkt über "www.geojson.io" besorgen.
+  p Auf dieser Seite kannst du die aktuell geladenen Stationen ansehen, diese anpassen oder neue Stationen ergänzen. Hierzu kannst du einen der Button unten auswählen, um eine Station hinzuzufügen.
 
   .container-fluid 
+    hr.hr
     .row.justify-content-center 
       h2 Station hinzufügen
     hr.hr
@@ -61,35 +62,38 @@ block content
               // Falls dieses Feld fehlt, hinweis an User, dass eine Station ausgewählt werden muss.
               textarea#hidden_geojson_data_from_map_feature(style="display:none" name="hidden_geojson_data_from_map_feature" required)
             hr.hr
-            button#submit_map_form.btn.btn-primary.m-1(type='button') Daten absenden
-            button#cancel_map_form.btn.btn-primary.m-1(type='button') Abbrechen
-            textarea#hidden_geojson_data_from_map_feature(style="display:none")
+            .row.justify-content-center
+              button#submit_map_form.btn.btn-primary.m-1(type='button') Daten absenden
+              button#cancel_map_form.btn.btn-primary.m-1(type='button') Abbrechen
 
           form#geojson_textarea_form(style="display:none")
-            p.note(align="right")
-              span(style='color: red;') *
-              |  Pflichtfeld
-            h3.required Stations-GeoJSON
-            p Hier kannst du eine Station hochladen, indem du eine GeoJSON mit allen nötigen Daten hochlädst. Bei Problemen, schau dir gerne das Beispiel an.
-              button#show_sample_geojson.btn.btn-secondary.m-1(type='button') Beispiel
-            .form-group 
-              label.font-weight-bold(for="textarea_geoJSON") GeoJSON eingeben
-              textarea#textarea_geoJSON.form-control(cols="30" rows="10" style='resize:none' name="textarea_geoJSON" placeholder='Gib hier die Stationsdaten vollständig im GeoJSON-Format an.' required)
+            .row.justify-content-center
+              h3 Stations-GeoJSON
+              p Hier kannst du eine Station erstellen, indem du eine GeoJSON mit allen nötigen Daten in das Textfeld einträgst. Bei Problemen, schau dir gerne das Beispiel an.
+              button#show_sample_geojson.btn.btn-secondary.m-3(type='button') Beispiel
+            .row.justify-content-center
+              .form-group 
+                label.font-weight-bold(for="textarea_geoJSON") GeoJSON eingeben
+                textarea#textarea_geoJSON.form-control(cols="30" rows="10" style='resize:none' name="textarea_geoJSON" placeholder='Gib hier die Stationsdaten vollständig im GeoJSON-Format an.' required)
             hr.hr
-            button#submit_geojson_textarea_form.btn.btn-primary.m-1(type='button') Daten absenden
-            button#cancel_geojson_textarea_form.btn.btn-primary.m-1(type='button') Abbrechen
+            .row.justify-content-center
+              button#submit_geojson_textarea_form.btn.btn-primary.m-1(type='button') Daten absenden
+              button#cancel_geojson_textarea_form.btn.btn-primary.m-1(type='button') Abbrechen
 
           form#geojson_upload_form(style="display:none")
-            p.note(align="right")
-              span(style='color: red;') *
-              |  Pflichtfeld
-            h3.required Stations-GeoJSON
-            .form-group
-              label.font-weight-bold(for='file_upload_geoJSON') GeoJSON-Datei hochladen
-              input#file_upload_geoJSON.form-control-file(type='file' accept="application/JSON, .json")
+            .row.justify-content-center
+              h3 Stations-GeoJSON
+              p Hier kannst du eine Station erstellen, indem du eine GeoJSON-Datei hochlädst. Bitte beachte, dass deine Datei die folgende Struktur erfüllt: 
+            .row.justify-content-center
+              textarea#sample_geojson.m-3(cols="30" rows="10" style='resize:none' readonly)
+            .row.justify-content-center
+              .form-group
+                label.font-weight-bold(for='file_upload_geoJSON') GeoJSON-Datei hochladen
+                input#file_upload_geoJSON.form-control-file(type='file' accept="application/JSON, .json")
             hr.hr
-            button#submit_geojson_upload_form.btn.btn-primary.m-1(type='button') Daten absenden
-            button#cancel_geojson_upload_form.btn.btn-primary.m-1(type='button') Abbrechen
+            .row.justify-content-center
+              button#submit_geojson_upload_form.btn.btn-primary.m-1(type='button') Daten absenden
+              button#cancel_geojson_upload_form.btn.btn-primary.m-1(type='button') Abbrechen
 
 
           //- form#station_upload_form(style="display:none")
