@@ -314,6 +314,9 @@ function prepare_update_station_button()
 
 // ----------------- Script Start -----------------
 
+//TODO: schauen, ob man den Code so ändern kann, das man die globalen Variablen los wird. 
+
+// initialisation of mandatory global variables
 let map_init = initializeMap()
 let map = map_init.map
 let stations_layer_group = map_init.stations_layer_group
