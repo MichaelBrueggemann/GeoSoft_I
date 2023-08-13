@@ -184,7 +184,7 @@ function initializeMap()
     map.addLayer(stations_layer_group)
 
     // save drawn items 
-    map.on(L.Draw.Event.CREATED, function (event) 
+    map.on(L.Draw.Event.CREATED, function(event) 
     {
         // clears all Elements that were drawn before
         drawnItems.clearLayers() 
@@ -200,22 +200,21 @@ function initializeMap()
         textarea.value = JSON.stringify(layer.toGeoJSON(), null, 2)
     })
 
-    map.on(L.Draw.Event.EDITED, function (event) 
+    map.on(L.Draw.Event.EDITED, function(event) 
     {
-        let textarea = document.getElementById("textarea_geoJSON")
+        let textarea = document.getElementById("hidden_geojson_data_from_map_feature")
 
         // the edited layer
-        console.log(event)
         let layer = Object.values(event.layers._layers)[0]
 
         // updates data in the textarea
         textarea.value = JSON.stringify(layer.toGeoJSON(), null, 2)
     })
 
-    map.on(L.Draw.Event.DELETED, function (event) 
+    map.on(L.Draw.Event.DELETED, function() 
     {
         // reset content of textarea
-        let textarea = document.getElementById("textarea_geoJSON")
+        let textarea = document.getElementById("hidden_geojson_data_from_map_feature")
         textarea.value = ""
     })
 
