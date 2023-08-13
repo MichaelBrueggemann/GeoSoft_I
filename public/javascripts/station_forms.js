@@ -1,6 +1,32 @@
 "use strict"
 import { add_new_station } from "./stations.js"
 
+/**
+ * Tests if the input is a valid geojson
+ * @param {} object Object to check.
+ */
+function isGeoJSON(object) 
+{
+    // Check if the object has the necessary GeoJSON properties
+    if (!(object.hasOwnProperty('type') && object.hasOwnProperty('properties') && object.hasOwnProperty('geometry')))
+    {
+      return false
+    }  
+    // Check if the 'type' is 'Feature' as it should be for GeoJSON
+    if (object.type !== 'Feature') 
+    {
+        return false
+    }
+    // Check if 'geometry' itself contain 'type' and 'coordinates'
+    if (!(object.geometry.hasOwnProperty('type') && object.geometry.hasOwnProperty('coordinates')))
+    {
+        return false
+    }
+    // else
+    return true
+    }
+    
+
 function enter_add_station_mode(edit_style)
 {
     switch(edit_style)
@@ -54,15 +80,12 @@ function prepare_map_form(map, drawnItems, drawControl)
     // open_map_form button
     document.getElementById("open_map_form").addEventListener("click", function()
     {
+        // reset validation state
         if (MAP_FORM.classList.contains("was-validated"))
         {
             MAP_FORM.classList.remove("was-validated")
         }
 
-        if (!MAP_FORM.classList.contains("needs-validation"))
-        {
-            MAP_FORM.classList.add("needs-validation")
-        }
 
         // add stations via map
         enter_add_station_mode("map")
@@ -135,47 +158,103 @@ function prepare_map_form(map, drawnItems, drawControl)
  * */ 
 function prepare_geojson_textarea_form()
 {
+    const GEOJSON_TEXTAREA_FORM = document.getElementById("geojson_textarea_form")
+
     // open_geojson_textarea_form button
     document.getElementById("open_geojson_textarea_form").addEventListener("click", function()
     {
+        // reset validation state
+        if (GEOJSON_TEXTAREA_FORM.classList.contains("was-validated"))
+        {
+            GEOJSON_TEXTAREA_FORM.classList.remove("was-validated")
+        }
+
         // add stations via textarea
         enter_add_station_mode("textarea")
+    })
+
+    document.getElementById("textarea_geoJSON").addEventListener("input", function()
+    {
+        let value_of_geojson_textarea = this.value
+
+        let geojson = {}
+        try 
+        {
+            geojson = JSON.parse(value_of_geojson_textarea)
+            this.setCustomValidity("Bitte gib eine korrekte GeoJSON an.")
+        } 
+        catch (error) 
+        {
+            console.log("Keine GeoJSON eingegeben: ", error)
+        }
+        // if the input isn't a correct GeoJSON
+        if (!isGeoJSON(geojson))
+        {
+            // invalidate textarea for later validation via HTML constraint validation API
+            this.setCustomValidity("Bitte gib eine korrekte GeoJSON an.")
+        }
+        else
+        {
+            // reset, to prevent wrong validation results
+            this.setCustomValidity("")
+        }
+        
+
     })
 
     // submit_geojson_textarea_form button
     document.getElementById("submit_geojson_textarea_form").addEventListener("click", function(event)
     {
-        event.preventDefault()
-        let form = document.getElementById('geojson_textarea_form')
         
-        let textarea_geojson = document.getElementById("textarea_geoJSON")
 
-        // parse body from formData
-        let request_body = JSON.parse(textarea_geojson.value)
+        if (!GEOJSON_TEXTAREA_FORM.checkValidity())
+        {
+            event.preventDefault()
+            // TODO: Warum wird das benutzt?
+            event.stopPropagation()
+            GEOJSON_TEXTAREA_FORM.classList.add("was-validated")
+        }
+        else
+        {
+            event.preventDefault()
         
-        // send data to API
-        add_new_station(request_body)
+            let textarea_geojson = document.getElementById("textarea_geoJSON")
 
-        form.reset()
+            try 
+            {
+                // parse body from formData
+                let request_body = JSON.parse(textarea_geojson.value)
+                
+                // send data to API
+                add_new_station(request_body)
 
-        // hide coressponding form element
-        leave_add_station_mode(form)
+                GEOJSON_TEXTAREA_FORM.reset()
+
+                // hide coressponding form element
+                leave_add_station_mode(GEOJSON_TEXTAREA_FORM)
+            } 
+            catch (error) 
+            {
+                console.log("Fehler beim Lesen der GeoJSON: ", error)
+            }
+            
+        }
+        
     })
 
     // cancel_geojson_textarea_form button
     document.getElementById("cancel_geojson_textarea_form").addEventListener("click", function()
     {
-        let geojson_textarea_form = document.getElementById("geojson_textarea_form")
-
         // reset form
-        geojson_textarea_form.reset()
+        GEOJSON_TEXTAREA_FORM.reset()
 
         // hide coressponding form element
-        leave_add_station_mode(geojson_textarea_form)
+        leave_add_station_mode(GEOJSON_TEXTAREA_FORM)
     })
 
     // show_sample_geojson button
-    document.getElementById("show_sample_geojson").addEventListener("click", function()
+    let show_sample_geojson_button = document.getElementById("show_sample_geojson")
+    show_sample_geojson_button.addEventListener("click", function()
     {
         let textarea = document.getElementById("textarea_geoJSON")
         textarea.value = JSON.stringify(
