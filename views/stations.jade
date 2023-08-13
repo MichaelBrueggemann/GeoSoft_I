@@ -61,14 +61,14 @@ block content
               label.fw-bold(for='input_url') URL
               input#input_url.form-control(type='url' name="input_url" placeholder='URL eingeben')
               .invalid-feedback Bitte gib eine URL im korrekten Format an (www."domainName"."domain").
-            .form-group(style="display:none")
+            .form-group
               // Falls dieses Feld fehlt, hinweis an User, dass eine Station ausgewählt werden muss.
               textarea#hidden_geojson_data_from_map_feature.form-control(style="display:none" name="hidden_geojson_data_from_map_feature" required)
+              .invalid-feedback Bitte wähle einen Standort über die Karte aus.
             hr.hr
             .row.justify-content-center
               button#submit_map_form.btn.btn-primary.m-1(type='button') Daten absenden
               button#cancel_map_form.btn.btn-primary.m-1(type='button') Abbrechen
-              button#submit_map_form2.btn.btn-primary.m-1(type='submit') Daten absenden
 
           form#geojson_textarea_form.container.needs-validation(style="display:none" novalidate)
             .row.justify-content-center

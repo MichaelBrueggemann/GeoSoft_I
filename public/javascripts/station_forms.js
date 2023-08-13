@@ -81,7 +81,9 @@ function prepare_map_form(map, drawnItems, drawControl)
         if (!MAP_FORM.checkValidity())
         {
             event.preventDefault()
+            // TODO: Warum wird das benutzt?
             event.stopPropagation()
+            MAP_FORM.classList.add("was-validated")
         }
         else
         {
@@ -119,6 +121,8 @@ function prepare_map_form(map, drawnItems, drawControl)
     {
         // deactivate draw control on map
         map.removeControl(drawControl)
+
+        MAP_FORM.reset()
 
         // hide coressponding form element
         leave_add_station_mode(MAP_FORM)
