@@ -146,13 +146,21 @@ block content
       .modal-content
         .modal-header
           h5.modal-title Station bearbeiten
-          button.close(type='button' data-dismiss='modal' aria-label='Close')
-            span(aria-hidden='true') ×
+          button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
         .modal-body(align="center")
           textarea#update_stationGeoJSON(rows='25' cols='45' style='resize:none')
         .modal-footer
-          button.btn.btn-secondary(type='button' data-dismiss='modal') Schließen
-          button#update_station.btn.btn-primary(type="button" data-dismiss='modal') Aktualisieren
+          button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen
+          button#update_station.btn.btn-primary(type="button" data-bs-dismiss='modal') Aktualisieren
 
-  
+  #sample_geojson_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
+    .modal-dialog.modal-dialog-centered(role='document')
+      .modal-content
+        .modal-header
+          h5.modal-title Beispiel-GeoJSON
+          button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
+        .modal-body(align="center")
+          textarea#sample_geojson_textarea(rows='15' cols='45' style='resize:none' readonly)
+        .modal-footer
+          button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen
           

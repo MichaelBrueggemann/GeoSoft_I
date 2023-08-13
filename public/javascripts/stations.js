@@ -115,8 +115,8 @@ export async function update_table() {
         edit_station_button.innerText = "Bearbeiten"
         edit_station_button.setAttribute("type", "button")
         edit_station_button.setAttribute("class", "btn btn-primary")
-        edit_station_button.setAttribute("data-toggle", "modal")
-        edit_station_button.setAttribute("data-target", "#edit_station_popup")
+        edit_station_button.setAttribute("data-bs-toggle", "modal")
+        edit_station_button.setAttribute("data-bs-target", "#edit_station_popup")
         
         edit_station_button.addEventListener("click", function()
         {

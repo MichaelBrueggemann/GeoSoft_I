@@ -173,6 +173,7 @@ function prepare_geojson_textarea_form()
         enter_add_station_mode("textarea")
     })
 
+    // validate textarea_geoJSON control element
     document.getElementById("textarea_geoJSON").addEventListener("input", function()
     {
         let value_of_geojson_textarea = this.value
@@ -254,9 +255,11 @@ function prepare_geojson_textarea_form()
 
     // show_sample_geojson button
     let show_sample_geojson_button = document.getElementById("show_sample_geojson")
+    show_sample_geojson_button.setAttribute("data-bs-toggle", "modal")
+    show_sample_geojson_button.setAttribute("data-bs-target", "#sample_geojson_popup")
     show_sample_geojson_button.addEventListener("click", function()
     {
-        let textarea = document.getElementById("textarea_geoJSON")
+        let textarea = document.getElementById("sample_geojson_textarea")
         textarea.value = JSON.stringify(
         {
             "type": "Feature",
