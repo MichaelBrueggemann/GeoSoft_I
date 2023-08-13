@@ -27,15 +27,15 @@ block content
 
   .container-fluid 
     hr.hr
-    .row.justify-content-center 
-      h2 Station hinzufügen
+    .row
+      h2.container.d-flex.justify-content-center  Station hinzufügen
     hr.hr
     .row 
         .col-sm-12.col-md-8
             #map1
         .col-sm-12.col-md-4
-          div#add_station_button_area
-            p.font-weight-bold Wie möchtest du deine Station hinzufügen:
+          div#add_station_button_area.container
+            p.fw-bold Wie möchtest du deine Station hinzufügen:
             .row.justify-content-center.p-3
               button#open_map_form.btn.btn-primary(type="button") über Karte
             .row.justify-content-center.p-3
@@ -43,40 +43,41 @@ block content
             .row.justify-content-center.p-3
               button#open_geojson_upload_form.btn.btn-primary(type="button") über Dateipload
 
-          form#map_form.needs-validation(style="display:none" novalidate)
+          form#map_form.container.needs-validation(style="display:none" novalidate)
             p.note(align="right")
               span(style='color: red;') *
               |  Pflichtfeld
             h3 Stationsmetadaten
             p Hier musst du über die Karte den Ort deiner Station auswählen. Die Daten zu deiner Station gibts du dann über die untenstehenden Eingabefelder an.
-            .form-group
-              label.required.font-weight-bold(for='exampleInputEmail1') Name
+            .form-group.m-1
+              label.required.fw-bold(for='input_name') Name
               input#input_name.form-control(type='text' name="input_name" placeholder='Name eingeben' required)
               .invalid-feedback Bitte gib einen Stationsnamen an.
-            .form-group
-              label.required.font-weight-bold(for='input_description') Beschreibung
+            .form-group.m-1
+              label.required.fw-bold(for='input_description') Beschreibung
               input#input_description.form-control(type='text' name="input_description" placeholder='Beschreibung eingeben' required)
               .invalid-feedback Bitte gib eine Beschreibung der Station an.
-            .form-group
-              label.font-weight-bold(for='input_url') URL
+            .form-group.m-1
+              label.fw-bold(for='input_url') URL
               input#input_url.form-control(type='url' name="input_url" placeholder='URL eingeben')
               .invalid-feedback Bitte gib eine URL im korrekten Format an (www."domainName"."domain").
             .form-group(style="display:none")
               // Falls dieses Feld fehlt, hinweis an User, dass eine Station ausgewählt werden muss.
-              textarea#hidden_geojson_data_from_map_feature(style="display:none" name="hidden_geojson_data_from_map_feature" required)
+              textarea#hidden_geojson_data_from_map_feature.form-control(style="display:none" name="hidden_geojson_data_from_map_feature" required)
             hr.hr
             .row.justify-content-center
               button#submit_map_form.btn.btn-primary.m-1(type='button') Daten absenden
               button#cancel_map_form.btn.btn-primary.m-1(type='button') Abbrechen
+              button#submit_map_form2.btn.btn-primary.m-1(type='submit') Daten absenden
 
-          form#geojson_textarea_form.needs-validation(style="display:none" novalidate)
+          form#geojson_textarea_form.container.needs-validation(style="display:none" novalidate)
             .row.justify-content-center
               h3 Stations-GeoJSON
               p Hier kannst du eine Station erstellen, indem du eine GeoJSON mit allen nötigen Daten in das Textfeld einträgst. Bei Problemen, schau dir gerne das Beispiel an.
               button#show_sample_geojson.btn.btn-secondary.m-3(type='button') Beispiel
             .row.justify-content-center
               .form-group 
-                label.font-weight-bold(for="textarea_geoJSON") GeoJSON eingeben
+                label.fw-bold(for="textarea_geoJSON") GeoJSON eingeben
                 textarea#textarea_geoJSON.form-control(cols="30" rows="10" style='resize:none' name="textarea_geoJSON" placeholder='Gib hier die Stationsdaten vollständig im GeoJSON-Format an.' required)
                 .invalid-feedback Bitte füge eine GeoJSON in das Feld ein.
             hr.hr
@@ -84,16 +85,16 @@ block content
               button#submit_geojson_textarea_form.btn.btn-primary.m-1(type='button') Daten absenden
               button#cancel_geojson_textarea_form.btn.btn-primary.m-1(type='button') Abbrechen
 
-          form#geojson_upload_form.needs-validation(style="display:none" novalidate)
+          form#geojson_upload_form.container.needs-validation(style="display:none" novalidate)
             .row.justify-content-center
               h3 Stations-GeoJSON
               p Hier kannst du eine Station erstellen, indem du eine GeoJSON-Datei hochlädst. Bitte beachte, dass deine Datei die folgende Struktur erfüllt: 
             .row.justify-content-center
-              textarea#sample_geojson.m-3(cols="30" rows="10" style='resize:none' readonly)
+              textarea#sample_geojson.m-3(cols="30" rows="12" style='resize:none' readonly)
             .row.justify-content-center
               .form-group
-                label.font-weight-bold(for='file_upload_geoJSON') GeoJSON-Datei hochladen
-                input#file_upload_geoJSON.form-control-file(type='file' accept="application/JSON, .json")
+                label.f2-bold(for='file_upload_geoJSON') GeoJSON-Datei hochladen
+                input#file_upload_geoJSON.form-control(type='file' accept="application/JSON, .json")
                 .invalid-feedback Bitte lade eine GeoJSON-Datei hoch.
                 textarea#hidden_geojson_data_from_upload(style="display:none" name="hidden_geojson_data_from_from_upload" required)
             hr.hr
