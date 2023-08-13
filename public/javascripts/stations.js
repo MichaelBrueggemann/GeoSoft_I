@@ -33,7 +33,7 @@ async function delete_station(id) {
  * Adds a new station to the DB
  * @param {*} geojson - GeoJSON Object defining the station
  */
-async function add_new_station(geojson) {
+export async function add_new_station(geojson) {
     
     await api_call("add_station", geojson)
 
@@ -233,7 +233,6 @@ function initializeMap()
  */
 async function update_map()
 {
-    // TODO: evtl so anpassen, dass nur die ausgewählte Station auf der Karte angezeigt wird
     station_collection = await fetch("/api/stations")
     station_collection = await station_collection.json()
 
@@ -261,9 +260,6 @@ async function update_map()
         }
     }
 }
-
-
-
 
 /**
  * This functions sole purpose is to increase readability of this code. 
@@ -324,7 +320,7 @@ let drawnItems = map_init.drawnItems
 let drawControl = map_init.drawControl
 
 prepare_update_station_button()
-prepare_form_buttons()
+prepare_form_buttons(map, drawnItems, drawControl)
 
 update_map()
 update_table()

@@ -1,4 +1,5 @@
 "use strict"
+import { add_new_station } from "./stations.js"
 
 function enter_add_station_mode(edit_style)
 {
@@ -42,12 +43,27 @@ function leave_add_station_mode(form)
 /**
  * This functions sole purpose is to increase readability of this code. 
  * It wraps the initialisation of the map_form form element
+ * @param {Object} map - Leaflet Map for form interactions
+ * @param {object} drawnItems - Leaflet Draw Layer for a Leaflet Draw Control
+ * @param {object} drawControl - Draw Control instance from Leaflet Draw
  * */
-function prepare_map_form()
+function prepare_map_form(map, drawnItems, drawControl)
 {
+    const MAP_FORM = document.getElementById('map_form')
+
     // open_map_form button
     document.getElementById("open_map_form").addEventListener("click", function()
     {
+        if (MAP_FORM.classList.contains("was-validated"))
+        {
+            MAP_FORM.classList.remove("was-validated")
+        }
+
+        if (!MAP_FORM.classList.contains("needs-validation"))
+        {
+            MAP_FORM.classList.add("needs-validation")
+        }
+
         // add stations via map
         enter_add_station_mode("map")
 
@@ -58,32 +74,44 @@ function prepare_map_form()
     // submit_map_form button
     document.getElementById("submit_map_form").addEventListener("click", function(event)
     {
+        console.log(MAP_FORM.checkValidity())
         event.preventDefault()
-        let form = document.getElementById('map_form')
-        let formData = new FormData(form)
-        
-        // parse body from formData
-        let request_body = 
+
+        // check form validity with JS constraint validation API
+        if (!MAP_FORM.checkValidity())
         {
-            type: JSON.parse(formData.get("hidden_geojson_data_from_map_feature")).type,
-            properties: {
-                name: formData.get("input_name"),
-                description: formData.get("input_description"),
-                url: formData.get("input_url")
-            },
-            geometry: JSON.parse(formData.get("hidden_geojson_data_from_map_feature")).geometry
+            event.preventDefault()
+            event.stopPropagation()
         }
+        else
+        {
+            MAP_FORM.classList.add("was-validated")
 
-        // send data to API
-        add_new_station(request_body)
+            let formData = new FormData(MAP_FORM)
+        
+            // parse body from formData
+            let request_body = 
+            {
+                type: JSON.parse(formData.get("hidden_geojson_data_from_map_feature")).type,
+                properties: {
+                    name: formData.get("input_name"),
+                    description: formData.get("input_description"),
+                    url: formData.get("input_url")
+                },
+                geometry: JSON.parse(formData.get("hidden_geojson_data_from_map_feature")).geometry
+            }
 
-        form.reset()
+            // send data to API
+            add_new_station(request_body)
 
-        // resets all elements drawn with the draw-tool
-        drawnItems.clearLayers() 
+            MAP_FORM.reset()
 
-        // hide coressponding form element
-        leave_add_station_mode(form)
+            // resets all elements drawn with the draw-tool
+            drawnItems.clearLayers() 
+
+            // hide coressponding form element
+            leave_add_station_mode(MAP_FORM)
+        }
     })
 
     // cancel_map_form button
@@ -92,10 +120,8 @@ function prepare_map_form()
         // deactivate draw control on map
         map.removeControl(drawControl)
 
-        let map_form = document.getElementById("map_form")
-
         // hide coressponding form element
-        leave_add_station_mode(map_form)
+        leave_add_station_mode(MAP_FORM)
     })
 }
 
@@ -268,10 +294,13 @@ function prepare_geojson_upload_form()
 /**
  * This functions sole purpose is to increase readability of this code. 
  * It wraps the initialisation of the buttons to choose in which style the user wants to add a new station and to leave the form.
+ * @param {object} map - Map for the map_form
+ * @param {object} drawnItems - Leaflet Draw Layer for a Leaflet Draw Control
+ * @param {object} drawControl - Draw Control instance from Leaflet Draw
  * */ 
-export function prepare_form_buttons()
+export function prepare_form_buttons(map, drawnItems, drawControl)
 {
-    prepare_map_form()
+    prepare_map_form(map, drawnItems, drawControl)
     
     prepare_geojson_textarea_form()
     
