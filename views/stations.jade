@@ -90,47 +90,17 @@ block content
               h3 Stations-GeoJSON
               p Hier kannst du eine Station erstellen, indem du eine GeoJSON-Datei hochlädst. Bitte beachte, dass deine Datei die folgende Struktur erfüllt: 
             .row.justify-content-center
-              textarea#sample_geojson.m-3(cols="30" rows="12" style='resize:none' readonly)
+              textarea#sample_geojson.m-3(cols="30" rows="15" style='resize:none' readonly)
             .row.justify-content-center
               .form-group
-                label.f2-bold(for='file_upload_geoJSON') GeoJSON-Datei hochladen
-                input#file_upload_geoJSON.form-control(type='file' accept="application/JSON, .json")
-                .invalid-feedback Bitte lade eine GeoJSON-Datei hoch.
-                textarea#hidden_geojson_data_from_upload(style="display:none" name="hidden_geojson_data_from_from_upload" required)
+                label.fw-bold(for='file_upload_geoJSON') GeoJSON-Datei hochladen
+                input#file_upload_geoJSON.form-control(type='file' accept="application/JSON, .json" required)
+                .invalid-feedback Bitte lade eine korrekte GeoJSON-Datei hoch.
+                textarea#hidden_geojson_data_from_upload.form-control(style="display:none" name="hidden_geojson_data_from_from_upload" required)
             hr.hr
             .row.justify-content-center
               button#submit_geojson_upload_form.btn.btn-primary.m-1(type='button') Daten absenden
               button#cancel_geojson_upload_form.btn.btn-primary.m-1(type='button') Abbrechen
-
-
-          //- form#station_upload_form(style="display:none")
-          //-   p.note(align="right")
-          //-     span(style='color: red;') *
-          //-     |  Pflichtfeld
-          //-   h3 Stationsmetadaten
-          //-   .form-group
-          //-     label.required.font-weight-bold(for='exampleInputEmail1') Name
-          //-     input#input_name.form-control(type='text' name="input_name" placeholder='Name eingeben' required)
-          //-   .form-group
-          //-     label.required.font-weight-bold(for='input_description') Beschreibung
-          //-     input#input_description.form-control(type='text' name="input_description" placeholder='Beschreibung eingeben' required)
-          //-   .form-group
-          //-     label.font-weight-bold(for='input_url') URL
-          //-     input#input_url.form-control(type='url' name="input_url" placeholder='URL eingeben')
-          //-   hr.hr
-          //-   h3.required Stations-GeoJSON
-          //-   .form-group 
-          //-     label.font-weight-bold(for="textarea_geoJSON") GeoJSON eingeben
-          //-     textarea#textarea_geoJSON.form-control(cols="30" rows="10" style='resize:none' name="textarea_geoJSON" placeholder='Gib hier die Stationsdaten im GeoJSON-Format an.' required)
-          //-   .form-group 
-          //-     p.text-center.text-weight-light
-          //-       u oder
-          //-   .form-group
-          //-     label.font-weight-bold(for='file_upload_geoJSON') GeoJSON-Datei hochladen
-          //-     // This field doesn't have the attribute "name" as it's not supposed to be send with the form.
-          //-     input#file_upload_geoJSON.form-control-file(type='file' accept="application/JSON, .json")
-          //-   hr.hr
-          //-   button#submit_station.btn.btn-primary(type='button') Daten absenden
 
   hr.hr
   .container-fluid
