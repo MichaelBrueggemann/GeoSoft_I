@@ -6,10 +6,10 @@ block scripts
     link(rel='stylesheet' href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css' integrity='sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H' crossorigin='anonymous')
     // external scripts
     // Leaflet
-    script(src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js' integrity='sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH' crossorigin='anonymous' defer='')
+    script(src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js' integrity='sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH' crossorigin='anonymous' defer)
   
     // internal scripts
-    script(src='/javascripts/tours.js' defer='')
+    script(src='/javascripts/tours.js' defer)
 
 block content
     h1= title
@@ -30,10 +30,10 @@ block content
     button#new_tour(type="button", style="display: block") neue Tour anlegen
     
     .container-fluid(style="display: block")#tour_div
-        table(width="100%")#tour_table
+        table(width="100%")#tour_table.table.table-striped.table-hover
             thead
-                th ID
-                th(align="center") Aktionen
+                th(scope="col") Name
+                th(align="center" scope="col") Aktionen
             tbody 
     #tour_information_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
         .modal-dialog.modal-dialog-centered(role='document')

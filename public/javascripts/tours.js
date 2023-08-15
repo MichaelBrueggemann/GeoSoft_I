@@ -100,7 +100,20 @@ async function update_table() {
     
     tours_collection.forEach(({ _id, stations, instructions, distance }) => {
         //id
-        let row = tbody.insertRow()
+        let row = tbody.insertRow();
+        row.addEventListener("click", async function(event) 
+        {
+            if (event.target.tagName !== "BUTTON") // only activates click event, if no button of the row is pressed
+            {
+                let map = await map_promise;
+                map.eachLayer((layer) => {
+                    if(layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
+                        map.removeLayer(layer);
+                    }
+                });
+            }
+            
+        })
         let tour_id = document.createElement("td")
         tour_id.innerText = _id
         row.insertCell().appendChild(tour_id)
@@ -325,7 +338,6 @@ UPDATEBUTTON.addEventListener("click", async () =>
         waypoints: waypoints,
     });
     let route = await res.json();
-    console.log(route);
     //Check result
     if (route.hasOwnProperty("message")) {
         $('#routing_error_popup').modal('show');
@@ -353,7 +365,6 @@ UPDATEBUTTON.addEventListener("click", async () =>
             current_distance += instruction.distance;
         }
     });
-    console.log(segment_distances)
     //Show Tour on Map
     let map = await map_promise;
     let i = 0;
