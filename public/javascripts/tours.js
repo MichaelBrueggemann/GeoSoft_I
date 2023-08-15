@@ -344,7 +344,8 @@ UPDATEBUTTON.addEventListener("click", async () =>
     tour_segments.forEach(segment => {
         let polyline = L.polyline(segment).addTo(map);
         polyline.bindPopup("Distanz muss noch über bsplsweise Turf berechnet werden");
-       polyline.on("click", (event) => {polyline.openPopup();});
+        polyline.on("mouseover", (event) => {polyline.openPopup();});
+        polyline.on("mouseout", (event) => {polyline.closePopup();});
     });
      //change Working Modi
      stopWorkingModi();
