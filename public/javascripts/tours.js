@@ -204,6 +204,7 @@ async function initializeMap()
        let mapstation = L.geoJSON(station, {color: "blue"}).addTo(map);
        mapstation.bindPopup(station.properties.name);
        mapstation.on("mouseover", (event) => {mapstation.openPopup();});
+       mapstation.on("mouseout", (event) => {mapstation.closePopup();});
        mapstation.on("click", (event) => {
         if (working_on_tour_mode){
             if (mapstation.options.color == "blue"){
