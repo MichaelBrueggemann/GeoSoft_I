@@ -191,7 +191,7 @@ async function initializeMap()
     //init stations
     await init_stations();
     // create map-object with initial view set to Münster, Germany
-    let map = new L.map('map2').setView([51.96918, 7.59579], 13)
+    let map = new L.map('tour_map').setView([51.96918, 7.59579], 13)
 
     // initialize base map
     let osmLayer = new L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png',
@@ -253,6 +253,7 @@ async function startWorkingModi() {
     tourdiv.style.display = 'none';
     let newTourButton = document.getElementById("new_tour")
     newTourButton.style.display = 'none';
+    document.getElementById('tour_map').scrollIntoView();
     working_on_tour_mode = true;
     let map = await map_promise;
     map.eachLayer((layer) => {
