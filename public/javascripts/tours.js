@@ -98,7 +98,7 @@ async function update_table() {
     let table = document.getElementById("tour_table")
     let tbody = document.createElement('tbody')
     
-    tours_collection.forEach(({ _id, stations, instructions, distance }) => {
+    tours_collection.forEach(({ _id, stations, segments, instructions, distance }) => {
         //id
         let row = tbody.insertRow();
         row.addEventListener("click", async function(event) 
@@ -111,6 +111,33 @@ async function update_table() {
                         map.removeLayer(layer);
                     }
                 });
+                if (current_tour_id == _id) {
+                    current_tour_id = null;
+                }
+                else {
+                    current_tour_id = _id;
+                    //calculate Segment_distances
+                    let segment_distances = [];
+                    let current_distance = 0;
+                    instructions.forEach( instruction => {
+                        if(instruction.text.startsWith("Waypoint") || instruction.text.startsWith("Arrive at destination")) {
+                            segment_distances.push(current_distance);
+                            current_distance = 0;
+                        }
+                        else {
+                            current_distance += instruction.distance;
+                        }
+                    });
+                    //Show Tour on Map
+                    let i = 0;
+                    segments.forEach(segment => {
+                        let polyline = L.polyline(segment).addTo(map);
+                        polyline.bindPopup("ca. " + Math.round(segment_distances[i]).toString() + "m");
+                        i++;
+                        polyline.on("mouseover", (event) => {polyline.openPopup();});
+                        polyline.on("mouseout", (event) => {polyline.closePopup();});
+                    });
+                }
             }
             
         })
@@ -260,6 +287,7 @@ async function update_stationtable(stations) {
 
 // ----------------- start Working - Modi -----------------
 async function startWorkingModi() {
+    current_tour_id = null;
     let statdiv = document.getElementById("station_div")
     statdiv.style.display = 'block';
     let tourdiv = document.getElementById("tour_div")
@@ -286,7 +314,6 @@ async function stopWorkingModi() {
     newTourButton.style.display = 'block';
     working_on_tour_mode = false;
     current_stations = [];
-    current_tour_id = null;
     let map = await map_promise;
     map.eachLayer((layer) => {
         if (layer instanceof L.GeoJSON) {  
@@ -351,32 +378,17 @@ UPDATEBUTTON.addEventListener("click", async () =>
     //Slicing tour in segments for each waypoint
     let tour_segments = slice_tour(route.paths[0].points.coordinates, route.paths[0].snapped_waypoints.coordinates);
     //save Tour in DB
-    if (current_tour_id == null) add_new_tour(current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
-    else update_tour(current_tour_id, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
-    //calculate Segment_distances
-    let segment_distances = [];
-    let current_distance = 0;
-    route.paths[0].instructions.forEach( instruction => {
-        if(instruction.text.startsWith("Waypoint") || instruction.text.startsWith("Arrive at destination")) {
-            segment_distances.push(current_distance);
-            current_distance = 0;
-        }
-        else {
-            current_distance += instruction.distance;
-        }
-    });
-    //Show Tour on Map
-    let map = await map_promise;
-    let i = 0;
-    tour_segments.forEach(segment => {
-        let polyline = L.polyline(segment).addTo(map);
-        polyline.bindPopup("ca. " + Math.round(segment_distances[i]).toString() + "m");
-        i++;
-        polyline.on("mouseover", (event) => {polyline.openPopup();});
-        polyline.on("mouseout", (event) => {polyline.closePopup();});
-    });
-     //change Working Modi
-     stopWorkingModi();
+    if (current_tour_id == null) {
+        await add_new_tour(current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
+    }
+    else {
+        await update_tour(current_tour_id, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
+    }
+    //select worked-on tour
+    let table = document.getElementById('tour_table');
+    table.tBodies[0].rows[table.tBodies[0].rows.length - 1].click();
+    //change Working Modi
+    stopWorkingModi();
     }
 })
 
