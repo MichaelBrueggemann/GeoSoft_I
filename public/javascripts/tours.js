@@ -124,7 +124,7 @@ async function update_table() {
             instructions.forEach((instruction) => {
                     infotext += "<br>" + instruction.text + " and follow the path for " + Math.round(instruction.distance) + " metres";
             })
-            console.log(instructions)
+            infotext += "<br>Diese Instruktionen kommen direkt von GRAPHHOPPER und sind somit leider nur auf englisch verfügbar."
 
             infotext+="<br><br>Gesamtlänge: "
             infotext+= distance + "m";
@@ -145,7 +145,7 @@ async function update_table() {
             current_tour_id = _id;
             await update_stationtable(stations);
             //set Highlighting on stations in Tour
-            let map = await mappromise;
+            let map = await map_promise;
             let idTrue = false;
             let pointTrue = false;
             map.eachLayer((layer) => {console.log(layer)
@@ -253,7 +253,7 @@ async function startWorkingModi() {
     let newTourButton = document.getElementById("new_tour")
     newTourButton.style.display = 'none';
     working_on_tour_mode = true;
-    let map = await mappromise;
+    let map = await map_promise;
     map.eachLayer((layer) => {
         if(layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
             map.removeLayer(layer);
@@ -272,7 +272,7 @@ async function stopWorkingModi() {
     working_on_tour_mode = false;
     current_stations = [];
     current_tour_id = null;
-    let map = await mappromise;
+    let map = await map_promise;
     map.eachLayer((layer) => {
         if (layer instanceof L.GeoJSON) {  
             layer.options.color = "blue";
@@ -339,7 +339,7 @@ UPDATEBUTTON.addEventListener("click", async () =>
     if (current_tour_id == null) add_new_tour(current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
     else update_tour(current_tour_id, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
     //Show Tour on Map
-    let map = await mappromise;
+    let map = await map_promise;
     tour_segments.forEach(segment => {
         let polyline = L.polyline(segment).addTo(map);
         polyline.bindPopup("Distanz muss noch über bsplsweise Turf berechnet werden");
@@ -389,5 +389,5 @@ function slice_tour(route, snapped_waypoints){
     return segments;
 }
 
-let mappromise = initializeMap()
+let map_promise = initializeMap()
 update_table()
