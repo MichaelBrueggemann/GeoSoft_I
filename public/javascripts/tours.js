@@ -157,18 +157,26 @@ async function update_table() {
         
         show_tour_button.addEventListener("click", () => {
             // populate popUp with tour information
-            let infotext = "Stationen:";
+            let infotext = "<strong>Stationen:</strong>";
             stations.forEach( ({properties}) => {
                     infotext += "<br>" + properties.name;
             })
             
-            infotext += "<br><br>Anleitung zur Tour:"
+            infotext += "<br><br><strong>Anleitung zur Tour:</strong>"
             instructions.forEach((instruction) => {
+                if(instruction.text.startsWith("Waypoint")) {
+                    infotext += "<br><strong>You arrived at one station</strong>";
+                }
+                else if (instruction.text.startsWith("Arrive at destination")){
+                    infotext += "<br><strong>Arrive at destination</strong>";
+                }
+                else {
                     infotext += "<br>" + instruction.text + " and follow the path for " + Math.round(instruction.distance) + " metres";
+                }
             })
             infotext += "<br>Diese Instruktionen kommen direkt von GRAPHHOPPER und sind somit leider nur auf englisch verfügbar."
 
-            infotext+="<br><br>Gesamtlänge: "
+            infotext+="<br><br><strong>Gesamtlänge</strong>: "
             infotext+= distance + "m";
 
             document.getElementById("infoText").innerHTML = infotext;
