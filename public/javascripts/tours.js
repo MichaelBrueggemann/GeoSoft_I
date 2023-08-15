@@ -243,11 +243,16 @@ async function initializeMap()
 
     stat_collection.forEach((station) => {
 
-       let mapstation = L.geoJSON(station, {color: "blue"}).addTo(map);
-       mapstation.bindPopup(station.properties.name);
-       mapstation.on("mouseover", (event) => {mapstation.openPopup();});
-       mapstation.on("mouseout", (event) => {mapstation.closePopup();});
-       mapstation.on("click", (event) => {
+        let mapstation = L.geoJSON(station, {color: "blue"}).addTo(map);
+        let popup_content = `<strong> Name: </strong> ${station.properties.name}  <br> <strong> Beschreibung: </strong> ${station.properties.description}  <br>`
+        if (station.properties.url) // append only if exisitng, as its an optional parameter
+        {
+            popup_content += `<strong> URL: </strong> <a href="${station.properties.url}" target="_blank"> ${station.properties.url} </a> `
+        }
+        mapstation.bindPopup(popup_content);
+        mapstation.on("mouseover", (event) => {mapstation.openPopup();});
+        mapstation.on("mouseout", (event) => {mapstation.closePopup();});
+        mapstation.on("click", (event) => {
         if (working_on_tour_mode){
             if (mapstation.options.color == "blue"){
                 mapstation.options.color = "violet";
