@@ -130,13 +130,15 @@ async function update_table() {
                     });
                     //Show Tour on Map
                     let i = 0;
+                    let tour_layer = L.featureGroup().addTo(map);
                     segments.forEach(segment => {
-                        let polyline = L.polyline(segment).addTo(map);
+                        let polyline = L.polyline(segment).addTo(tour_layer);
                         polyline.bindPopup("ca. " + Math.round(segment_distances[i]).toString() + "m");
                         i++;
                         polyline.on("mouseover", (event) => {polyline.openPopup();});
                         polyline.on("mouseout", (event) => {polyline.closePopup();});
                     });
+                    map.fitBounds(tour_layer.getBounds());
                 }
             }
             
