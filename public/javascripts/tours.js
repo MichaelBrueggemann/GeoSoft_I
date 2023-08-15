@@ -148,7 +148,7 @@ async function update_table() {
             let map = await map_promise;
             let idTrue = false;
             let pointTrue = false;
-            map.eachLayer((layer) => {console.log(layer)
+            map.eachLayer((layer) => {
                 if (idTrue) {
                     layer.options.color = "violet";
                     layer.setStyle({color: "violet"});
@@ -325,6 +325,7 @@ UPDATEBUTTON.addEventListener("click", async () =>
         waypoints: waypoints,
     });
     let route = await res.json();
+    console.log(route);
     //Check result
     if (route.hasOwnProperty("message")) {
         $('#routing_error_popup').modal('show');
@@ -340,11 +341,26 @@ UPDATEBUTTON.addEventListener("click", async () =>
     //save Tour in DB
     if (current_tour_id == null) add_new_tour(current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
     else update_tour(current_tour_id, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
+    //calculate Segment_distances
+    let segment_distances = [];
+    let current_distance = 0;
+    route.paths[0].instructions.forEach( instruction => {
+        if(instruction.text.startsWith("Waypoint") || instruction.text.startsWith("Arrive at destination")) {
+            segment_distances.push(current_distance);
+            current_distance = 0;
+        }
+        else {
+            current_distance += instruction.distance;
+        }
+    });
+    console.log(segment_distances)
     //Show Tour on Map
     let map = await map_promise;
+    let i = 0;
     tour_segments.forEach(segment => {
         let polyline = L.polyline(segment).addTo(map);
-        polyline.bindPopup("Distanz muss noch über bsplsweise Turf berechnet werden");
+        polyline.bindPopup("ca. " + Math.round(segment_distances[i]).toString() + "m");
+        i++;
         polyline.on("mouseover", (event) => {polyline.openPopup();});
         polyline.on("mouseout", (event) => {polyline.closePopup();});
     });
