@@ -274,7 +274,12 @@ async function initializeMap()
            }
             update_stationtable([station]);
         }
-        //else {Teil mit Hilfestellung für Seite}
+        else 
+        {
+            $('#station_selection_help').modal('show');
+        let help_text = "Bitte klicken Sie auf -<strong>neue Tour anlegen</strong>- oder in der Tabelle bei der gewünschten Tour auf -<strong>Bearbeiten</strong>-, um Stationen auszuwählen und sie zu Touren zusammenzufügen.";
+        document.getElementById("help_text").innerHTML = help_text;
+        }
        })
     })
 
