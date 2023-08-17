@@ -249,9 +249,9 @@ const API_KEY = process.env.GRAPHHOPPER_API_KEY;
  * @returns {*} - Route as Object (see GRAPHHOPPER Documentation for more Information)
  */
 async function getRouting(waypoints) {
-  //Prepare the Request-String for GRAPHHOPPER-API
+  //Prepare the Request-String for GRAPHHOPPER-API (every waypoint has to be in api-request and the api_key of course)
   const API_URL = `https://graphhopper.com/api/1/route?point=${waypoints.map(wp => `${wp.lat},${wp.lng}`).join('&point=')}&vehicle=bike&optimize="true"&points_encoded=false&key=${API_KEY}`;
-
+  //actual request on GRAPHHOPPER-API
   try {
       const RESPONSE = await fetch(API_URL);
       const DATA = await RESPONSE.json();
