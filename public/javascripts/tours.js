@@ -503,16 +503,15 @@ function calculate_centroid(polygon) {
 function slice_tour(route, snapped_waypoints) { 
     //first point of whole tour = first point of first segment of tour
     let segments = [[[route[0][1],route[0][0]]]];
-    //i increments and represents the index of the points of the whole tour (not the first and the last)
-    //j is the count of segments
-    for (let i = 1, j = 1; i < route.length -1; i++) {
-        //add the point with index i to the segment with index j-1 (index=count-1)
-        segments[j-1].push([route[i][1],route[i][0]]);
-        //if a waypoint is reached create a new segment push the point with index i also in this segment and increment segmentcount
-        if(JSON.stringify(route[i]) === JSON.stringify(snapped_waypoints[j])) {
+    //tour_point_index represents the index of the points of the whole tour (not the first and the last)
+    for (let tour_point_index = 1, segment_count = 1; tour_point_index < route.length -1; tour_point_index++) {
+        //add the point with current index to the segment with current index (= count-1)
+        segments[segment_count-1].push([route[tour_point_index][1],route[tour_point_index][0]]);
+        //if a waypoint is reached create a new segment push the point with current index also in this segment
+        if(JSON.stringify(route[tour_point_index]) === JSON.stringify(snapped_waypoints[segment_count])) {
             segments.push([]);
-            segments[j].push([route[i][1],route[i][0]]);
-            j++;
+            segments[segment_count].push([route[tour_point_index][1],route[tour_point_index][0]]);
+            segment_count++;
         }
     }
     //add the last point to the last segment
