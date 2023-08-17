@@ -14,10 +14,10 @@ function is_geojson(object)
     }  
 
     // Check if the "type" is "Feature" as it should be for GeoJSON
-    if (object.type !== 'Feature') 
-    {
-        return false
-    }
+    // if (object.type !== 'Feature') 
+    // {
+    //     return false
+    // }
 
     // check if the mandatory properties exists and are not-empty strings
     if (!(object.properties.hasOwnProperty('name') && object.properties.name !== "" && object.properties.hasOwnProperty('description') && object.properties.description !== ""))
@@ -470,3 +470,42 @@ export function prepare_form_buttons(map, drawnItems, drawControl)
     
     prepare_geojson_upload_form()
 }
+
+
+// Testing
+let correct_station = {
+    "type": "Feature",
+    "properties": {
+      "name": "Korrekte Station",
+      "description": "Das ist der Prinzipalmarkt",
+      "url": "https://de.wikipedia.org/wiki/Prinzipalmarkt"
+    },
+    "geometry": {
+      "coordinates": [
+        7.628199238097352,
+        51.962239849033296
+      ],
+      "type": "Point"
+    }
+  }
+
+let incorrect_station = {
+    "type": "Feature",
+    "properties": {
+      "name": " ",
+      "description": "Das ist der Prinzipalmarkt",
+      "url": "https://de.wikipedia.org/wiki/Prinzipalmarkt"
+    },
+    "geometry": {
+      "coordinates": [
+        7.628199238097352,
+        51.962239849033296
+      ],
+      "type": "Point"
+    }
+  }
+console.log("Add correct station: ", correct_station)
+add_new_station(correct_station)
+
+console.log("Add incorrect station: ", incorrect_station)
+add_new_station(incorrect_station)

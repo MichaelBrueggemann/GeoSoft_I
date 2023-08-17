@@ -1,8 +1,11 @@
 "use strict"
 
+const { OUR_SPECIAL_GEOJSON_SCHEMA } = require("../express_validator_schemes/geojson_schema")
+
 const EXPRESS = require('express');
 const ROUTER = EXPRESS.Router();
 const DOTENV = require('dotenv');
+const { checkSchema, validationResult } = require('express-validator')
 
 // --------------- DATABASE INITIALIZATION ---------------
 
@@ -154,11 +157,26 @@ ROUTER.get('/stations', async function(_req, res)
 })
 
 
+// added middleware to check whether the request-body matches the schema
+ROUTER.post('/add_station', checkSchema(OUR_SPECIAL_GEOJSON_SCHEMA, ['body']), function(req, res) {
+console.log("REquest", req.body)
 
-ROUTER.post('/add_station', function(req, res) {
-  add_item(req.body, station_collection);
+  const RESULT = validationResult(req)
+  const ERRORS = RESULT.array()
+  console.log("valid errors", ERRORS)
 
-  res.send()
+  // request was invalid
+  if (ERRORS.length > 0)
+  {
+    console.log("ERROR Mesaage for the user: ", ERRORS[0].msg)
+    res.status(400).send(ERRORS[0].msg)
+  }
+  else
+  {
+    add_item(req.body, station_collection);
+    res.status(200).send()
+  }
+  
 });
 
 ROUTER.post('/delete_station', function(req, res) {
