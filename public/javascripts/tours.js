@@ -161,29 +161,29 @@ async function update_table() {
         
         show_tour_button.addEventListener("click", () => {
             // populate popUp with tour information
-            let infotext = "<strong>Stationen:</strong>";
+            let info_text = "<strong>Stationen:</strong>";
             stations.forEach( ({properties}) => {
-                    infotext += "<br>" + properties.name;
+                    info_text += "<br>" + properties.name;
             })
             
-            infotext += "<br><br><strong>Anleitung zur Tour:</strong>"
+            info_text += "<br><br><strong>Anleitung zur Tour:</strong>"
             instructions.forEach((instruction) => {
                 if(instruction.text.startsWith("Waypoint")) {
-                    infotext += "<br><strong>You arrived at one station</strong>";
+                    info_text += "<br><strong>You arrived at one station</strong>";
                 }
                 else if (instruction.text.startsWith("Arrive at destination")){
-                    infotext += "<br><strong>Arrive at destination</strong>";
+                    info_text += "<br><strong>Arrive at destination</strong>";
                 }
                 else {
-                    infotext += "<br>" + instruction.text + " and follow the path for " + Math.round(instruction.distance) + " metres";
+                    info_text += "<br>" + instruction.text + " and follow the path for " + Math.round(instruction.distance) + " metres";
                 }
             })
-            infotext += "<br>Diese Instruktionen kommen direkt von GRAPHHOPPER und sind somit leider nur auf englisch verfügbar."
+            info_text += "<br>Diese Instruktionen kommen direkt von GRAPHHOPPER und sind somit leider nur auf englisch verfügbar."
 
-            infotext+="<br><br><strong>Gesamtlänge</strong>: "
-            infotext+= distance + "m";
+            info_text+="<br><br><strong>Gesamtlänge</strong>: "
+            info_text+= distance + "m";
 
-            document.getElementById("infoText").innerHTML = infotext;
+            document.getElementById("info_text").innerHTML = info_text;
         })
         
         row.insertCell().appendChild(show_tour_button)
@@ -195,30 +195,30 @@ async function update_table() {
         update_tour_button.setAttribute("class", "btn btn-primary")
         update_tour_button.addEventListener("click",async () => 
         {
-            startWorkingModi();
+            start_working_modi();
             current_tour_id = _id;
-            let tourname_input = document.getElementById("tourname");
-            tourname_input.value = name;
+            let tour_name_input = document.getElementById("tour_name");
+            tour_name_input.value = name;
             await update_stationtable(stations);
             //set Highlighting on stations in Tour
             let map = await map_promise;
-            let idTrue = false;
-            let pointTrue = false;
+            let id_true = false;
+            let point_true = false;
             map.eachLayer((layer) => {
-                if (idTrue) {
+                if (id_true) {
                     layer.options.color = "violet";
                     layer.setStyle({color: "violet"});
-                    idTrue = false;
-                    if (pointTrue)
+                    id_true = false;
+                    if (point_true)
                     {
                         layer.getLayers()[0].setIcon(PURPLE_MARKER);
-                        pointTrue = false;
+                        point_true = false;
                     }
                 }
             if (layer.hasOwnProperty('feature') && current_stations.map(obj => obj._id).includes(layer.feature._id)) {  
-                idTrue = true;
+                id_true = true;
                 if (layer.feature.geometry.type == 'Point') {
-                    pointTrue = true;
+                    point_true = true;
                 }
             }
             })
@@ -250,33 +250,33 @@ async function initializeMap()
     let map = new L.map('tour_map').setView([51.96918, 7.59579], 13)
 
     // initialize base map
-    let osmLayer = new L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+    let osm_layer = new L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png',
         {attribution:'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'});
 
-    osmLayer.addTo(map)
+    osm_layer.addTo(map)
 
     stat_collection.forEach((station) => {
 
-        let mapstation = L.geoJSON(station, {color: "blue"}).addTo(map);
+        let map_station = L.geoJSON(station, {color: "blue"}).addTo(map);
         let popup_content = `<strong> Name: </strong> ${station.properties.name}  <br> <strong> Beschreibung: </strong> ${station.properties.description}  <br>`
         if (station.properties.url) // append only if exisitng, as its an optional parameter
         {
             popup_content += `<strong> URL: </strong> <a href="${station.properties.url}" target="_blank"> ${station.properties.url} </a> `
         }
-        mapstation.bindPopup(popup_content);
-        mapstation.on("mouseover", (event) => {mapstation.openPopup();});
-        mapstation.on("mouseout", (event) => {mapstation.closePopup();});
-        mapstation.on("click", (event) => {
+        map_station.bindPopup(popup_content);
+        map_station.on("mouseover", (event) => {map_station.openPopup();});
+        map_station.on("mouseout", (event) => {map_station.closePopup();});
+        map_station.on("click", (event) => {
         if (working_on_tour_mode){
-            if (mapstation.options.color == "blue"){
-                mapstation.options.color = "violet";
-                mapstation.setStyle({color: "violet"});
-                if (station.geometry.type == "Point") mapstation.getLayers()[0].setIcon(PURPLE_MARKER);
+            if (map_station.options.color == "blue"){
+                map_station.options.color = "violet";
+                map_station.setStyle({color: "violet"});
+                if (station.geometry.type == "Point") map_station.getLayers()[0].setIcon(PURPLE_MARKER);
             }
             else {
-                mapstation.options.color = "blue";
-                mapstation.setStyle({color: "blue"});
-                if (station.geometry.type == "Point") mapstation.getLayers()[0].setIcon(BLUE_MARKER);
+                map_station.options.color = "blue";
+                map_station.setStyle({color: "blue"});
+                if (station.geometry.type == "Point") map_station.getLayers()[0].setIcon(BLUE_MARKER);
            }
             update_stationtable([station]);
         }
@@ -300,7 +300,7 @@ async function update_stationtable(stations) {
             current_stations = current_stations.filter(stat => stat._id !== station._id);
         } else {current_stations = current_stations.concat(station);}
     });
-    let table = document.getElementById("selectedStation_table")
+    let table = document.getElementById("selected_station_table")
     let tbody = document.createElement('tbody')
     current_stations.forEach(({properties}) => {
         let row = tbody.insertRow()
@@ -312,14 +312,14 @@ async function update_stationtable(stations) {
 }
 
 // ----------------- start Working - Modi -----------------
-async function startWorkingModi() {
+async function start_working_modi() {
     current_tour_id = null;
-    let statdiv = document.getElementById("station_div")
-    statdiv.style.display = 'block';
-    let tourdiv = document.getElementById("tour_div")
-    tourdiv.style.display = 'none';
-    let newTourButton = document.getElementById("new_tour")
-    newTourButton.style.display = 'none';
+    let stat_div = document.getElementById("station_div")
+    stat_div.style.display = 'block';
+    let tour_div = document.getElementById("tour_div")
+    tour_div.style.display = 'none';
+    let new_tour_button = document.getElementById("new_tour")
+    new_tour_button.style.display = 'none';
     document.getElementById('tour_map').scrollIntoView();
     working_on_tour_mode = true;
     let map = await map_promise;
@@ -331,15 +331,15 @@ async function startWorkingModi() {
 }
 
 // ----------------- stop Working - Modi -----------------
-async function stopWorkingModi() {
-    let statdiv = document.getElementById("station_div")
-    statdiv.style.display = 'none';
-    let tourdiv = document.getElementById("tour_div")
-    tourdiv.style.display = 'block';
-    let newTourButton = document.getElementById("new_tour")
-    newTourButton.style.display = 'block';
-    let tourname_input = document.getElementById("tourname");
-    tourname_input.value = null;
+async function stop_working_modi() {
+    let stat_div = document.getElementById("station_div")
+    stat_div.style.display = 'none';
+    let tour_div = document.getElementById("tour_div")
+    tour_div.style.display = 'block';
+    let new_tour_button = document.getElementById("new_tour")
+    new_tour_button.style.display = 'block';
+    let tour_name_input = document.getElementById("tour_name");
+    tour_name_input.value = null;
     working_on_tour_mode = false;
     current_stations = [];
     let map = await map_promise;
@@ -352,33 +352,33 @@ async function stopWorkingModi() {
             layer.setIcon(BLUE_MARKER);
         }
     })
-    let table = document.getElementById("selectedStation_table")
+    let table = document.getElementById("selected_station_table")
     let tbody = table.querySelector('tbody');
-    let newtbody = document.createElement('tbody');
-    if (tbody) table.replaceChild(newtbody, tbody);
+    let new_tbody = document.createElement('tbody');
+    if (tbody) table.replaceChild(new_tbody, tbody);
 }
 
 // ----------------- new Tour - Button -----------------
-const NEWTOURBUTTON = document.getElementById("new_tour");
-NEWTOURBUTTON.setAttribute("class", "btn btn-primary")
-NEWTOURBUTTON.addEventListener("click", () => 
+const NEW_TOUR_BUTTON = document.getElementById("new_tour");
+NEW_TOUR_BUTTON.setAttribute("class", "btn btn-primary")
+NEW_TOUR_BUTTON.addEventListener("click", () => 
 {
-    startWorkingModi();
+    start_working_modi();
     update_stationtable([]);
 })
 
 // ----------------- Cancel - Button -----------------
-const CANCELBUTTON = document.getElementById("cancel");
-CANCELBUTTON.setAttribute("class", "btn btn-primary")
-CANCELBUTTON.addEventListener("click", () => 
+const CANCEL_BUTTON = document.getElementById("cancel");
+CANCEL_BUTTON.setAttribute("class", "btn btn-primary")
+CANCEL_BUTTON.addEventListener("click", () => 
 {
-    stopWorkingModi();
+    stop_working_modi();
 })
 
 // ----------------- Update - Button -----------------
-const UPDATEBUTTON = document.getElementById("calculate_tour");
-UPDATEBUTTON.setAttribute("class", "btn btn-primary")
-UPDATEBUTTON.addEventListener("click", async () => 
+const UPDATE_BUTTON = document.getElementById("calculate_tour");
+UPDATE_BUTTON.setAttribute("class", "btn btn-primary")
+UPDATE_BUTTON.addEventListener("click", async () => 
 {
     //calculate Tour 
     let waypoints = current_stations.map((station) => {
@@ -386,7 +386,7 @@ UPDATEBUTTON.addEventListener("click", async () =>
             return {lat: station.geometry.coordinates[1], lng: station.geometry.coordinates[0]};
         }
         else{
-          return calculateCentroid(station.geometry.coordinates);
+          return calculate_centroid(station.geometry.coordinates);
         }
       });
     let res = await api_call("routing", {
@@ -396,29 +396,29 @@ UPDATEBUTTON.addEventListener("click", async () =>
     //Check result
     if (route.hasOwnProperty("message")) {
         $('#routing_error_popup').modal('show');
-        let errorstatement = "Leider konnte mit den ausgewählten Stationen keine Tour erstellt werden. <br>";
-        errorstatement += "Dies könnte beispielsweise daran liegen, dass eine falsche Anzahl von Stationen ausgewählt wurde (min. 2) oder die Stationen nicht via Fahhrad zu verbinden sind. <br>";
-        errorstatement += "Aber auch andere Fehler können auftreten und wir bitten um Entschuldigung, dass es nicht geklappt hat. <br>";
-        errorstatement += "<br><br>Bitte überprüfen Sie ihre aktuelle Stationenauswahl und versuchen Sie es erneut."
-        document.getElementById("errorstatement").innerHTML = errorstatement;
+        let error_statement = "Leider konnte mit den ausgewählten Stationen keine Tour erstellt werden. <br>";
+        error_statement += "Dies könnte beispielsweise daran liegen, dass eine falsche Anzahl von Stationen ausgewählt wurde (min. 2) oder die Stationen nicht via Fahhrad zu verbinden sind. <br>";
+        error_statement += "Aber auch andere Fehler können auftreten und wir bitten um Entschuldigung, dass es nicht geklappt hat. <br>";
+        error_statement += "<br><br>Bitte überprüfen Sie ihre aktuelle Stationenauswahl und versuchen Sie es erneut."
+        document.getElementById("error_statement").innerHTML = error_statement;
     }
     else {
     //Slicing tour in segments for each waypoint
     let tour_segments = slice_tour(route.paths[0].points.coordinates, route.paths[0].snapped_waypoints.coordinates);
     //Get Tourname from input-field
-    let tourname = document.getElementById("tourname").value;
+    let tour_name = document.getElementById("tour_name").value;
     //save Tour in DB
     if (current_tour_id == null) {
-        await add_new_tour(tourname, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
+        await add_new_tour(tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
     }
     else {
-        await update_tour(current_tour_id, tourname, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
+        await update_tour(current_tour_id, tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
     }
     //select worked-on tour
     let table = document.getElementById('tour_table');
     table.tBodies[0].rows[table.tBodies[0].rows.length - 1].click();
     //change Working Modi
-    stopWorkingModi();
+    stop_working_modi();
     }
 })
 
@@ -427,17 +427,17 @@ UPDATEBUTTON.addEventListener("click", async () =>
  * @param {*} polygon - Polygon-Coordinates from which the Centroid should be derieved
  * @returns {*} - Centroid of Polygon in LatLng-Format
  */
-function calculateCentroid(polygon){
-    const vertices = polygon[0];
-    let sumLat = 0;
-    let sumLng = 0;
-    for(const vertex of vertices){
-        sumLat += vertex[1];
-        sumLng += vertex[0];
+function calculate_centroid(polygon){
+    const VERTICES = polygon[0];
+    let sum_lat = 0;
+    let sum_lng = 0;
+    for(const VERTEX of VERTICES){
+        sum_lat += VERTEX[1];
+        sum_lng += VERTEX[0];
     }
-    const centroidLat = sumLat / vertices.length;
-    const centroidLng = sumLng / vertices.length;
-    return {lat: centroidLat, lng: centroidLng};
+    const CENTROID_LAT = sum_lat / VERTICES.length;
+    const CENTROID_LNG = sum_lng / VERTICES.length;
+    return {lat: CENTROID_LAT, lng: CENTROID_LNG};
 }
 
 /**

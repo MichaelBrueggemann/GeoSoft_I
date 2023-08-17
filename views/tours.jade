@@ -23,10 +23,10 @@ block content
                 form
                     .form-group
                         label.font-weight-bold(for='tourname') Tourname:
-                        input#tourname.form-control(type='tourname' aria-describedby='tourname_help' placeholder='Hier Tournamen einfügen')
-                        small#tourname_help.form-text.text-muted Kein Pflichtfeld, eine möglichst eindeutige Eingabe wird aber dringenst empfohlen
+                        input#tour_name.form-control(type='tourname' aria-describedby='tour_name_help' placeholder='Hier Tournamen einfügen')
+                        small#tour_name_help.form-text.text-muted Kein Pflichtfeld, eine möglichst eindeutige Eingabe wird aber dringenst empfohlen
 
-                table(width="100%")#selectedStation_table
+                table(width="100%")#selected_station_table
                     thead
                         th ausgewählte Stationen:
                     tbody
@@ -49,7 +49,7 @@ block content
                     button.close(type='button' data-dismiss='modal' aria-label='Close')
                         span(aria-hidden='true') ×
                 .modal-body(align="center")
-                    #infoText
+                    #info_text
                 .modal-footer
                     button.btn.btn-secondary(type='button' data-dismiss='modal') Schließen
     #routing_error_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
@@ -60,7 +60,7 @@ block content
                     button.close(type='button' data-dismiss='modal' aria-label='Close')
                         span(aria-hidden='true') ×
                 .modal-body(align="center")
-                    #errorstatement
+                    #error_statement
                 .modal-footer
                     button.btn.btn-secondary(type='button' data-dismiss='modal') Schließen
     #station_selection_help.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
