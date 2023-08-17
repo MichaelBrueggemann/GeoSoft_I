@@ -67,8 +67,7 @@ async function add_new_tour(new_name, new_stations, new_segments, new_instructio
  * @param {*} id - ID of the station that should be updated
  * @param {*} newstations - Array with station-objects
  */
-async function update_tour(id, new_name, new_stations, new_segments, new_instructions, new_distance) 
-{
+async function update_tour(id, new_name, new_stations, new_segments, new_instructions, new_distance) {
 
     await api_call("update_tour", {
             id: id,
@@ -100,15 +99,13 @@ async function update_table() {
     let table = document.getElementById("tour_table")
     let tbody = document.createElement('tbody')
     
-    tours_collection.forEach(({ _id, name, stations, segments, instructions, distance }) => {
+    tours_collection.forEach(function({ _id, name, stations, segments, instructions, distance }) {
         //selection of tours
         let row = tbody.insertRow();
-        row.addEventListener("click", async function(event) 
-        {
-            if (event.target.tagName !== "BUTTON") // only activates click event, if no button of the row is pressed
-            {
+        row.addEventListener("click", async function(event) {
+            if (event.target.tagName !== "BUTTON") {// only activates click event, if no button of the row is pressed
                 let map = await map_promise;
-                map.eachLayer((layer) => {
+                map.eachLayer(function(layer) {
                     if(layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
                         map.removeLayer(layer);
                     }
@@ -121,7 +118,7 @@ async function update_table() {
                     //calculate Segment_distances
                     let segment_distances = [];
                     let current_distance = 0;
-                    instructions.forEach( instruction => {
+                    instructions.forEach(function(instruction) {
                         if(instruction.text.startsWith("Waypoint") || instruction.text.startsWith("Arrive at destination")) {
                             segment_distances.push(current_distance);
                             current_distance = 0;
@@ -133,12 +130,12 @@ async function update_table() {
                     //Show Tour on Map
                     let i = 0;
                     let tour_layer = L.featureGroup().addTo(map);
-                    segments.forEach(segment => {
+                    segments.forEach(function(segment) {
                         let polyline = L.polyline(segment).addTo(tour_layer);
                         polyline.bindPopup("ca. " + Math.round(segment_distances[i]).toString() + "m");
                         i++;
-                        polyline.on("mouseover", (event) => {polyline.openPopup();});
-                        polyline.on("mouseout", (event) => {polyline.closePopup();});
+                        polyline.on("mouseover", function(event) {polyline.openPopup();});
+                        polyline.on("mouseout", function(event) {polyline.closePopup();});
                     });
                     map.fitBounds(tour_layer.getBounds());
                 }
@@ -159,15 +156,15 @@ async function update_table() {
         show_tour_button.setAttribute("data-toggle", "modal")
         show_tour_button.setAttribute("data-target", "#tour_information_popup")
         
-        show_tour_button.addEventListener("click", () => {
+        show_tour_button.addEventListener("click", function() {
             // populate popUp with tour information
             let info_text = "<strong>Stationen:</strong>";
-            stations.forEach( ({properties}) => {
+            stations.forEach( function({properties}) {
                     info_text += "<br>" + properties.name;
             })
             
             info_text += "<br><br><strong>Anleitung zur Tour:</strong>"
-            instructions.forEach((instruction) => {
+            instructions.forEach(function(instruction) {
                 if(instruction.text.startsWith("Waypoint")) {
                     info_text += "<br><strong>You arrived at one station</strong>";
                 }
@@ -193,8 +190,7 @@ async function update_table() {
         update_tour_button.innerText = "Bearbeiten"
         update_tour_button.setAttribute("type", "button")
         update_tour_button.setAttribute("class", "btn btn-primary")
-        update_tour_button.addEventListener("click",async () => 
-        {
+        update_tour_button.addEventListener("click",async function() {
             start_working_modi();
             current_tour_id = _id;
             let tour_name_input = document.getElementById("tour_name");
@@ -204,13 +200,12 @@ async function update_table() {
             let map = await map_promise;
             let id_true = false;
             let point_true = false;
-            map.eachLayer((layer) => {
+            map.eachLayer(function(layer) {
                 if (id_true) {
                     layer.options.color = "violet";
                     layer.setStyle({color: "violet"});
                     id_true = false;
-                    if (point_true)
-                    {
+                    if (point_true) {
                         layer.getLayers()[0].setIcon(PURPLE_MARKER);
                         point_true = false;
                     }
@@ -231,7 +226,7 @@ async function update_table() {
         delete_tour_button.innerText = "Löschen"
         delete_tour_button.setAttribute("type", "button")
         delete_tour_button.setAttribute("class", "btn btn-primary")
-        delete_tour_button.addEventListener("click",() => {
+        delete_tour_button.addEventListener("click",function() {
             delete_tour(_id)
         })
         
@@ -255,28 +250,31 @@ async function initializeMap()
 
     osm_layer.addTo(map)
 
-    stat_collection.forEach((station) => {
+    stat_collection.forEach(function(station) {
 
         let map_station = L.geoJSON(station, {color: "blue"}).addTo(map);
         let popup_content = `<strong> Name: </strong> ${station.properties.name}  <br> <strong> Beschreibung: </strong> ${station.properties.description}  <br>`
-        if (station.properties.url) // append only if exisitng, as its an optional parameter
-        {
+        if (station.properties.url) { // append only if exisitng, as its an optional parameter
             popup_content += `<strong> URL: </strong> <a href="${station.properties.url}" target="_blank"> ${station.properties.url} </a> `
         }
         map_station.bindPopup(popup_content);
-        map_station.on("mouseover", (event) => {map_station.openPopup();});
-        map_station.on("mouseout", (event) => {map_station.closePopup();});
-        map_station.on("click", (event) => {
-        if (working_on_tour_mode){
-            if (map_station.options.color == "blue"){
+        map_station.on("mouseover", function(event) {map_station.openPopup();});
+        map_station.on("mouseout", function(event) {map_station.closePopup();});
+        map_station.on("click", function(event) {
+        if (working_on_tour_mode) {
+            if (map_station.options.color == "blue") {
                 map_station.options.color = "violet";
                 map_station.setStyle({color: "violet"});
-                if (station.geometry.type == "Point") map_station.getLayers()[0].setIcon(PURPLE_MARKER);
+                if (station.geometry.type == "Point") {
+                    map_station.getLayers()[0].setIcon(PURPLE_MARKER);
+                }
             }
             else {
                 map_station.options.color = "blue";
                 map_station.setStyle({color: "blue"});
-                if (station.geometry.type == "Point") map_station.getLayers()[0].setIcon(BLUE_MARKER);
+                if (station.geometry.type == "Point") {
+                    map_station.getLayers()[0].setIcon(BLUE_MARKER);
+                }
            }
             update_stationtable([station]);
         }
@@ -295,14 +293,16 @@ async function initializeMap()
 // ----------------- station-table -----------------
 async function update_stationtable(stations) {
     //filter current selected (disselected) stations
-    stations.forEach((station) => {
-        if (current_stations.map(obj => obj._id).includes(station._id)){
+    stations.forEach(function(station) {
+        if (current_stations.map(obj => obj._id).includes(station._id)) {
             current_stations = current_stations.filter(stat => stat._id !== station._id);
-        } else {current_stations = current_stations.concat(station);}
+        } else {
+            current_stations = current_stations.concat(station);
+        }
     });
     let table = document.getElementById("selected_station_table")
     let tbody = document.createElement('tbody')
-    current_stations.forEach(({properties}) => {
+    current_stations.forEach(function({properties}) {
         let row = tbody.insertRow()
         let station_name = document.createElement("td")
         row.insertCell().appendChild(station_name)
@@ -323,7 +323,7 @@ async function start_working_modi() {
     document.getElementById('tour_map').scrollIntoView();
     working_on_tour_mode = true;
     let map = await map_promise;
-    map.eachLayer((layer) => {
+    map.eachLayer(function(layer) {
         if(layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
             map.removeLayer(layer);
         }
@@ -343,26 +343,27 @@ async function stop_working_modi() {
     working_on_tour_mode = false;
     current_stations = [];
     let map = await map_promise;
-    map.eachLayer((layer) => {
+    map.eachLayer(function(layer) {
         if (layer instanceof L.GeoJSON) {  
             layer.options.color = "blue";
             layer.setStyle({color: "blue"});
         }
-        else if (layer instanceof L.Marker){
+        else if (layer instanceof L.Marker) {
             layer.setIcon(BLUE_MARKER);
         }
     })
     let table = document.getElementById("selected_station_table")
     let tbody = table.querySelector('tbody');
     let new_tbody = document.createElement('tbody');
-    if (tbody) table.replaceChild(new_tbody, tbody);
+    if (tbody) {
+        table.replaceChild(new_tbody, tbody);
+    }
 }
 
 // ----------------- new Tour - Button -----------------
 const NEW_TOUR_BUTTON = document.getElementById("new_tour");
 NEW_TOUR_BUTTON.setAttribute("class", "btn btn-primary")
-NEW_TOUR_BUTTON.addEventListener("click", () => 
-{
+NEW_TOUR_BUTTON.addEventListener("click", function() {
     start_working_modi();
     update_stationtable([]);
 })
@@ -370,22 +371,20 @@ NEW_TOUR_BUTTON.addEventListener("click", () =>
 // ----------------- Cancel - Button -----------------
 const CANCEL_BUTTON = document.getElementById("cancel");
 CANCEL_BUTTON.setAttribute("class", "btn btn-primary")
-CANCEL_BUTTON.addEventListener("click", () => 
-{
+CANCEL_BUTTON.addEventListener("click", function() {
     stop_working_modi();
 })
 
 // ----------------- Update - Button -----------------
 const UPDATE_BUTTON = document.getElementById("calculate_tour");
 UPDATE_BUTTON.setAttribute("class", "btn btn-primary")
-UPDATE_BUTTON.addEventListener("click", async () => 
-{
+UPDATE_BUTTON.addEventListener("click", async function() {
     //calculate Tour 
-    let waypoints = current_stations.map((station) => {
-        if (station.geometry.type == "Point"){
+    let waypoints = current_stations.map(function(station) {
+        if (station.geometry.type == "Point") {
             return {lat: station.geometry.coordinates[1], lng: station.geometry.coordinates[0]};
         }
-        else{
+        else {
           return calculate_centroid(station.geometry.coordinates);
         }
       });
@@ -427,11 +426,11 @@ UPDATE_BUTTON.addEventListener("click", async () =>
  * @param {*} polygon - Polygon-Coordinates from which the Centroid should be derieved
  * @returns {*} - Centroid of Polygon in LatLng-Format
  */
-function calculate_centroid(polygon){
+function calculate_centroid(polygon) {
     const VERTICES = polygon[0];
     let sum_lat = 0;
     let sum_lng = 0;
-    for(const VERTEX of VERTICES){
+    for(const VERTEX of VERTICES) {
         sum_lat += VERTEX[1];
         sum_lng += VERTEX[0];
     }
@@ -446,11 +445,11 @@ function calculate_centroid(polygon){
  * @param {*} snapped_waypoints - Snapped Waypoints of the Tour
  * @returns {*} - Coordinates of Toursegments
  */
-function slice_tour(route, snapped_waypoints){ 
+function slice_tour(route, snapped_waypoints) { 
     let segments = [[[route[0][1],route[0][0]]]];
-    for (let i = 1, j = 1; i < route.length -1; i++){
+    for (let i = 1, j = 1; i < route.length -1; i++) {
         segments[j-1].push([route[i][1],route[i][0]]);
-        if(JSON.stringify(route[i]) === JSON.stringify(snapped_waypoints[j])){
+        if(JSON.stringify(route[i]) === JSON.stringify(snapped_waypoints[j])) {
             segments.push([]);
             segments[j].push([route[i][1],route[i][0]]);
             j++;

@@ -24,10 +24,8 @@ let station_collection; // Collection-Instance to perform database operations on
 /**
  * Function to initialize the Database and Collection and store them in global variables for later access.
  */
-async function initialize_DB()
-{
-  try
-  {
+async function initialize_DB() {
+  try {
     await CLIENT.connect();
     db = CLIENT.db(DB_NAME);
     station_collection = db.collection(COLLECTION_NAME_STATIONS);
@@ -35,8 +33,7 @@ async function initialize_DB()
     tour_collection = db.collection(COLLECTION_NAME_TOURS);
     console.log(`Erfolgreich mit '${DB_NAME}.${COLLECTION_NAME_TOURS}' verbunden`);
   }
-  catch (err)
-  {
+  catch (err) {
     console.log(err)
   }
 }
@@ -49,13 +46,13 @@ initialize_DB()
  * @param {*} item - Data to add to the DB.
  * @param {*} collection - DB Collection where the Data should be added to.
  */
-async function add_item(item, collection)
-{
+async function add_item(item, collection) {
   try {
     const RESULT = await collection.insertOne(item);
     console.log('Neues Element in die Datenbank eingefügt');
     console.log('Eingefügte ID:', RESULT.insertedId);
-  } catch (err) {
+  } 
+  catch (err) {
     console.error('Fehler beim Einfügen des Elements in die Datenbank:', err);
   } 
 }
@@ -70,7 +67,8 @@ async function get_items(collection) {
       const VALUES = await collection.find({}).toArray();
       console.log('Alle Werte der Collection abgerufen');
       return VALUES;
-    } catch (err) {
+    } 
+    catch (err) {
       console.error('Fehler beim Abrufen der Werte aus der Collection:', err);
       return null;
     } 
@@ -87,7 +85,8 @@ async function delete_item(id, collection) {
 
     if (RESULT.deletedCount === 1) {
       return { message: 'Datensatz erfolgreich gelöscht' };
-    } else {
+    } 
+    else {
       return { message: 'Datensatz nicht gefunden' };
     }
   } catch (err) {
@@ -110,10 +109,12 @@ async function update_item(id, newData, collection) {
 
     if (RESULT.modifiedCount === 1) {
       return { message: 'Datensatz erfolgreich aktualisiert' };
-    } else {
+    } 
+    else {
       return { message: 'Datensatz nicht gefunden' };
     }
-  } catch (err) {
+  } 
+  catch (err) {
     console.error('Fehler beim Aktualisieren des Datensatzes:', err);
   }
 }
@@ -122,23 +123,24 @@ async function update_item(id, newData, collection) {
 // ------------------- Webserver-Routes: Station-Website -------------------
 
 // API calls generally do not want caching because the returned data may change
-ROUTER.use((_req, res, next) => {
+ROUTER.use(function(_req, res, next) {
   res.set('Cache-Control', 'no-store')
   next()
 })
 
 
-ROUTER.get('/stations', async function(_req, res)
-{
+ROUTER.get('/stations', async function(_req, res) {
   try {
     const STATIONS = await get_items(station_collection); 
 
     if (STATIONS) {
       res.json(STATIONS); 
-    } else {
+    } 
+    else {
       res.status(404).json({ message: 'Keine Stationen gefunden' });
     }
-  } catch (err) {
+  } 
+  catch (err) {
     console.error('Fehler beim Abrufen der Stationen:', err);
     res.status(500).json({ message: 'Interner Serverfehler' });
   }
@@ -155,7 +157,7 @@ ROUTER.post('/add_station', function(req, res) {
 ROUTER.post('/upload_geojson_station', UPLOAD.single("file"), function(req, res) {
 
   // Read the file from file system 
-  FS.readFile(req.file.path, 'utf8', function(err, data){
+  FS.readFile(req.file.path, 'utf8', function(err, data) {
     if (err) {
       console.error(err);
       return res.status(500).send('Beim Lesen der Datei is ein Fehler aufgetreten')
@@ -191,17 +193,18 @@ ROUTER.post('/update_station', function(req, res) {
 // ------------------- Webserver-Routes: Tour-Website -------------------
 
 
-ROUTER.get('/tours', async function(_req, res)
-{
+ROUTER.get('/tours', async function(_req, res) {
   try {
     const TOURS = await get_items(tour_collection); 
 
     if (TOURS) {
       res.json(TOURS); 
-    } else {
+    } 
+    else {
       res.status(404).json({ message: 'Keine Touren gefunden' });
     }
-  } catch (err) {
+  } 
+  catch (err) {
     console.error('Fehler beim Abrufen der Touren:', err);
     res.status(500).json({ message: 'Interner Serverfehler' });
   }
@@ -245,7 +248,7 @@ const API_KEY = process.env.GRAPHHOPPER_API_KEY;
  * @param {} waypoints - Points which should be visited 
  * @returns {*} - Route as Object (see GRAPHHOPPER Documentation for more Information)
  */
-async function getRouting(waypoints){
+async function getRouting(waypoints) {
   //Prepare the Request-String for GRAPHHOPPER-API
   const API_URL = `https://graphhopper.com/api/1/route?point=${waypoints.map(wp => `${wp.lat},${wp.lng}`).join('&point=')}&vehicle=bike&optimize="true"&points_encoded=false&key=${API_KEY}`;
 
@@ -253,7 +256,8 @@ async function getRouting(waypoints){
       const RESPONSE = await fetch(API_URL);
       const DATA = await RESPONSE.json();
       return DATA;
-  } catch (error) {
+  } 
+  catch (error) {
       console.error('Fehler beim GRAPHHOPPER_API-Aufruf:', error);
       return null;
   }
@@ -266,10 +270,12 @@ ROUTER.post('/routing', async function(req, res) {
 
     if (ROUTE) { 
       res.json(ROUTE); 
-    } else {
+    } 
+    else {
       res.status(404).json({ message: 'Keine Route gefunden' });
     }
-  } catch (err) {
+  } 
+  catch (err) {
     console.error('Fehler beim Routing einer Tour', err);
     res.status(500).json({ message: 'Interner Serverfehler' });
   }
