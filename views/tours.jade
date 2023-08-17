@@ -20,9 +20,15 @@ block content
             .col-sm-12.col-md-8
                 #tour_map
             .col-sm-12.col-md-4(style="display: none")#station_div
+                form
+                    .form-group
+                        label.font-weight-bold(for='tourname') Tourname:
+                        input#tourname.form-control(type='tourname' aria-describedby='tourname_help' placeholder='Hier Tournamen einfügen')
+                        small#tourname_help.form-text.text-muted Kein Pflichtfeld, wird aber dringenst empfohlen
+
                 table(width="100%")#selectedStation_table
                     thead
-                        th ausgewählte Stationen
+                        th ausgewählte Stationen:
                     tbody
                 button#cancel(type='button') Abbrechen
                 button#calculate_tour(type="button") Tour berechnen
