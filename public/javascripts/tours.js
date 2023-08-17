@@ -49,8 +49,9 @@ async function api_call(route, body) {
  * Adds a new tour to the DB
  * @param {*} newstations - Array with station-objects
  */
-async function add_new_tour(new_stations, new_segments, new_instructions, new_distance) {
+async function add_new_tour(new_name, new_stations, new_segments, new_instructions, new_distance) {
     let tour = {
+        name: new_name,
         stations: new_stations,
         segments: new_segments,
         instructions: new_instructions,
@@ -66,11 +67,12 @@ async function add_new_tour(new_stations, new_segments, new_instructions, new_di
  * @param {*} id - ID of the station that should be updated
  * @param {*} newstations - Array with station-objects
  */
-async function update_tour(id, new_stations, new_segments, new_instructions, new_distance) 
+async function update_tour(id, new_name, new_stations, new_segments, new_instructions, new_distance) 
 {
 
     await api_call("update_tour", {
             id: id,
+            name: new_name,
             stations: new_stations,
             segments: new_segments,
             instructions: new_instructions,
@@ -98,8 +100,8 @@ async function update_table() {
     let table = document.getElementById("tour_table")
     let tbody = document.createElement('tbody')
     
-    tours_collection.forEach(({ _id, stations, segments, instructions, distance }) => {
-        //id
+    tours_collection.forEach(({ _id, name, stations, segments, instructions, distance }) => {
+        //selection of tours
         let row = tbody.insertRow();
         row.addEventListener("click", async function(event) 
         {
@@ -143,9 +145,11 @@ async function update_table() {
             }
             
         })
-        let tour_id = document.createElement("td")
-        tour_id.innerText = _id
-        row.insertCell().appendChild(tour_id)
+
+        //name
+        let tour_name = document.createElement("td");
+        tour_name.innerText = name;
+        row.insertCell().appendChild(tour_name);
 
         //Show-Button
         let show_tour_button = document.createElement("button")
@@ -193,6 +197,8 @@ async function update_table() {
         {
             startWorkingModi();
             current_tour_id = _id;
+            let tourname_input = document.getElementById("tourname");
+            tourname_input.value = name;
             await update_stationtable(stations);
             //set Highlighting on stations in Tour
             let map = await map_promise;
@@ -332,6 +338,8 @@ async function stopWorkingModi() {
     tourdiv.style.display = 'block';
     let newTourButton = document.getElementById("new_tour")
     newTourButton.style.display = 'block';
+    let tourname_input = document.getElementById("tourname");
+    tourname_input.value = null;
     working_on_tour_mode = false;
     current_stations = [];
     let map = await map_promise;
@@ -397,12 +405,14 @@ UPDATEBUTTON.addEventListener("click", async () =>
     else {
     //Slicing tour in segments for each waypoint
     let tour_segments = slice_tour(route.paths[0].points.coordinates, route.paths[0].snapped_waypoints.coordinates);
+    //Get Tourname from input-field
+    let tourname = document.getElementById("tourname").value;
     //save Tour in DB
     if (current_tour_id == null) {
-        await add_new_tour(current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
+        await add_new_tour(tourname, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
     }
     else {
-        await update_tour(current_tour_id, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
+        await update_tour(current_tour_id, tourname, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
     }
     //select worked-on tour
     let table = document.getElementById('tour_table');
