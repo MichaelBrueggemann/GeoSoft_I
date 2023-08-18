@@ -159,7 +159,7 @@ ROUTER.get('/stations', async function(_req, res)
 
 // added middleware to check whether the request-body matches the schema
 ROUTER.post('/add_station', checkSchema(OUR_SPECIAL_GEOJSON_SCHEMA, ['body']), function(req, res) {
-console.log("REquest", req.body)
+  console.log("Request", req.body)
 
   const RESULT = validationResult(req)
   const ERRORS = RESULT.array()
