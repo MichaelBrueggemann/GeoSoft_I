@@ -492,10 +492,10 @@ let correct_station = {
 let incorrect_station = {
     "type": "Feature",
     "properties": {
-      "name": " ",
-      "description": "Das ist der Prinzipalmarkt",
-      "url": "https://de.wikipedia.org/wiki/Prinzipalmarkt"
-    },
+        "name": "Test",
+        "description": "Test",
+        "url": "https://de.wikipedia.org/wiki/Prinzipalmarkt"
+      },
     "geometry": {
       "coordinates": [
         7.628199238097352,
@@ -505,7 +505,7 @@ let incorrect_station = {
     }
   }
 console.log("Add correct station: ", correct_station)
-add_new_station(correct_station)
+//add_new_station(correct_station)
 
 console.log("Add incorrect station: ", incorrect_station)
 add_new_station(incorrect_station)
