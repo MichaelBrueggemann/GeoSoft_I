@@ -1,4 +1,5 @@
 "use strict"
+const { body } = require('express-validator')
 
 /* This schema defines a valid GeoJSON input. 
 This schema is documented more then the other schema to help understanding the used library*/
@@ -55,25 +56,43 @@ const OUR_SPECIAL_GEOJSON_SCHEMA =
             bail: true
         }
     },
-    'geometry.coordinates.*': {
-        trim: true,
+    'geometry.coordinates': {
         notEmpty: {
             errorMessage: "Die Koordinaten dürfen nicht leer sein!",
         },
-        // TODO: Testen warum Floats nicht richtig erkannt werden
-        custom: {
-            errorMessage: "Die Koordinaten müssen Längen- und Breitengrad enthalten!",
-            options: {
-                // custom validator function
-                function(value)
-                {
-                    console.log("value", value)
-                    return /^\d+\.\d+/.test(value)
-                }
-            }
+        isArray:{
+            errorMessage: "'coordinates' muss ein Array sein!",
         },
-        
     },
+    'geometry.coordinates.*': {
+        notEmpty: {
+            // only check this validator, if the geometry of the object to check isn't of type "Point"
+            if: body('geometry.type').custom(function(value) { return value !== 'Point'}),
+            errorMessage: "Die Koordinaten dürfen nicht leer sein!",
+        },
+        isArray:{
+            // only check this validator, if the geometry of the object to check isn't of type "Point"
+            if: body('geometry.type').custom(function(value) { return value !== 'Point'}),
+            errorMessage: "Jeder Eintrag in 'coordinates' muss ein Array sein!",
+        },
+    },
+    // 'geometry.coordinates[0].*.*': {
+    //     trim: true,
+    //     notEmpty: {
+    //         errorMessage: "Die Koordinaten dürfen nicht leer sein!",
+    //     },
+    //     // TODO: Testen warum Floats nicht richtig erkannt werden
+    //     custom: {
+    //         errorMessage: "Die Koordinaten müssen Längen- und Breitengrad enthalten!",
+    //         options: {
+    //             function(value)
+    //             {
+    //                 return /\d+\.\d+/.test(parseFloat(value))
+    //             }
+    //         }
+    //     },
+        
+    // },
     'geometry.type': {
         /* this is a custom validator method, that isn't built-in in validator.js.
         "custom" is the name of the validator method, but i could also be any other name. The only requirement is
