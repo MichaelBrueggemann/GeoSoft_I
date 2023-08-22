@@ -5,7 +5,7 @@ const { OUR_SPECIAL_GEOJSON_SCHEMA } = require("../express_validator_schemes/geo
 const EXPRESS = require('express');
 const ROUTER = EXPRESS.Router();
 const DOTENV = require('dotenv');
-const { checkSchema, validationResult } = require('express-validator')
+const { body, checkSchema, validationResult } = require('express-validator')
 
 // --------------- DATABASE INITIALIZATION ---------------
 
@@ -157,8 +157,21 @@ ROUTER.get('/stations', async function(_req, res)
 })
 
 
+
+
 // added middleware to check whether the request-body matches the schema
-ROUTER.post('/add_station', checkSchema(OUR_SPECIAL_GEOJSON_SCHEMA, ['body']), function(req, res) {
+// For some unclear reasons the last validation chain "body('geometry.coordinates[0].*.*')..." has to be defined outside of the schema to work porperly
+ROUTER.post('/add_station', checkSchema(OUR_SPECIAL_GEOJSON_SCHEMA, ['body']), 
+  body('geometry.coordinates[0].*.*')
+  .trim()
+  .notEmpty()
+  .withMessage("Die Koordinaten dürfen nicht leer sein!")
+  .custom(function(value) 
+  { 
+    // test if input is a valid float like "123.00", "123.x", "x.132"
+    return /\d+\.\d+/.test(parseFloat(value)) 
+  })
+  .withMessage("Die Koordinaten müssen Gleikommazahlen sein!"), function(req, res) {
   console.log("Request", req.body)
 
   const RESULT = validationResult(req)
