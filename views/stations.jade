@@ -94,8 +94,8 @@ block content
             .row.justify-content-center
               .form-group
                 label.fw-bold(for='file_upload_geoJSON') GeoJSON-Datei hochladen
-                input#file_upload_geoJSON.form-control(type='file' accept="application/JSON, .json" required)
-                #invalid_feedback_geojson.invalid-feedback 
+                input#file_upload_geoJSON.form-control(type='file' accept="application/JSON, .json")
+                #invalid_feedback_fileupload_geojson.invalid-feedback 
                 textarea#hidden_geojson_data_from_upload.form-control(style="display:none" name="hidden_geojson_data_from_from_upload")
             hr.hr
             .row.justify-content-center
