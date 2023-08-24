@@ -280,13 +280,35 @@ function prepare_update_station_button()
 {
     /* Use "event delegation" to bind an event to a detached button. The button "#update_station" is first attached to the DOM, if the modal "'edit_station_popup"
     is opened (the button is part of the modal), therefore pre-existing events for this button might get lost.*/
-    document.body.addEventListener('click', function(event) {
+    document.body.addEventListener('click', async function(event) {
         // set/overwrite event on button "#update_station"
         if (event.target.id === 'update_station') {
             const UPDATE_STATION_TEXTAREA = document.getElementById(`update_stationGeoJSON`)
             const UPDATED_STATION = JSON.parse(UPDATE_STATION_TEXTAREA.value)
             const STATION_ID = UPDATE_STATION_TEXTAREA.dataset.station_id
-            update_station(STATION_ID, UPDATED_STATION)  
+            
+            let result = await update_station(STATION_ID, UPDATED_STATION)
+
+            if (!result.ok)
+            {
+                let json_result = await result.json()
+                    
+                // add CSS-class to enable custom styling
+                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
+
+                // add error message from the server to the designated field
+                document.getElementById("invalid_feedback_update_geojson").innerHTML = json_result.message
+            }
+            else
+            {
+                if (document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+                {
+                    document.getElementById("update_stationGeoJSON").classList.remove("is-invalid")
+                }
+
+                // manually hide modal
+                $('#edit_station_popup').modal('hide')
+            }
         }
     })
 }
