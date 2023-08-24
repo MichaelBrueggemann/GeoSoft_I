@@ -153,7 +153,7 @@ function prepare_map_form(map, drawnItems, drawControl)
             }
 
             // send data to API
-            await add_new_station(request_body)
+            add_new_station(request_body)
             
             MAP_FORM.reset()
 

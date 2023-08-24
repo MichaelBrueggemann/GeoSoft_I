@@ -67,7 +67,6 @@ const GEOJSON_ADD_SCHEMA =
     },
     // checks only apply if the geometry of the GeoJSON is not of type "Point"
     'geometry.coordinates[0].*': {
-        trim: true,
         notEmpty: {
             // only check this validator, if the geometry of the object to check isn't of type "Point"
             if: body('geometry.type').custom(function(value) { return value !== 'Point'}),
@@ -81,7 +80,6 @@ const GEOJSON_ADD_SCHEMA =
     },
     // checks only apply if the geometry of the GeoJSON is not of type "Polygon"
     'geometry.coordinates.*': {
-        trim: true,
         notEmpty: {
             // only check this validator, if the geometry of the object to check isn't of type "Polygon"
             if: body('geometry.type').custom(function(value) { return value !== 'Polygon'}),
@@ -197,7 +195,6 @@ const GEOJSON_UPDATE_SCHEMA =
     },
     // checks only apply if the geometry of the GeoJSON is not of type "Point"
     'geojson.geometry.coordinates[0].*': {
-        trim: true,
         notEmpty: {
             // only check this validator, if the geometry of the object to check isn't of type "Point"
             if: body('geometry.type').custom(function(value) { return value !== 'Point'}),
@@ -211,7 +208,6 @@ const GEOJSON_UPDATE_SCHEMA =
     },
     // checks only apply if the geometry of the GeoJSON is not of type "Polygon"
     'geojson.geometry.coordinates.*': {
-        trim: true,
         notEmpty: {
             // only check this validator, if the geometry of the object to check isn't of type "Polygon"
             if: body('geometry.type').custom(function(value) { return value !== 'Polygon'}),

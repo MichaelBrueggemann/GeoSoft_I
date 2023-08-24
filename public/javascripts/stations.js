@@ -42,7 +42,6 @@ async function delete_station(id) {
  * @returns Promise to with message from the server in the "message" property when unpacked with ".json()"
  */
 export async function add_new_station(geojson) {
-    
     let result = await api_call("add_station", geojson)
 
     await update_map()
@@ -109,7 +108,8 @@ export async function update_table() {
                     // set map zoom on the highlighted feature
                     if (LEAFLET_LAYER instanceof L.Polygon)
                     {
-                        map.setView(LEAFLET_LAYER.getCenter(), 30)
+                        map.fitBounds(LEAFLET_LAYER.getBounds())
+                        //map.setView(LEAFLET_LAYER.getCenter(), 30)
                     }
                     else if (LEAFLET_LAYER instanceof L.Marker)
                     {
