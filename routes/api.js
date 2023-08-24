@@ -1,6 +1,6 @@
 "use strict"
 
-const { OUR_SPECIAL_GEOJSON_SCHEMA } = require("../express_validator_schemes/geojson_schema")
+const { GEOJSON_ADD_SCHEMA, GEOJSON_UPDATE_SCHEMA } = require("../express_validator_schemes/geojson_schema")
 
 const EXPRESS = require('express');
 const ROUTER = EXPRESS.Router();
@@ -161,7 +161,7 @@ ROUTER.get('/stations', async function(_req, res)
 
 // added middleware to check whether the request-body matches the schema
 // For some unclear reasons the last validation chain "body('geometry.coordinates[0].*.*')..." has to be defined outside of the schema to work porperly
-ROUTER.post('/add_station', checkSchema(OUR_SPECIAL_GEOJSON_SCHEMA, ['body']), 
+ROUTER.post('/add_station', checkSchema(GEOJSON_ADD_SCHEMA, ['body']), 
   body('geometry.coordinates[0].*.*')
   .trim()
   .notEmpty()
@@ -208,15 +208,49 @@ ROUTER.post('/delete_station', function(req, res) {
 });
 
 
-ROUTER.post('/update_station', function(req, res) {
+ROUTER.post('/update_station', checkSchema(GEOJSON_UPDATE_SCHEMA, ['body']), 
+body('geometry.coordinates[0].*.*')
+.trim()
+.notEmpty()
+.withMessage("Die Koordinaten dürfen nicht leer sein!")
+.custom(function(value) 
+{ 
+  // test if input is a valid float like "123.00", "123.x", "x.132"
+  return /\d+\.\d+/.test(parseFloat(value)) 
+})
+.withMessage("Die Koordinate muss eine Gleitkommazahlen sein!"), function(req, res) {
+
   // TODO: Hier Server valid und Response an den Client einbauen
   const ID = req.body.id;
   let newData = {
     geojson: req.body.geojson
-  };
+  }
+
+  const RESULT = validationResult(req)
+  const ERRORS = RESULT.array()
+  console.log("valid errors", ERRORS)
+  console.log("Request Body im Update route", req.body)
+
+  // request was invalid
+  if (ERRORS.length > 0)
+  {
+    let error_message = ""
+    for (const error of ERRORS)
+    {
+      error_message += `Im Wert '${error.value}' ist ein Fehler. Bitte beachte die Fehlernachricht: </br> "${error.msg}"`
+      if (ERRORS.length > 1)
+      {
+        error_message += "</br>"
+      }
+    }
     
-    update_item(ID, newData, station_collection);
-    res.send()
+    res.status(400).json({message: error_message})
+  }
+  else
+  {
+    update_item(ID, newData, station_collection)
+    res.status(200).json({message: "Alles ok."})
+  }
 });
 
 // ------------------- Webserver-Routes: Tour-Website -------------------

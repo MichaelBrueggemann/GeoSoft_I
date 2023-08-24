@@ -118,10 +118,15 @@ block content
           h5.modal-title Station bearbeiten
           button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
         .modal-body(align="center")
-          textarea#update_stationGeoJSON(rows='25' cols='45' style='resize:none')
+          form#update_station_form.container.needs-validation(novalidate)
+            .row.justify-content-center
+              .form-group 
+                label.fw-bold(for="update_stationGeoJSON") GeoJSON bearbeiten
+                textarea#update_stationGeoJSON(rows='25' cols='45' style='resize:none')
+                #invalid_feedback_update_geojson.invalid-feedback
         .modal-footer
           button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen
-          button#update_station.btn.btn-primary(type="button" data-bs-dismiss='modal') Aktualisieren
+          button#update_station.btn.btn-primary(type="button") Aktualisieren
 
   #sample_geojson_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
     .modal-dialog.modal-dialog-centered(role='document')
