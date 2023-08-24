@@ -250,7 +250,7 @@ const API_KEY = process.env.GRAPHHOPPER_API_KEY;
  */
 async function get_routing(waypoints) {
   //Prepare the Request-String for GRAPHHOPPER-API (every waypoint has to be in api-request and the api_key of course)
-  const API_URL = `https://graphhopper.com/api/1/route?point=${waypoints.map(wp => `${wp.lat},${wp.lng}`).join('&point=')}&vehicle=bike&optimize="true"&points_encoded=false&key=${API_KEY}`;
+  const API_URL = construct_Graphhopper_URL(waypoints);
   //actual request on GRAPHHOPPER-API
   try {
       const RESPONSE = await fetch(API_URL);
@@ -282,4 +282,25 @@ ROUTER.post('/routing', async function(req, res) {
  
 });
 
+/**
+ * Creates Request-URL for GRAPHHOPPER-API for a bicycle-tour
+ * @param {*} waypoints - Array of Points (Lat, Lng) which should be connected
+ * @returns {String} - GRAPHHOPPER-URL
+ */
+function construct_Graphhopper_URL(waypoints) {
+  const BASE_URL = "https://graphhopper.com/api/1/route";
+  //As the waypoints-Array can contain different amounts of points, it must be stringyfied outside the other PARAMS
+  const WAYPOINT_STRING = 'point=' + waypoints.map(wp => `${wp.lat},${wp.lng}`).join('&point=');
+  const PARAMS = {
+      vehicle: "bike",
+      optimize: true,
+      points_encoded: false,
+      key: API_KEY
+  };
+  const PARAM_STRING = Object.entries(PARAMS).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join("&");
+
+  return `${BASE_URL}?${WAYPOINT_STRING}&${PARAM_STRING}`;
+}
+
 module.exports = ROUTER;
+
