@@ -119,7 +119,7 @@ function prepare_map_form(map, drawnItems, drawControl)
     })
 
     // submit_map_form button
-    document.getElementById("submit_map_form").addEventListener("click", function(event)
+    document.getElementById("submit_map_form").addEventListener("click", async function(event)
     {
         event.preventDefault()
 
@@ -151,7 +151,18 @@ function prepare_map_form(map, drawnItems, drawControl)
             }
 
             // send data to API
-            add_new_station(request_body)
+            let result = await add_new_station(request_body)
+            console.log("Server Message: ", result)
+
+            // The HTTP Request had an error
+            if (!result.ok) 
+            {
+                console.log("Ein Fehler ist aufgetreten")
+                console.log("Nachricht vom Server:", result.message)
+
+            }
+
+            // TODO: Hier Fallunterscheidung. Wie bisher wenn kein Fehler vom Server zurückkommt. Bei Fehler soll Form nicht verlassen werden und die Fehlerbehafteten Kontrollelemente sollen einen Fehlerstatus erhalten.
 
             MAP_FORM.reset()
 
@@ -200,65 +211,85 @@ function prepare_geojson_textarea_form()
         enter_add_station_mode("textarea")
     })
 
+    let textarea_geojson = document.getElementById("textarea_geoJSON")
+
     // validate textarea_geoJSON control element
-    document.getElementById("textarea_geoJSON").addEventListener("input", function()
-    {
-        let value_of_geojson_textarea = this.value
+    // document.getElementById("textarea_geoJSON").addEventListener("input", function()
+    // {
+    //     let value_of_geojson_textarea = this.value
 
-        let geojson = {}
+    //     let geojson = {}
 
-        try 
-        {
-            geojson = JSON.parse(value_of_geojson_textarea)
-        } 
-        catch (error) 
-        {
-            // console.log("Keine GeoJSON eingegeben: ", error)
-        }
-        // if the input isn't a correct GeoJSON
-        if (!is_geojson(geojson))
-        {
-            // invalidate textarea for later validation via HTML constraint validation API
-            this.setCustomValidity("noGeoJSON")
-        }
-        else
-        {
-            // reset, to prevent wrong validation results
-            this.setCustomValidity("")
-        }
-    })
+    //     try 
+    //     {
+    //         geojson = JSON.parse(value_of_geojson_textarea)
+    //     } 
+    //     catch (error) 
+    //     {
+    //         // console.log("Keine GeoJSON eingegeben: ", error)
+    //     }
+    //     // if the input isn't a correct GeoJSON
+    //     if (!is_geojson(geojson))
+    //     {
+    //         // invalidate textarea for later validation via HTML constraint validation API
+    //         this.setCustomValidity("noGeoJSON")
+    //     }
+    //     else
+    //     {
+    //         // reset, to prevent wrong validation results
+    //         this.setCustomValidity("")
+    //     }
+    // })
 
     // submit_geojson_textarea_form button
-    document.getElementById("submit_geojson_textarea_form").addEventListener("click", function(event)
+    document.getElementById("submit_geojson_textarea_form").addEventListener("click", async function(event)
     {
-        if (!GEOJSON_TEXTAREA_FORM.checkValidity())
+        // if (!GEOJSON_TEXTAREA_FORM.checkValidity())
+        // {
+        //     event.preventDefault()
+
+        //     // add bootstrap css-class for styling of the error messages
+        //     GEOJSON_TEXTAREA_FORM.classList.add("was-validated")
+        // }
+        // else
         {
             event.preventDefault()
 
             // add bootstrap css-class for styling of the error messages
             GEOJSON_TEXTAREA_FORM.classList.add("was-validated")
-        }
-        else
-        {
-            event.preventDefault()
 
-            // add bootstrap css-class for styling of the error messages
-            GEOJSON_TEXTAREA_FORM.classList.add("was-validated")
-
-            let textarea_geojson = document.getElementById("textarea_geoJSON")
-
+            
             try 
             {
                 // parse body from form
                 let request_body = JSON.parse(textarea_geojson.value)
                 
                 // send data to API
-                add_new_station(request_body)
+                let result = await add_new_station(request_body)
+                
+                // result is not "ok" when an HTTP Error occurs (Errorcode > 299)
+                if (!result.ok) 
+                {
+                    let json_result = await result.json()
+                    
+                    // add CSS-class to enable custom styling
+                    textarea_geojson.classList.add("is-invalid")
 
-                GEOJSON_TEXTAREA_FORM.reset()
+                    // add error message from the server to the designated field
+                    document.getElementById("invalid_feedback_geojson").innerHTML = json_result.message
+                }
+                else
+                {
+                    GEOJSON_TEXTAREA_FORM.reset()
+                    if (textarea_geojson.classList.contains("is-invalid"))
+                    {
+                        textarea_geojson.classList.remove("is-invalid")
+                    }
+                    // hide coressponding form element
+                    leave_add_station_mode(GEOJSON_TEXTAREA_FORM)
+                }
 
-                // hide coressponding form element
-                leave_add_station_mode(GEOJSON_TEXTAREA_FORM)
+                
             } 
             catch (error) 
             {
@@ -273,6 +304,11 @@ function prepare_geojson_textarea_form()
     {
         // reset form
         GEOJSON_TEXTAREA_FORM.reset()
+
+        if (textarea_geojson.classList.contains("is-invalid"))
+        {
+            textarea_geojson.classList.remove("is-invalid")
+        }
 
         // hide coressponding form element
         leave_add_station_mode(GEOJSON_TEXTAREA_FORM)
@@ -498,14 +534,25 @@ let incorrect_station = {
       },
     "geometry": {
       "coordinates": [
-        7.628199238097352,
-        51.962239849033296
+        [
+          [
+            "7579708",
+            "51.99079"
+          ],
+          [
+            "7.593269",
+            "51.992481"
+          ],
+          [
+            "7.579536",
+            "51.996497"
+          ],
+          [
+            "7.579708",
+            "51.99079"
+          ]
+        ]
       ],
-      "type": "Point"
+      "type": "Polygon"
     }
   }
-console.log("Add correct station: ", correct_station)
-//add_new_station(correct_station)
-
-console.log("Add incorrect station: ", incorrect_station)
-add_new_station(incorrect_station)
