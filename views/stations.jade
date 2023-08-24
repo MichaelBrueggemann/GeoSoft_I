@@ -79,7 +79,7 @@ block content
               .form-group 
                 label.fw-bold(for="textarea_geoJSON") GeoJSON eingeben
                 textarea#textarea_geoJSON.form-control(cols="30" rows="10" style='resize:none' name="textarea_geoJSON" placeholder='Gib hier die Stationsdaten vollständig im GeoJSON-Format an.' required)
-                .invalid-feedback Bitte füge eine GeoJSON in das Feld ein.
+                #invalid_feedback_geojson.invalid-feedback 
             hr.hr
             .row.justify-content-center
               button#submit_geojson_textarea_form.btn.btn-primary.m-1(type='button') Daten absenden
@@ -95,8 +95,8 @@ block content
               .form-group
                 label.fw-bold(for='file_upload_geoJSON') GeoJSON-Datei hochladen
                 input#file_upload_geoJSON.form-control(type='file' accept="application/JSON, .json" required)
-                .invalid-feedback Bitte lade eine korrekte GeoJSON-Datei hoch.
-                textarea#hidden_geojson_data_from_upload.form-control(style="display:none" name="hidden_geojson_data_from_from_upload" required)
+                #invalid_feedback_geojson.invalid-feedback 
+                textarea#hidden_geojson_data_from_upload.form-control(style="display:none" name="hidden_geojson_data_from_from_upload")
             hr.hr
             .row.justify-content-center
               button#submit_geojson_upload_form.btn.btn-primary.m-1(type='button') Daten absenden
