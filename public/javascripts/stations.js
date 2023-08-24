@@ -8,13 +8,20 @@ let station_collection = {};
  * Sends Data to the desired route via HTTP-Post-Request.
  * @param {*} route - API-Endpoint to send the body to.
  * @param {*} body - HTML Request-Body
+ * @returns Promise with the server response, only if the API Call was "add_station" or "update_station"
  */
 async function api_call(route, body) {
-    await fetch("/api/" + route, {
+    let result = await fetch("/api/" + route, {
         method: 'POST',
         headers: {"content-type": "application/json"},
         body: JSON.stringify(body),
     })
+    // only send return server response, if a new station was added or updated
+    if (route === "add_station" || route === "update_station")
+    {
+        return result
+    }
+    
 }
 
 /**
@@ -32,30 +39,35 @@ async function delete_station(id) {
 /**
  * Adds a new station to the DB
  * @param {*} geojson - GeoJSON Object defining the station
+ * @returns Promise to with message from the server in the "message" property when unpacked with ".json()"
  */
 export async function add_new_station(geojson) {
     
-    await api_call("add_station", geojson)
+    let result = await api_call("add_station", geojson)
 
     await update_map()
     await update_table()
-    
+
+    return result
 }
 
 /**
  * Updates a station in the DB
  * @param {*} id - ID of the station that should be updated
  * @param {*} geojson - GeoJSON file with data of the station
+ * @returns Promise to with message from the server in the "message" property when unpacked with ".json()"
  */
 async function update_station(id, geojson) 
 {
-    await api_call("update_station", {
+    let result = await api_call("update_station", {
             id: id,
             geojson: geojson,
         });
 
     await update_map()
     await update_table()
+
+    return result
 }
 
 // ----------------- Stations Table -----------------
@@ -278,34 +290,6 @@ function prepare_update_station_button()
         }
     })
 }
-
-// ggf. löschen
-// //set in own scope to prevent unwanted global variables
-// {
-// const SUBMIT_STATION_FORM_BUTTON = document.getElementById("submit_station")
-// SUBMIT_STATION_FORM_BUTTON.addEventListener("click", function(event)
-// {
-//     //event.preventDefault()
-//     let form = document.getElementById('station_upload_form')
-//     let formData = new FormData(form)
-    
-    
-//     // parse body from formData
-//     let request_body = 
-//     {
-//         type: JSON.parse(formData.get("textarea_geoJSON")).type,
-//         properties: {
-//             name: formData.get("input_name"),
-//             description: formData.get("input_description"),
-//             url: formData.get("input_url")
-//         },
-//         geometry: JSON.parse(formData.get("textarea_geoJSON")).geometry
-//     }
-//     add_new_station(request_body)
-//     form.reset()
-//     drawnItems.clearLayers() // resets all elements drawn with the draw-tool
-// })
-// }
 
 // ----------------- Script Start -----------------
 
