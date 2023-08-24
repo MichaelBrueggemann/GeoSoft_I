@@ -171,23 +171,32 @@ ROUTER.post('/add_station', checkSchema(OUR_SPECIAL_GEOJSON_SCHEMA, ['body']),
     // test if input is a valid float like "123.00", "123.x", "x.132"
     return /\d+\.\d+/.test(parseFloat(value)) 
   })
-  .withMessage("Die Koordinaten müssen Gleikommazahlen sein!"), function(req, res) {
-  console.log("Request", req.body)
-
+  .withMessage("Die Koordinate muss eine Gleitkommazahlen sein!"), function(req, res) {
+  
   const RESULT = validationResult(req)
   const ERRORS = RESULT.array()
   console.log("valid errors", ERRORS)
+  console.log(req.body)
 
   // request was invalid
   if (ERRORS.length > 0)
   {
-    console.log("ERROR Mesaage for the user: ", ERRORS[0].msg)
-    res.status(400).send(ERRORS[0].msg)
+    let error_message = ""
+    for (const error of ERRORS)
+    {
+      error_message += `Im Wert '${error.value}' ist ein Fehler. Bitte beachte die Fehlernachricht: </br> "${error.msg}"`
+      if (ERRORS.length > 1)
+      {
+        error_message += "</br>"
+      }
+    }
+    
+    res.status(400).json({message: error_message})
   }
   else
   {
     add_item(req.body, station_collection);
-    res.status(200).send()
+    res.status(200).json({message: "Alles ok."})
   }
   
 });
@@ -200,6 +209,7 @@ ROUTER.post('/delete_station', function(req, res) {
 
 
 ROUTER.post('/update_station', function(req, res) {
+  // TODO: Hier Server valid und Response an den Client einbauen
   const ID = req.body.id;
   let newData = {
     geojson: req.body.geojson
