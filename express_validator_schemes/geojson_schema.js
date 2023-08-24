@@ -58,13 +58,14 @@ const OUR_SPECIAL_GEOJSON_SCHEMA =
     },
     'geometry.coordinates': {
         notEmpty: {
-            errorMessage: "Die Koordinaten dürfen nicht leer sein!",
+            errorMessage: "Die GeoJSON muss unter 'geometry' ein Feld 'coordinates' enthalten!",
         },
         isArray:{
             errorMessage: "'coordinates' muss ein Array sein!",
         },
     },
-    'geometry.coordinates.*': {
+    // checks only apply if the geometry of the GeoJSON is not of type "Point"
+    'geometry.coordinates[0].*': {
         notEmpty: {
             // only check this validator, if the geometry of the object to check isn't of type "Point"
             if: body('geometry.type').custom(function(value) { return value !== 'Point'}),
@@ -76,6 +77,25 @@ const OUR_SPECIAL_GEOJSON_SCHEMA =
             errorMessage: "Jeder Eintrag in 'coordinates' muss ein Array sein!",
         },
     },
+    // checks only apply if the geometry of the GeoJSON is not of type "Polygon"
+    'geometry.coordinates.*': {
+        notEmpty: {
+            // only check this validator, if the geometry of the object to check isn't of type "Polygon"
+            if: body('geometry.type').custom(function(value) { return value !== 'Polygon'}),
+            errorMessage: "Die Koordinaten dürfen nicht leer sein!",
+        },
+        custom:{
+            // only check this validator, if the geometry of the object to check isn't of type "Polygon"
+            if: body('geometry.type').custom(function(value) { return value !== 'Polygon'}),
+            options: function(value) 
+            { 
+                // test if input is a valid float like "123.00", "123.x", "x.132"
+                return /\d+\.\d+/.test(parseFloat(value)) 
+            },
+            errorMessage: "Die Koordinate muss eine Gleitkommazahlen sein!",
+        },
+    },
+
     // 'geometry.coordinates[0].*.*': {
     //     trim: true,
     //     notEmpty: {
