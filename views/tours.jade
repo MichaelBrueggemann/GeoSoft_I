@@ -39,38 +39,38 @@ block content
         table(width="100%")#tour_table.table.table-striped.table-hover
             thead
                 th(scope="col") Name
-                th(align="center" scope="col") Aktionen
+                th(style="text-align:center" scope="col") Aktionen
             tbody 
     #tour_information_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
         .modal-dialog.modal-dialog-centered(role='document')
             .modal-content
                 .modal-header
                     h5.modal-title Tour-Informationen
-                    button.close(type='button' data-dismiss='modal' aria-label='Close')
+                    button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
                         span(aria-hidden='true') ×
                 .modal-body(align="center")
                     #info_text
                 .modal-footer
-                    button.btn.btn-secondary(type='button' data-dismiss='modal') Schließen
+                    button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen
     #routing_error_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
         .modal-dialog.modal-dialog-centered(role='document')
             .modal-content
                 .modal-header
                     h5.modal-title Route konnte nicht berechnet werden
-                    button.close(type='button' data-dismiss='modal' aria-label='Close')
+                    button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
                         span(aria-hidden='true') ×
                 .modal-body(align="center")
                     #error_statement
                 .modal-footer
-                    button.btn.btn-secondary(type='button' data-dismiss='modal') Schließen
+                    button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen
     #station_selection_help.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
         .modal-dialog.modal-dialog-centered(role='document')
             .modal-content
                 .modal-header
                     h5.modal-title Stationsauswahl - Hilfe
-                    button.close(type='button' data-dismiss='modal' aria-label='Close')
+                    button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
                         span(aria-hidden='true') ×
                 .modal-body(align="center")
                     #help_text
                 .modal-footer
-                    button.btn.btn-secondary(type='button' data-dismiss='modal') Schließen
+                    button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen

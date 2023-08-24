@@ -171,8 +171,8 @@ async function update_table() {
         info_tour_button.innerText = "Informationen"
         info_tour_button.setAttribute("type", "button")
         info_tour_button.setAttribute("class", "btn btn-primary")
-        info_tour_button.setAttribute("data-toggle", "modal")
-        info_tour_button.setAttribute("data-target", "#tour_information_popup")
+        info_tour_button.setAttribute("data-bs-toggle", "modal")
+        info_tour_button.setAttribute("data-bs-target", "#tour_information_popup")
         
         // populate popUp with tour information
         info_tour_button.addEventListener("click", function() {
