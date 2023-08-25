@@ -13,12 +13,6 @@ function is_geojson(object)
       return false
     }  
 
-    // Check if the "type" is "Feature" as it should be for GeoJSON
-    // if (object.type !== 'Feature') 
-    // {
-    //     return false
-    // }
-
     // check if the mandatory properties exists and are not-empty strings
     if (!(object.properties.hasOwnProperty('name') && object.properties.name !== "" && object.properties.hasOwnProperty('description') && object.properties.description !== ""))
     {
@@ -207,52 +201,11 @@ function prepare_geojson_textarea_form()
 
     let textarea_geojson = document.getElementById("textarea_geoJSON")
 
-    // validate textarea_geoJSON control element
-    // document.getElementById("textarea_geoJSON").addEventListener("input", function()
-    // {
-    //     let value_of_geojson_textarea = this.value
-
-    //     let geojson = {}
-
-    //     try 
-    //     {
-    //         geojson = JSON.parse(value_of_geojson_textarea)
-    //     } 
-    //     catch (error) 
-    //     {
-    //         // console.log("Keine GeoJSON eingegeben: ", error)
-    //     }
-    //     // if the input isn't a correct GeoJSON
-    //     if (!is_geojson(geojson))
-    //     {
-    //         // invalidate textarea for later validation via HTML constraint validation API
-    //         this.setCustomValidity("noGeoJSON")
-    //     }
-    //     else
-    //     {
-    //         // reset, to prevent wrong validation results
-    //         this.setCustomValidity("")
-    //     }
-    // })
-
     // submit_geojson_textarea_form button
     document.getElementById("submit_geojson_textarea_form").addEventListener("click", async function(event)
     {
-        // if (!GEOJSON_TEXTAREA_FORM.checkValidity())
-        // {
-        //     event.preventDefault()
-
-        //     // add bootstrap css-class for styling of the error messages
-        //     GEOJSON_TEXTAREA_FORM.classList.add("was-validated")
-        // }
-        // else
-        {
             event.preventDefault()
 
-            // add bootstrap css-class for styling of the error messages
-            //GEOJSON_TEXTAREA_FORM.classList.add("was-validated")
-
-            
             try 
             {
                 // parse body from form
@@ -291,8 +244,8 @@ function prepare_geojson_textarea_form()
                 // console.log("Fehler beim Lesen der GeoJSON: ", error)
             }
             
-        }
     })
+    
 
     // cancel_geojson_textarea_form button
     document.getElementById("cancel_geojson_textarea_form").addEventListener("click", function()
@@ -433,16 +386,6 @@ function prepare_geojson_upload_form()
     // submit_geojson_upload_form button
     document.getElementById("submit_geojson_upload_form").addEventListener("click", async function(event)
     {
-        
-        // if (!GEOJSON_UPLOAD_FORM.checkValidity())
-        // {
-        //     event.preventDefault()
-
-        //     // add bootstrap css-class for styling of the error messages
-        //     GEOJSON_UPLOAD_FORM.classList.add("was-validated")
-        // }
-        // else
-        {
             event.preventDefault()
            
             let upload_form_data = document.getElementById("hidden_geojson_data_from_upload")
@@ -486,8 +429,8 @@ function prepare_geojson_upload_form()
                 // console.log("Keine GeoJSON eingegeben: ", error)
                 // if for some reason a error occurs nothing should happen after the event
             }  
-        }
     })
+    
 
     // cancel_geojson_upload_form button
     document.getElementById("cancel_geojson_upload_form").addEventListener("click", function()
