@@ -1,22 +1,21 @@
 "use strict"
 
+const { GEOJSON_ADD_SCHEMA, GEOJSON_UPDATE_SCHEMA } = require("../express_validator_schemes/geojson_schema")
+
 const EXPRESS = require('express');
 const ROUTER = EXPRESS.Router();
 const DOTENV = require('dotenv');
-const MULTER  = require('multer')
-const UPLOAD = MULTER({ dest: '../public/data/uploads' }) // store files send to the API and make them accessible
-const FS = require('fs') // Read files from the file system
-
+const { body, checkSchema, validationResult } = require('express-validator')
 
 // --------------- DATABASE INITIALIZATION ---------------
 
 const { ObjectId } = require('mongodb');
-const MongoClient = require('mongodb').MongoClient;
+const MONGO_CLIENT = require('mongodb').MongoClient;
 const URL = 'mongodb://127.0.0.1:/3000'; // connection URL
-const CLIENT = new MongoClient(URL); // mongodb client
-const DBNAME = 'mydatabase'; // database name
-const COLLECTIONNAMETOURS = 'touren'; // collection name
-const COLLECTIONNAMESTATIONS = 'stations'; // collection name
+const CLIENT = new MONGO_CLIENT(URL); // mongodb client
+const DB_NAME = 'mydatabase'; // database name
+const COLLECTION_NAME_TOURS = 'touren'; // collection name
+const COLLECTION_NAME_STATIONS = 'stations'; // collection name
 let db // Database-Instance where all data is stored
 let tour_collection; // Collection-Instance to perform database operations on
 let station_collection; // Collection-Instance to perform database operations on
@@ -24,24 +23,21 @@ let station_collection; // Collection-Instance to perform database operations on
 /**
  * Function to initialize the Database and Collection and store them in global variables for later access.
  */
-async function initializeDB()
-{
-  try
-  {
+async function initialize_DB() {
+  try {
     await CLIENT.connect();
-    db = CLIENT.db(DBNAME);
-    station_collection = db.collection(COLLECTIONNAMESTATIONS);
-    console.log(`Erfolgreich mit '${DBNAME}.${COLLECTIONNAMESTATIONS}' verbunden`);
-    tour_collection = db.collection(COLLECTIONNAMETOURS);
-    console.log(`Erfolgreich mit '${DBNAME}.${COLLECTIONNAMETOURS}' verbunden`);
+    db = CLIENT.db(DB_NAME);
+    station_collection = db.collection(COLLECTION_NAME_STATIONS);
+    console.log(`Erfolgreich mit '${DB_NAME}.${COLLECTION_NAME_STATIONS}' verbunden`);
+    tour_collection = db.collection(COLLECTION_NAME_TOURS);
+    console.log(`Erfolgreich mit '${DB_NAME}.${COLLECTION_NAME_TOURS}' verbunden`);
   }
-  catch (err)
-  {
+  catch (err) {
     console.log(err)
   }
 }
 
-initializeDB()
+initialize_DB()
 
 // ------------------- DB-Functions -------------------
 /**
@@ -49,13 +45,13 @@ initializeDB()
  * @param {*} item - Data to add to the DB.
  * @param {*} collection - DB Collection where the Data should be added to.
  */
-async function add_item(item, collection)
-{
+async function add_item(item, collection) {
   try {
-    const result = await collection.insertOne(item);
+    const RESULT = await collection.insertOne(item);
     console.log('Neues Element in die Datenbank eingefügt');
-    console.log('Eingefügte ID:', result.insertedId);
-  } catch (err) {
+    console.log('Eingefügte ID:', RESULT.insertedId);
+  } 
+  catch (err) {
     console.error('Fehler beim Einfügen des Elements in die Datenbank:', err);
   } 
 }
@@ -67,10 +63,11 @@ async function add_item(item, collection)
  */
 async function get_items(collection) {
   try {
-      const values = await collection.find({}).toArray();
+      const VALUES = await collection.find({}).toArray();
       console.log('Alle Werte der Collection abgerufen');
-      return values;
-    } catch (err) {
+      return VALUES;
+    } 
+    catch (err) {
       console.error('Fehler beim Abrufen der Werte aus der Collection:', err);
       return null;
     } 
@@ -83,11 +80,12 @@ async function get_items(collection) {
  */
 async function delete_item(id, collection) {
   try {
-    const result = await collection.deleteOne({ _id: new ObjectId(id) }); // Datensatz anhand der ID löschen
+    const RESULT = await collection.deleteOne({ _id: new ObjectId(id) }); // Datensatz anhand der ID löschen
 
-    if (result.deletedCount === 1) {
+    if (RESULT.deletedCount === 1) {
       return { message: 'Datensatz erfolgreich gelöscht' };
-    } else {
+    } 
+    else {
       return { message: 'Datensatz nicht gefunden' };
     }
   } catch (err) {
@@ -103,17 +101,33 @@ async function delete_item(id, collection) {
  */
 async function update_item(id, newData, collection) {
   try {
-    const result = await collection.updateOne(
-      { _id: new ObjectId(id) }, 
-      { $set: newData } 
-    );
+
+    // the collections need different kinds of updates
+    // TODO: @Tim: bitte erklären, warum
+    let result = null
+    if (collection === station_collection)
+    {
+      result = await collection.updateOne(
+        { _id: new ObjectId(id) }, 
+        { $set: newData.geojson } 
+      );
+    }
+    else if (collection === tour_collection)
+    {
+      result = await collection.updateOne(
+        { _id: new ObjectId(id) }, 
+        { $set: newData } 
+      );
+    }
 
     if (result.modifiedCount === 1) {
       return { message: 'Datensatz erfolgreich aktualisiert' };
-    } else {
+    } 
+    else {
       return { message: 'Datensatz nicht gefunden' };
     }
-  } catch (err) {
+  } 
+  catch (err) {
     console.error('Fehler beim Aktualisieren des Datensatzes:', err);
   }
 }
@@ -122,54 +136,71 @@ async function update_item(id, newData, collection) {
 // ------------------- Webserver-Routes: Station-Website -------------------
 
 // API calls generally do not want caching because the returned data may change
-ROUTER.use((_req, res, next) => {
+ROUTER.use(function(_req, res, next) {
   res.set('Cache-Control', 'no-store')
   next()
 })
 
 
-ROUTER.get('/stations', async function(_req, res)
-{
+ROUTER.get('/stations', async function(_req, res) {
   try {
-    const stations = await get_items(station_collection); 
+    const STATIONS = await get_items(station_collection); 
 
-    if (stations) {
-      res.json(stations); 
-    } else {
+    if (STATIONS) {
+      res.json(STATIONS); 
+    } 
+    else {
       res.status(404).json({ message: 'Keine Stationen gefunden' });
     }
-  } catch (err) {
+  } 
+  catch (err) {
     console.error('Fehler beim Abrufen der Stationen:', err);
     res.status(500).json({ message: 'Interner Serverfehler' });
   }
 })
 
 
-
-ROUTER.post('/add_station', function(req, res) {
-  add_item(req.body, station_collection);
-
-  res.send()
-});
-
-ROUTER.post('/upload_geojson_station', UPLOAD.single("file"), function(req, res) {
-
-  // Read the file from file system 
-  FS.readFile(req.file.path, 'utf8', function(err, data){
-    if (err) {
-      console.error(err);
-      return res.status(500).send('Beim Lesen der Datei is ein Fehler aufgetreten')
-    }
-    // Parse the file content to a JavaScript object
-    const FILE_CONTENT = JSON.parse(data);
-    
-    // add file content to DB
-    add_item(FILE_CONTENT, station_collection)
-    res.status(200).send({ success: true, message: 'Upload Completed!' })
+// added middleware to check whether the request-body matches the schema
+// For some unclear reasons the last validation chain "body('geometry.coordinates[0].*.*')..." has to be defined outside of the schema to work porperly
+ROUTER.post('/add_station', checkSchema(GEOJSON_ADD_SCHEMA, ['body']), 
+  body('geometry.coordinates[0].*.*')
+  .trim()
+  .notEmpty()
+  .withMessage("Die Koordinaten dürfen nicht leer sein!")
+  .custom(function(value) 
+  { 
+    // test if input is a valid float like "123.00", "123.x", "x.132"
+    return /\d+\.\d+/.test(parseFloat(value)) 
   })
+  .withMessage("Die Koordinate muss eine Gleitkommazahlen sein!"), function(req, res) {
   
-})
+  const RESULT = validationResult(req)
+  const ERRORS = RESULT.array()
+  console.log("valid errors", ERRORS)
+  console.log(req.body)
 
+  // request was invalid
+  if (ERRORS.length > 0)
+  {
+    let error_message = ""
+    for (const error of ERRORS)
+    {
+      error_message += `Im Wert '${error.value}' ist ein Fehler. Bitte beachte die Fehlernachricht: </br> "${error.msg}"`
+      if (ERRORS.length > 1)
+      {
+        error_message += "</br>"
+      }
+    }
+    
+    res.status(400).json({message: error_message})
+  }
+  else
+  {
+    add_item(req.body, station_collection);
+    res.status(200).json({message: "Alles ok."})
+  }
+  
+});
 
 ROUTER.post('/delete_station', function(req, res) {
   const ID = req.body.id;
@@ -178,30 +209,67 @@ ROUTER.post('/delete_station', function(req, res) {
 });
 
 
-ROUTER.post('/update_station', function(req, res) {
+ROUTER.post('/update_station', checkSchema(GEOJSON_UPDATE_SCHEMA, ['body']), 
+body('geometry.coordinates[0].*.*')
+.trim()
+.notEmpty()
+.withMessage("Die Koordinaten dürfen nicht leer sein!")
+.custom(function(value) 
+{ 
+  // test if input is a valid float like "123.00", "123.x", "x.132"
+  return /\d+\.\d+/.test(parseFloat(value)) 
+})
+.withMessage("Die Koordinate muss eine Gleitkommazahlen sein!"), function(req, res) {
+
+  // TODO: Hier Server valid und Response an den Client einbauen
   const ID = req.body.id;
-  let newData = {
+  let new_data = {
     geojson: req.body.geojson
-  };
-    
-    update_item(ID, newData, station_collection);
-    res.send()
+  }
+
+  const RESULT = validationResult(req)
+  const ERRORS = RESULT.array()
+  console.log("valid errors", ERRORS)
+  console.log("Request Body im Update route", req.body)
+
+  // request was invalid
+  if (ERRORS.length > 0)
+  {
+    let error_message = ""
+    for (const error of ERRORS)
+    {
+      error_message += `Im Wert '${error.value}' ist ein Fehler. Bitte beachte die Fehlernachricht: </br> "${error.msg}"`
+      if (ERRORS.length > 1)
+      {
+        error_message += "</br>"
+      }
+    }
+
+    res.status(400).json({message: error_message})
+  }
+  else
+  {
+    update_item(ID, newData, station_collection)
+    res.status(200).json({message: "Alles ok."})
+  }
+
 });
 
 // ------------------- Webserver-Routes: Tour-Website -------------------
 
 
-ROUTER.get('/tours', async function(_req, res)
-{
+ROUTER.get('/tours', async function(_req, res) {
   try {
-    const tours = await get_items(tour_collection); 
+    const TOURS = await get_items(tour_collection); 
 
-    if (tours) {
-      res.json(tours); 
-    } else {
+    if (TOURS) {
+      res.json(TOURS); 
+    } 
+    else {
       res.status(404).json({ message: 'Keine Touren gefunden' });
     }
-  } catch (err) {
+  } 
+  catch (err) {
     console.error('Fehler beim Abrufen der Touren:', err);
     res.status(500).json({ message: 'Interner Serverfehler' });
   }
@@ -223,11 +291,15 @@ ROUTER.post('/delete_tour', function(req, res) {
 
 ROUTER.post('/update_tour', function(req, res) {
   const ID = req.body.id;
-  let newData = {
-    stations: req.body.stations
+  let new_data = {
+    name: req.body.name,
+    stations: req.body.stations,
+    segments: req.body.segments,
+    instructions: req.body.instructions,
+    distance: req.body.distance
   };
     
-    update_item(ID, newData, tour_collection);
+    update_item(ID, new_data, tour_collection);
     res.send()
 });
 
@@ -241,35 +313,59 @@ const API_KEY = process.env.GRAPHHOPPER_API_KEY;
  * @param {} waypoints - Points which should be visited 
  * @returns {*} - Route as Object (see GRAPHHOPPER Documentation for more Information)
  */
-async function getRouting(waypoints){
-  //Prepare the Request-String for GRAPHHOPPER-API
-  const API_URL = `https://graphhopper.com/api/1/route?point=${waypoints.map(wp => `${wp.lat},${wp.lng}`).join('&point=')}&vehicle=bike&optimize="true"&points_encoded=false&key=${API_KEY}`;
-
+async function get_routing(waypoints) {
+  //Prepare the Request-String for GRAPHHOPPER-API (every waypoint has to be in api-request and the api_key of course)
+  const API_URL = construct_Graphhopper_URL(waypoints);
+  //actual request on GRAPHHOPPER-API
   try {
-      const response = await fetch(API_URL);
-      const DATA = await response.json();
+      const RESPONSE = await fetch(API_URL);
+      const DATA = await RESPONSE.json();
       return DATA;
-  } catch (error) {
+  } 
+  catch (error) {
       console.error('Fehler beim GRAPHHOPPER_API-Aufruf:', error);
       return null;
   }
 }
 
 ROUTER.post('/routing', async function(req, res) {
-  const waypoints = req.body.waypoints;
+  const WAYPOINTS = req.body.waypoints;
   try {
-    const route = await getRouting(waypoints); 
+    const ROUTE = await get_routing(WAYPOINTS); 
 
-    if (route) { 
-      res.json(route); 
-    } else {
+    if (ROUTE) { 
+      res.json(ROUTE); 
+    } 
+    else {
       res.status(404).json({ message: 'Keine Route gefunden' });
     }
-  } catch (err) {
+  } 
+  catch (err) {
     console.error('Fehler beim Routing einer Tour', err);
     res.status(500).json({ message: 'Interner Serverfehler' });
   }
  
 });
 
+/**
+ * Creates Request-URL for GRAPHHOPPER-API for a bicycle-tour
+ * @param {*} waypoints - Array of Points (Lat, Lng) which should be connected
+ * @returns {String} - GRAPHHOPPER-URL
+ */
+function construct_Graphhopper_URL(waypoints) {
+  const BASE_URL = "https://graphhopper.com/api/1/route";
+  //As the waypoints-Array can contain different amounts of points, it must be stringyfied outside the other PARAMS
+  const WAYPOINT_STRING = 'point=' + waypoints.map(wp => `${wp.lat},${wp.lng}`).join('&point=');
+  const PARAMS = {
+      vehicle: "bike",
+      optimize: true,
+      points_encoded: false,
+      key: API_KEY
+  };
+  const PARAM_STRING = Object.entries(PARAMS).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join("&");
+
+  return `${BASE_URL}?${WAYPOINT_STRING}&${PARAM_STRING}`;
+}
+
 module.exports = ROUTER;
+

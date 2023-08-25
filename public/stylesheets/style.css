@@ -8,9 +8,9 @@ a {
 }
 
 
-#map2 { height: 800px; }
+#tour_map { height: 600px; }
 
-#map1 { height: 100% }
+#map1 { height: 800px }
 
 .required:after {
   content:"*";

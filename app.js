@@ -8,6 +8,7 @@ let indexRouter = require('./routes/index');
 let stationsRouter = require('./routes/stations_route');
 let tourRouter = require('./routes/tour_route');
 let apiRouter = require('./routes/api');
+let impressumRouter = require('./routes/impressum');
 
 let app = express();
 
@@ -25,6 +26,7 @@ app.use('/', indexRouter);
 app.use('/api', apiRouter);
 app.use('/stationsverwaltung', stationsRouter)
 app.use('/tourverwaltung', tourRouter);
+app.use('/impressum', impressumRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
