@@ -79,7 +79,7 @@ block content
               .form-group 
                 label.fw-bold(for="textarea_geoJSON") GeoJSON eingeben
                 textarea#textarea_geoJSON.form-control(cols="30" rows="10" style='resize:none' name="textarea_geoJSON" placeholder='Gib hier die Stationsdaten vollständig im GeoJSON-Format an.' required)
-                .invalid-feedback Bitte füge eine GeoJSON in das Feld ein.
+                #invalid_feedback_geojson.invalid-feedback 
             hr.hr
             .row.justify-content-center
               button#submit_geojson_textarea_form.btn.btn-primary.m-1(type='button') Daten absenden
@@ -94,9 +94,9 @@ block content
             .row.justify-content-center
               .form-group
                 label.fw-bold(for='file_upload_geoJSON') GeoJSON-Datei hochladen
-                input#file_upload_geoJSON.form-control(type='file' accept="application/JSON, .json" required)
-                .invalid-feedback Bitte lade eine korrekte GeoJSON-Datei hoch.
-                textarea#hidden_geojson_data_from_upload.form-control(style="display:none" name="hidden_geojson_data_from_from_upload" required)
+                input#file_upload_geoJSON.form-control(type='file' accept="application/JSON, .json")
+                #invalid_feedback_fileupload_geojson.invalid-feedback 
+                textarea#hidden_geojson_data_from_upload.form-control(style="display:none" name="hidden_geojson_data_from_from_upload")
             hr.hr
             .row.justify-content-center
               button#submit_geojson_upload_form.btn.btn-primary.m-1(type='button') Daten absenden
@@ -118,10 +118,15 @@ block content
           h5.modal-title Station bearbeiten
           button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
         .modal-body(align="center")
-          textarea#update_stationGeoJSON(rows='25' cols='45' style='resize:none')
+          form#update_station_form.container.needs-validation(novalidate)
+            .row.justify-content-center
+              .form-group 
+                label.fw-bold(for="update_stationGeoJSON") GeoJSON bearbeiten
+                textarea#update_stationGeoJSON(rows='25' cols='45' style='resize:none')
+                #invalid_feedback_update_geojson.invalid-feedback
         .modal-footer
           button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen
-          button#update_station.btn.btn-primary(type="button" data-bs-dismiss='modal') Aktualisieren
+          button#update_station.btn.btn-primary(type="button") Aktualisieren
 
   #sample_geojson_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
     .modal-dialog.modal-dialog-centered(role='document')

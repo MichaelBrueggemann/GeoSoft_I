@@ -14,10 +14,10 @@ function is_geojson(object)
     }  
 
     // Check if the "type" is "Feature" as it should be for GeoJSON
-    if (object.type !== 'Feature') 
-    {
-        return false
-    }
+    // if (object.type !== 'Feature') 
+    // {
+    //     return false
+    // }
 
     // check if the mandatory properties exists and are not-empty strings
     if (!(object.properties.hasOwnProperty('name') && object.properties.name !== "" && object.properties.hasOwnProperty('description') && object.properties.description !== ""))
@@ -119,7 +119,9 @@ function prepare_map_form(map, drawnItems, drawControl)
     })
 
     // submit_map_form button
-    document.getElementById("submit_map_form").addEventListener("click", function(event)
+    /* This Form only has client side error responses, as the Leaflet Functions take care of providing valid geojson Data. 
+    The whole request body taht is send to the server via this form is still server site checked*/
+    document.getElementById("submit_map_form").addEventListener("click", async function(event)
     {
         event.preventDefault()
 
@@ -152,7 +154,7 @@ function prepare_map_form(map, drawnItems, drawControl)
 
             // send data to API
             add_new_station(request_body)
-
+            
             MAP_FORM.reset()
 
             // resets all elements drawn with the draw-tool
@@ -200,65 +202,86 @@ function prepare_geojson_textarea_form()
         enter_add_station_mode("textarea")
     })
 
+    let textarea_geojson = document.getElementById("textarea_geoJSON")
+
     // validate textarea_geoJSON control element
-    document.getElementById("textarea_geoJSON").addEventListener("input", function()
-    {
-        let value_of_geojson_textarea = this.value
+    // document.getElementById("textarea_geoJSON").addEventListener("input", function()
+    // {
+    //     let value_of_geojson_textarea = this.value
 
-        let geojson = {}
+    //     let geojson = {}
 
-        try 
-        {
-            geojson = JSON.parse(value_of_geojson_textarea)
-        } 
-        catch (error) 
-        {
-            // console.log("Keine GeoJSON eingegeben: ", error)
-        }
-        // if the input isn't a correct GeoJSON
-        if (!is_geojson(geojson))
-        {
-            // invalidate textarea for later validation via HTML constraint validation API
-            this.setCustomValidity("noGeoJSON")
-        }
-        else
-        {
-            // reset, to prevent wrong validation results
-            this.setCustomValidity("")
-        }
-    })
+    //     try 
+    //     {
+    //         geojson = JSON.parse(value_of_geojson_textarea)
+    //     } 
+    //     catch (error) 
+    //     {
+    //         // console.log("Keine GeoJSON eingegeben: ", error)
+    //     }
+    //     // if the input isn't a correct GeoJSON
+    //     if (!is_geojson(geojson))
+    //     {
+    //         // invalidate textarea for later validation via HTML constraint validation API
+    //         this.setCustomValidity("noGeoJSON")
+    //     }
+    //     else
+    //     {
+    //         // reset, to prevent wrong validation results
+    //         this.setCustomValidity("")
+    //     }
+    // })
 
     // submit_geojson_textarea_form button
-    document.getElementById("submit_geojson_textarea_form").addEventListener("click", function(event)
+    document.getElementById("submit_geojson_textarea_form").addEventListener("click", async function(event)
     {
-        if (!GEOJSON_TEXTAREA_FORM.checkValidity())
+        // if (!GEOJSON_TEXTAREA_FORM.checkValidity())
+        // {
+        //     event.preventDefault()
+
+        //     // add bootstrap css-class for styling of the error messages
+        //     GEOJSON_TEXTAREA_FORM.classList.add("was-validated")
+        // }
+        // else
         {
             event.preventDefault()
 
             // add bootstrap css-class for styling of the error messages
-            GEOJSON_TEXTAREA_FORM.classList.add("was-validated")
-        }
-        else
-        {
-            event.preventDefault()
+            //GEOJSON_TEXTAREA_FORM.classList.add("was-validated")
 
-            // add bootstrap css-class for styling of the error messages
-            GEOJSON_TEXTAREA_FORM.classList.add("was-validated")
-
-            let textarea_geojson = document.getElementById("textarea_geoJSON")
-
+            
             try 
             {
                 // parse body from form
                 let request_body = JSON.parse(textarea_geojson.value)
                 
                 // send data to API
-                add_new_station(request_body)
+                let result = await add_new_station(request_body)
+                
+                // result is not "ok" when an HTTP Error occurs (Errorcode > 299)
+                if (!result.ok) 
+                {
+                    let json_result = await result.json()
+                    
+                    // add CSS-class to enable custom styling
+                    textarea_geojson.classList.add("is-invalid")
 
-                GEOJSON_TEXTAREA_FORM.reset()
+                    // add error message from the server to the designated field
+                    document.getElementById("invalid_feedback_geojson").innerHTML = json_result.message
+                }
+                else
+                {
+                    GEOJSON_TEXTAREA_FORM.reset()
 
-                // hide coressponding form element
-                leave_add_station_mode(GEOJSON_TEXTAREA_FORM)
+                    if (textarea_geojson.classList.contains("is-invalid"))
+                    {
+                        textarea_geojson.classList.remove("is-invalid")
+                    }
+                    // hide coressponding form element
+                    leave_add_station_mode(GEOJSON_TEXTAREA_FORM)
+                }
+
+                
             } 
             catch (error) 
             {
@@ -273,6 +296,11 @@ function prepare_geojson_textarea_form()
     {
         // reset form
         GEOJSON_TEXTAREA_FORM.reset()
+
+        if (textarea_geojson.classList.contains("is-invalid"))
+        {
+            textarea_geojson.classList.remove("is-invalid")
+        }
 
         // hide coressponding form element
         leave_add_station_mode(GEOJSON_TEXTAREA_FORM)
@@ -370,6 +398,7 @@ function prepare_geojson_upload_form()
     prepare_geojson_file_upload()
 
     const GEOJSON_UPLOAD_FORM = document.getElementById("geojson_upload_form")
+    const GEOJSON_FILE_UPLOAD = document.getElementById("file_upload_geoJSON")
 
     // open_geojson_upload_form button
     document.getElementById("open_geojson_upload_form").addEventListener("click", function()
@@ -399,22 +428,19 @@ function prepare_geojson_upload_form()
     }
 
     // submit_geojson_upload_form button
-    document.getElementById("submit_geojson_upload_form").addEventListener("click", function(event)
+    document.getElementById("submit_geojson_upload_form").addEventListener("click", async function(event)
     {
         
-        if (!GEOJSON_UPLOAD_FORM.checkValidity())
+        // if (!GEOJSON_UPLOAD_FORM.checkValidity())
+        // {
+        //     event.preventDefault()
+
+        //     // add bootstrap css-class for styling of the error messages
+        //     GEOJSON_UPLOAD_FORM.classList.add("was-validated")
+        // }
+        // else
         {
             event.preventDefault()
-
-            // add bootstrap css-class for styling of the error messages
-            GEOJSON_UPLOAD_FORM.classList.add("was-validated")
-        }
-        else
-        {
-            event.preventDefault()
-
-            // add bootstrap css-class for styling of the error messages
-            GEOJSON_UPLOAD_FORM.classList.add("was-validated")
            
             let upload_form_data = document.getElementById("hidden_geojson_data_from_upload")
     
@@ -423,15 +449,34 @@ function prepare_geojson_upload_form()
                 let request_body = JSON.parse(upload_form_data.value)  
                 
                 // send data to API
-                add_new_station(request_body)
+                let result = await add_new_station(request_body)
         
-                GEOJSON_UPLOAD_FORM.reset()
+                if (!result.ok) 
+                {
+                    let json_result = await result.json()
+                    
+                    // add CSS-class to enable custom styling
+                    GEOJSON_FILE_UPLOAD.classList.add("is-invalid")
 
-                // restore sample data after reset
-                document.getElementById("sample_geojson").value = JSON.stringify(sample_geojson, null, 2)
-        
-                // hide coressponding form element
-                leave_add_station_mode(GEOJSON_UPLOAD_FORM)
+                    // add error message from the server to the designated field
+                    document.getElementById("invalid_feedback_fileupload_geojson").innerHTML = json_result.message
+                }
+                else
+                {
+                    GEOJSON_UPLOAD_FORM.reset()
+
+                    if (GEOJSON_FILE_UPLOAD.classList.contains("is-invalid"))
+                    {
+                        GEOJSON_FILE_UPLOAD.classList.remove("is-invalid")
+                    }
+
+                    // restore sample data after reset
+                    document.getElementById("sample_geojson").value = JSON.stringify(sample_geojson, null, 2)
+            
+                    // hide coressponding form element
+                    leave_add_station_mode(GEOJSON_UPLOAD_FORM)
+                }
+                
             } 
             catch (error) 
             {
@@ -446,6 +491,12 @@ function prepare_geojson_upload_form()
     {
         // reset file upload area
         document.getElementById("file_upload_geoJSON").value = ""
+
+
+        if (GEOJSON_FILE_UPLOAD.classList.contains("is-invalid"))
+        {
+            GEOJSON_FILE_UPLOAD.classList.remove("is-invalid")
+        }
 
         // hide coressponding form element
         leave_add_station_mode(GEOJSON_UPLOAD_FORM)
@@ -470,3 +521,53 @@ export function prepare_form_buttons(map, drawnItems, drawControl)
     
     prepare_geojson_upload_form()
 }
+
+
+// Testing
+let correct_station = {
+    "type": "Feature",
+    "properties": {
+      "name": "Korrekte Station",
+      "description": "Das ist der Prinzipalmarkt",
+      "url": "https://de.wikipedia.org/wiki/Prinzipalmarkt"
+    },
+    "geometry": {
+      "coordinates": [
+        7.628199238097352,
+        51.962239849033296
+      ],
+      "type": "Point"
+    }
+  }
+
+let incorrect_station = {
+    "type": "Feature",
+    "properties": {
+        "name": "Test",
+        "description": "Test",
+        "url": "https://de.wikipedia.org/wiki/Prinzipalmarkt"
+      },
+    "geometry": {
+      "coordinates": [
+        [
+          [
+            "7579708",
+            "51.99079"
+          ],
+          [
+            "7.593269",
+            "51.992481"
+          ],
+          [
+            "7.579536",
+            "51.996497"
+          ],
+          [
+            "7.579708",
+            "51.99079"
+          ]
+        ]
+      ],
+      "type": "Polygon"
+    }
+  }
