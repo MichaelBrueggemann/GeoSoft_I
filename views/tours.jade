@@ -6,23 +6,29 @@ block scripts
     link(rel='stylesheet' href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css' integrity='sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H' crossorigin='anonymous')
     // external scripts
     // Leaflet
-    script(src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js' integrity='sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH' crossorigin='anonymous' defer='')
+    script(src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js' integrity='sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH' crossorigin='anonymous' defer)
   
     // internal scripts
-    script(src='/javascripts/tours.js' defer='')
+    script(src='/javascripts/tours.js' defer)
 
 block content
     h1= title
-    p Auf dieser Seite kannst du die aktuell geladenen Stationen ansehen und diese zu Touren verknüpfen. WEITERE HINWEISE HINZUFÜGEN (inkl. Hinweis auf GRAPHHOPPER)!
+    p Auf dieser Seite kannst du die aktuell geladenen Stationen ansehen und diese zu Touren verknüpfen. Anschließend können sie auf dieser Seite verwaltet werden. Die Touren werden mittels der GRAPHHOPPER-API erstellt.
     
     .container-fluid 
         .row 
             .col-sm-12.col-md-8
-                #map2
+                #tour_map
             .col-sm-12.col-md-4(style="display: none")#station_div
-                table(width="100%")#selectedStation_table
+                form
+                    .form-group
+                        label.font-weight-bold(for='tourname') Tourname:
+                        input#tour_name.form-control(type='tourname' aria-describedby='tour_name_help' placeholder='Hier Tournamen einfügen')
+                        small#tour_name_help.form-text.text-muted Kein Pflichtfeld, eine möglichst eindeutige Eingabe wird aber dringenst empfohlen
+
+                table(width="100%")#selected_station_table
                     thead
-                        th ausgewählte Stationen
+                        th ausgewählte Stationen:
                     tbody
                 button#cancel(type='button') Abbrechen
                 button#calculate_tour(type="button") Tour berechnen
@@ -30,30 +36,41 @@ block content
     button#new_tour(type="button", style="display: block") neue Tour anlegen
     
     .container-fluid(style="display: block")#tour_div
-        table(width="100%")#tour_table
+        table(width="100%")#tour_table.table.table-striped.table-hover
             thead
-                th ID
-                th(align="center") Aktionen
+                th(scope="col") Name
+                th(style="text-align:center" scope="col") Aktionen
             tbody 
     #tour_information_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
         .modal-dialog.modal-dialog-centered(role='document')
             .modal-content
                 .modal-header
                     h5.modal-title Tour-Informationen
-                    button.close(type='button' data-dismiss='modal' aria-label='Close')
+                    button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
                         span(aria-hidden='true') ×
                 .modal-body(align="center")
-                    #infoText
+                    #info_text
                 .modal-footer
-                    button.btn.btn-secondary(type='button' data-dismiss='modal') Schließen
+                    button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen
     #routing_error_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
         .modal-dialog.modal-dialog-centered(role='document')
             .modal-content
                 .modal-header
                     h5.modal-title Route konnte nicht berechnet werden
-                    button.close(type='button' data-dismiss='modal' aria-label='Close')
+                    button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
                         span(aria-hidden='true') ×
                 .modal-body(align="center")
-                    #errorstatement
+                    #error_statement
                 .modal-footer
-                    button.btn.btn-secondary(type='button' data-dismiss='modal') Schließen
+                    button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen
+    #station_selection_help.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
+        .modal-dialog.modal-dialog-centered(role='document')
+            .modal-content
+                .modal-header
+                    h5.modal-title Stationsauswahl - Hilfe
+                    button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
+                        span(aria-hidden='true') ×
+                .modal-body(align="center")
+                    #help_text
+                .modal-footer
+                    button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen

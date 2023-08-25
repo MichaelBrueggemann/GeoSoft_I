@@ -1,7 +1,7 @@
 const EXPRESS = require('express');
 const ROUTER = EXPRESS.Router();
 
-/* GET Routenverwaltung. */
+/* GET Tourverwaltung. */
 ROUTER.get('/', function(_req, res, _next) {
   res.render('tours', { title: 'Tourverwaltung' });
 });
