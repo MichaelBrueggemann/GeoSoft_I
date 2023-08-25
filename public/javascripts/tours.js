@@ -486,8 +486,8 @@ function calculate_centroid(polygon) {
     let sum_lat = 0;
     let sum_lng = 0;
     for(const VERTEX of VERTICES) {
-        sum_lat += VERTEX[1];
-        sum_lng += VERTEX[0];
+        sum_lat += parseFloat(VERTEX[1]);
+        sum_lng += parseFloat(VERTEX[0]);
     }
     const CENTROID_LAT = sum_lat / VERTICES.length;
     const CENTROID_LNG = sum_lng / VERTICES.length;
