@@ -103,7 +103,6 @@ async function update_item(id, newData, collection) {
   try {
 
     // the collections need different kinds of updates
-    // TODO: @Tim: bitte erklären, warum
     let result = null
     if (collection === station_collection)
     {
@@ -221,7 +220,6 @@ body('geometry.coordinates[0].*.*')
 })
 .withMessage("Die Koordinate muss eine Gleitkommazahlen sein!"), function(req, res) {
 
-  // TODO: Hier Server valid und Response an den Client einbauen
   const ID = req.body.id;
   let new_data = {
     geojson: req.body.geojson
@@ -249,7 +247,7 @@ body('geometry.coordinates[0].*.*')
   }
   else
   {
-    update_item(ID, newData, station_collection)
+    update_item(ID, new_data, station_collection)
     res.status(200).json({message: "Alles ok."})
   }
 
