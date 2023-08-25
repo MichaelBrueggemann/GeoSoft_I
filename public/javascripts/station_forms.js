@@ -160,6 +160,9 @@ function prepare_map_form(map, drawnItems, drawControl)
             // resets all elements drawn with the draw-tool
             drawnItems.clearLayers() 
 
+            // deactivate draw control on map
+            map.removeControl(drawControl)
+
             // hide coressponding form element
             leave_add_station_mode(MAP_FORM)
         }
