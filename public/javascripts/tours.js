@@ -148,11 +148,17 @@ async function update_table() {
                     let tour_layer = L.featureGroup().addTo(map);
                     //each toursegment gets his own Popup (inkl. distance)
                     segments.forEach(function(segment) {
-                        let polyline = L.polyline(segment).addTo(tour_layer);
+                        let polyline = L.polyline(segment, {color: 'cadetblue', weight: 4}).addTo(tour_layer);
                         polyline.bindPopup("ca. " + Math.round(segment_distances[i]).toString() + "m");
                         i++;
-                        polyline.on("mouseover", function(event) {polyline.openPopup();});
-                        polyline.on("mouseout", function(event) {polyline.closePopup();});
+                        polyline.on("mouseover", function(event) {
+                            polyline.openPopup();
+                            polyline.setStyle({color: 'purple', weight: 7});
+                        });
+                        polyline.on("mouseout", function(event) {
+                            polyline.closePopup();
+                            polyline.setStyle({color: 'cadetblue', weight: 4});
+                        });
                     });
                     //Zoom on selected tour
                     map.fitBounds(tour_layer.getBounds());
