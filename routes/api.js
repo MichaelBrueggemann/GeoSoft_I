@@ -5,14 +5,15 @@ const { GEOJSON_ADD_SCHEMA, GEOJSON_UPDATE_SCHEMA } = require("../express_valida
 const EXPRESS = require('express');
 const ROUTER = EXPRESS.Router();
 const DOTENV = require('dotenv');
+const URL = require('url');
 const { body, checkSchema, validationResult } = require('express-validator')
 
 // --------------- DATABASE INITIALIZATION ---------------
 
 const { ObjectId } = require('mongodb');
 const MONGO_CLIENT = require('mongodb').MongoClient;
-const URL = 'mongodb://127.0.0.1:/3000'; // connection URL
-const CLIENT = new MONGO_CLIENT(URL); // mongodb client
+const DB_URL = 'mongodb://127.0.0.1:/3000'; // connection URL
+const CLIENT = new MONGO_CLIENT(DB_URL); // mongodb client
 const DB_NAME = 'mydatabase'; // database name
 const COLLECTION_NAME_TOURS = 'touren'; // collection name
 const COLLECTION_NAME_STATIONS = 'stations'; // collection name
@@ -353,18 +354,25 @@ ROUTER.post('/routing', async function(req, res) {
  * @returns {String} - GRAPHHOPPER-URL
  */
 function construct_Graphhopper_URL(waypoints) {
+  //create URL with protokoll, domain and path
   const BASE_URL = "https://graphhopper.com/api/1/route";
-  //As the waypoints-Array can contain different amounts of points, it must be stringyfied outside the other PARAMS
-  const WAYPOINT_STRING = 'point=' + waypoints.map(wp => `${wp.lat},${wp.lng}`).join('&point=');
-  const PARAMS = {
-      vehicle: "bike",
-      optimize: true,
-      points_encoded: false,
-      key: API_KEY
-  };
-  const PARAM_STRING = Object.entries(PARAMS).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join("&");
-
-  return `${BASE_URL}?${WAYPOINT_STRING}&${PARAM_STRING}`;
+  let url = new URL.URL(BASE_URL);
+  //Routing should be for bicycles
+  url.searchParams.set("vehicle", "bike");
+  //The order in which the stations should be visited is not important, so can be optimized
+  url.searchParams.set("optimize", true);
+  //its easyer to work with the result if its decoded
+  url.searchParams.set("points_encoded", false);
+  //The API_KEY is required
+  url.searchParams.set("key", API_KEY);
+  //Every waypoint has to be added to the request-url
+  for(let waypoint of waypoints){
+    let lat = waypoint.lat;
+    let lng = waypoint.lng;
+    let point_string = lat.toString() +',' + lng.toString();
+    url.searchParams.append("point", point_string);
+  }
+  return url;
 }
 
 module.exports = ROUTER;
