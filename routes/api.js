@@ -1,12 +1,11 @@
 "use strict"
 
+const { GEOJSON_ADD_SCHEMA, GEOJSON_UPDATE_SCHEMA } = require("../express_validator_schemes/geojson_schema")
+
 const EXPRESS = require('express');
 const ROUTER = EXPRESS.Router();
 const DOTENV = require('dotenv');
-const MULTER  = require('multer')
-const UPLOAD = MULTER({ dest: '../public/data/uploads' }) // store files send to the API and make them accessible
-const FS = require('fs') // Read files from the file system
-
+const { body, checkSchema, validationResult } = require('express-validator')
 
 // --------------- DATABASE INITIALIZATION ---------------
 
@@ -102,12 +101,26 @@ async function delete_item(id, collection) {
  */
 async function update_item(id, newData, collection) {
   try {
-    const RESULT = await collection.updateOne(
-      { _id: new ObjectId(id) }, 
-      { $set: newData } 
-    );
 
-    if (RESULT.modifiedCount === 1) {
+    // the collections need different kinds of updates
+    // TODO: @Tim: bitte erklären, warum
+    let result = null
+    if (collection === station_collection)
+    {
+      result = await collection.updateOne(
+        { _id: new ObjectId(id) }, 
+        { $set: newData.geojson } 
+      );
+    }
+    else if (collection === tour_collection)
+    {
+      result = await collection.updateOne(
+        { _id: new ObjectId(id) }, 
+        { $set: newData } 
+      );
+    }
+
+    if (result.modifiedCount === 1) {
       return { message: 'Datensatz erfolgreich aktualisiert' };
     } 
     else {
@@ -147,31 +160,47 @@ ROUTER.get('/stations', async function(_req, res) {
 })
 
 
-
-ROUTER.post('/add_station', function(req, res) {
-  add_item(req.body, station_collection);
-
-  res.send()
-});
-
-ROUTER.post('/upload_geojson_station', UPLOAD.single("file"), function(req, res) {
-
-  // Read the file from file system 
-  FS.readFile(req.file.path, 'utf8', function(err, data) {
-    if (err) {
-      console.error(err);
-      return res.status(500).send('Beim Lesen der Datei is ein Fehler aufgetreten')
-    }
-    // Parse the file content to a JavaScript object
-    const FILE_CONTENT = JSON.parse(data);
-    
-    // add file content to DB
-    add_item(FILE_CONTENT, station_collection)
-    res.status(200).send({ success: true, message: 'Upload Completed!' })
+// added middleware to check whether the request-body matches the schema
+// For some unclear reasons the last validation chain "body('geometry.coordinates[0].*.*')..." has to be defined outside of the schema to work porperly
+ROUTER.post('/add_station', checkSchema(GEOJSON_ADD_SCHEMA, ['body']), 
+  body('geometry.coordinates[0].*.*')
+  .trim()
+  .notEmpty()
+  .withMessage("Die Koordinaten dürfen nicht leer sein!")
+  .custom(function(value) 
+  { 
+    // test if input is a valid float like "123.00", "123.x", "x.132"
+    return /\d+\.\d+/.test(parseFloat(value)) 
   })
+  .withMessage("Die Koordinate muss eine Gleitkommazahlen sein!"), function(req, res) {
   
-})
+  const RESULT = validationResult(req)
+  const ERRORS = RESULT.array()
+  console.log("valid errors", ERRORS)
+  console.log(req.body)
 
+  // request was invalid
+  if (ERRORS.length > 0)
+  {
+    let error_message = ""
+    for (const error of ERRORS)
+    {
+      error_message += `Im Wert '${error.value}' ist ein Fehler. Bitte beachte die Fehlernachricht: </br> "${error.msg}"`
+      if (ERRORS.length > 1)
+      {
+        error_message += "</br>"
+      }
+    }
+    
+    res.status(400).json({message: error_message})
+  }
+  else
+  {
+    add_item(req.body, station_collection);
+    res.status(200).json({message: "Alles ok."})
+  }
+  
+});
 
 ROUTER.post('/delete_station', function(req, res) {
   const ID = req.body.id;
@@ -180,14 +209,50 @@ ROUTER.post('/delete_station', function(req, res) {
 });
 
 
-ROUTER.post('/update_station', function(req, res) {
+ROUTER.post('/update_station', checkSchema(GEOJSON_UPDATE_SCHEMA, ['body']), 
+body('geometry.coordinates[0].*.*')
+.trim()
+.notEmpty()
+.withMessage("Die Koordinaten dürfen nicht leer sein!")
+.custom(function(value) 
+{ 
+  // test if input is a valid float like "123.00", "123.x", "x.132"
+  return /\d+\.\d+/.test(parseFloat(value)) 
+})
+.withMessage("Die Koordinate muss eine Gleitkommazahlen sein!"), function(req, res) {
+
+  // TODO: Hier Server valid und Response an den Client einbauen
   const ID = req.body.id;
   let new_data = {
     geojson: req.body.geojson
-  };
-    
-    update_item(ID, new_data, station_collection);
-    res.send()
+  }
+
+  const RESULT = validationResult(req)
+  const ERRORS = RESULT.array()
+  console.log("valid errors", ERRORS)
+  console.log("Request Body im Update route", req.body)
+
+  // request was invalid
+  if (ERRORS.length > 0)
+  {
+    let error_message = ""
+    for (const error of ERRORS)
+    {
+      error_message += `Im Wert '${error.value}' ist ein Fehler. Bitte beachte die Fehlernachricht: </br> "${error.msg}"`
+      if (ERRORS.length > 1)
+      {
+        error_message += "</br>"
+      }
+    }
+
+    res.status(400).json({message: error_message})
+  }
+  else
+  {
+    update_item(ID, newData, station_collection)
+    res.status(200).json({message: "Alles ok."})
+  }
+
 });
 
 // ------------------- Webserver-Routes: Tour-Website -------------------
