@@ -191,12 +191,12 @@ ROUTER.post('/add_station', checkSchema(GEOJSON_ADD_SCHEMA, ['body']),
       }
     }
     
-    res.status(400).json({message: error_message})
+    res.status(400).json({error: error_message})
   }
   else
   {
     add_item(req.body, station_collection);
-    res.status(200).json({message: "Alles ok."})
+    res.status(200).json({error: "Alles ok."})
   }
   
 });
@@ -243,12 +243,12 @@ body('geometry.coordinates[0].*.*')
       }
     }
 
-    res.status(400).json({message: error_message})
+    res.status(400).json({error: error_message})
   }
   else
   {
     update_item(ID, new_data, station_collection)
-    res.status(200).json({message: "Alles ok."})
+    res.status(200).json({error: "Alles ok."})
   }
 
 });

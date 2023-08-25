@@ -147,18 +147,54 @@ function prepare_map_form(map, drawnItems, drawControl)
             }
 
             // send data to API
-            add_new_station(request_body)
+            let result = await add_new_station(request_body)
             
-            MAP_FORM.reset()
+            if (!result.ok) 
+            {
+                let json_result = await result.json()
+                
+                if (json_result.error.path === 'properties.name')
+                {
+                    // add CSS-class to enable custom styling
+                    document.getElementById("input_name").classList.add("is-invalid")
+                }
 
-            // resets all elements drawn with the draw-tool
-            drawnItems.clearLayers() 
+                if (json_result.error.path === 'properties.description')
+                {
+                    // add CSS-class to enable custom styling
+                    document.getElementById("input_description").classList.add("is-invalid")
+                }
 
-            // deactivate draw control on map
-            map.removeControl(drawControl)
+                if (json_result.error.path === 'properties.url')
+                {
+                    // add CSS-class to enable custom styling
+                    document.getElementById("input_url").classList.add("is-invalid")
+                }
 
-            // hide coressponding form element
-            leave_add_station_mode(MAP_FORM)
+                
+
+                // add error message from the server to the designated field
+                document.getElementById("invalid_feedback_geojson").innerHTML = json_result.message
+            }
+            else
+            {
+                MAP_FORM.reset()
+
+                // TODO: Hier einmal in allen kontrollelementen des Forms die CSS-Klasse entfernen
+                // if (textarea_geojson.classList.contains("is-invalid"))
+                // {
+                //     textarea_geojson.classList.remove("is-invalid")
+                // }
+
+                // resets all elements drawn with the draw-tool
+                drawnItems.clearLayers()
+
+                // deactivate draw control on map
+                map.removeControl(drawControl)
+
+                // hide coressponding form element
+                leave_add_station_mode(MAP_FORM)
+            }
         }
     })
 
@@ -223,7 +259,7 @@ function prepare_geojson_textarea_form()
                     textarea_geojson.classList.add("is-invalid")
 
                     // add error message from the server to the designated field
-                    document.getElementById("invalid_feedback_geojson").innerHTML = json_result.message
+                    document.getElementById("invalid_feedback_geojson").innerHTML = json_result.error
                 }
                 else
                 {
@@ -405,7 +441,7 @@ function prepare_geojson_upload_form()
                     GEOJSON_FILE_UPLOAD.classList.add("is-invalid")
 
                     // add error message from the server to the designated field
-                    document.getElementById("invalid_feedback_fileupload_geojson").innerHTML = json_result.message
+                    document.getElementById("invalid_feedback_fileupload_geojson").innerHTML = json_result.error
                 }
                 else
                 {
