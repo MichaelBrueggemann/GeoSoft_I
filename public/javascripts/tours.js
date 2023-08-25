@@ -184,6 +184,8 @@ async function update_table() {
             
             //Tell user instructions how to follow the tour
             info_text += "<br><br><strong>Anleitung zur Tour:</strong>"
+            info_text += "<br><div style='border:1px'>Diese Instruktionen kommen direkt von GRAPHHOPPER und sind somit leider nur auf englisch verfügbar.</div>"
+
             instructions.forEach(function(instruction) {
                 if(instruction.text.startsWith("Waypoint")) {
                     info_text += "<br><strong>You arrived at one station</strong>";
@@ -195,8 +197,6 @@ async function update_table() {
                     info_text += "<br>" + instruction.text + " and follow the path for " + Math.round(instruction.distance) + " metres";
                 }
             })
-            info_text += "<br>Diese Instruktionen kommen direkt von GRAPHHOPPER und sind somit leider nur auf englisch verfügbar."
-
             //Overall distance of tour
             info_text+="<br><br><strong>Gesamtlänge</strong>: "
             info_text+= distance + "m";
@@ -451,7 +451,7 @@ UPDATE_BUTTON.addEventListener("click", async function() {
     if (route.hasOwnProperty("message")) {
         $('#routing_error_popup').modal('show');
         let error_statement = "Leider konnte mit den ausgewählten Stationen keine Tour erstellt werden. <br>";
-        error_statement += "Dies könnte beispielsweise daran liegen, dass eine falsche Anzahl von Stationen ausgewählt wurde (min. 2) oder die Stationen nicht via Fahhrad zu verbinden sind. <br>";
+        error_statement += "Dies könnte beispielsweise daran liegen, dass eine falsche Anzahl von Stationen ausgewählt wurde (min. 2) oder die Stationen nicht via Fahrrad zu verbinden sind. <br>";
         error_statement += "Aber auch andere Fehler können auftreten und wir bitten um Entschuldigung, dass es nicht geklappt hat. <br>";
         error_statement += "<br><br>Bitte überprüfen Sie ihre aktuelle Stationenauswahl und versuchen Sie es erneut."
         document.getElementById("error_statement").innerHTML = error_statement;
