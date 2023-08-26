@@ -130,7 +130,7 @@ function prepare_map_form(map, drawnItems, drawControl)
         else
         {
             // add bootstrap css-class for styling of the error messages
-            MAP_FORM.classList.add("was-validated")
+            //MAP_FORM.classList.add("was-validated")
 
             let formData = new FormData(MAP_FORM)
         
@@ -153,34 +153,43 @@ function prepare_map_form(map, drawnItems, drawControl)
             {
                 let json_result = await result.json()
                 
+                console.log(result)
+
+                /* NOTE: Funktioniert noch nicht. Die Idee ist dass der Server pro Feld ein Fehlerobjekt zurückgibt (muss noch definiert werden). 
+                NOTE: Der Client prüft dann welche der ihm bekannten Felder im Fehlerobjekt auftauchen und konstruiert dementsprechende die Fehlernachricht. 
+                NOTE: Taucht ein Feld öfter auf, so wird der nächste Fehler an die passende Nachricht angehangen. */
                 if (json_result.error.path === 'properties.name')
                 {
                     // add CSS-class to enable custom styling
                     document.getElementById("input_name").classList.add("is-invalid")
+
+                    // add error message from the server to the designated field
+                    document.getElementById("invalid_feedback_name").innerHTML = json_result.error_message
                 }
 
                 if (json_result.error.path === 'properties.description')
                 {
                     // add CSS-class to enable custom styling
                     document.getElementById("input_description").classList.add("is-invalid")
+
+                    // add error message from the server to the designated field
+                    document.getElementById("invalid_feedback_description").innerHTML = json_result.error_message
                 }
 
                 if (json_result.error.path === 'properties.url')
                 {
                     // add CSS-class to enable custom styling
                     document.getElementById("input_url").classList.add("is-invalid")
-                }
 
-                
-
-                // add error message from the server to the designated field
-                document.getElementById("invalid_feedback_geojson").innerHTML = json_result.message
+                    // add error message from the server to the designated field
+                    document.getElementById("invalid_feedback_url").innerHTML = json_result.error_message
+                }    
             }
             else
             {
                 MAP_FORM.reset()
 
-                // TODO: Hier einmal in allen kontrollelementen des Forms die CSS-Klasse entfernen
+                // TODO: Hier einmal in allen kontrollelementen des Forms die CSS-Klasse entfernen, damit das Styling durch den Server und nicht durch den Client vorgenommen werden kann.
                 // if (textarea_geojson.classList.contains("is-invalid"))
                 // {
                 //     textarea_geojson.classList.remove("is-invalid")
@@ -259,7 +268,7 @@ function prepare_geojson_textarea_form()
                     textarea_geojson.classList.add("is-invalid")
 
                     // add error message from the server to the designated field
-                    document.getElementById("invalid_feedback_geojson").innerHTML = json_result.error
+                    document.getElementById("invalid_feedback_geojson").innerHTML = json_result.error_message
                 }
                 else
                 {
@@ -441,7 +450,7 @@ function prepare_geojson_upload_form()
                     GEOJSON_FILE_UPLOAD.classList.add("is-invalid")
 
                     // add error message from the server to the designated field
-                    document.getElementById("invalid_feedback_fileupload_geojson").innerHTML = json_result.error
+                    document.getElementById("invalid_feedback_fileupload_geojson").innerHTML = json_result.error_message
                 }
                 else
                 {

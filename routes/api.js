@@ -191,7 +191,7 @@ ROUTER.post('/add_station', checkSchema(GEOJSON_ADD_SCHEMA, ['body']),
       }
     }
     
-    res.status(400).json({error: error_message})
+    res.status(400).json({error_message: error_message})
   }
   else
   {
@@ -237,13 +237,15 @@ body('geometry.coordinates[0].*.*')
     for (const error of ERRORS)
     {
       error_message += `Im Wert '${error.value}' ist ein Fehler. Bitte beachte die Fehlernachricht: </br> "${error.msg}"`
+      
+      // multiple errors need a new line 
       if (ERRORS.length > 1)
       {
         error_message += "</br>"
       }
     }
 
-    res.status(400).json({error: error_message})
+    res.status(400).json({error_message: error_message})
   }
   else
   {
