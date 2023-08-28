@@ -1,4 +1,6 @@
 "use strict"
+import {zip_array_and_leaflet_layergroup, highlight, default_style, add_station_metadata} from "./map_helper.js"
+
 //Highlighted Marker
 const PURPLE_MARKER = new L.Icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
@@ -281,18 +283,29 @@ async function initializeMap()
         {attribution:'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'});
 
     osm_layer.addTo(map)
+    
+    // LayerGroup to store stations
+    let stations_layer_group = L.layerGroup()
+    map.addLayer(stations_layer_group)
 
     //Show stations on map
     stat_collection.forEach(function(station) {
 
-        let map_station = L.geoJSON(station, {color: "blue"}).addTo(map);
-        //create station-Popup
-        let popup_content = `<strong> Name: </strong> ${station.properties.name}  <br> <strong> Beschreibung: </strong> ${station.properties.description}  <br>`
-        if (station.properties.url) { // append only if exisitng, as its an optional parameter
-            popup_content += `<strong> URL: </strong> <a href="${station.properties.url}" target="_blank"> ${station.properties.url} </a> `
+        if(station.geometry.type === "Point")
+        {
+            let marker = L.marker([station.geometry.coordinates[1], station.geometry.coordinates[0]]).addTo(stations_layer_group)
+            add_station_metadata(station, marker)
         }
-        map_station.bindPopup(popup_content);
-        map_station.on("mouseover", function(event) {map_station.openPopup();});
+        else if (station.geometry.type === "Polygon")
+        {
+            // "coordinates" are accessed at index "0" because geoJSOn wrappes the coordinates in an extra array
+            let polygon = L.polygon(station.geometry.coordinates[0].map(function(coord) // used to change coords from lng/lat to lat/lng
+            {
+                return [coord[1], coord[0]]
+            })).addTo(stations_layer_group)
+            add_station_metadata(station, polygon)
+        }
+        /*map_station.on("mouseover", function(event) {map_station.openPopup();});
         //Select stations via click 
         map_station.on("click", function(event) {
         //if you are editing a tour change state of station_table
@@ -322,7 +335,7 @@ async function initializeMap()
         let help_text = "Bitte klicken Sie auf -<strong>neue Tour anlegen</strong>- oder in der Tabelle bei der gewünschten Tour auf -<strong>Bearbeiten</strong>-, um Stationen auszuwählen und sie zu Touren zusammenzufügen.";
         document.getElementById("help_text").innerHTML = help_text;
         }
-       })
+       })*/
     })
 
     return map
