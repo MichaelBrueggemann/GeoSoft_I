@@ -85,6 +85,34 @@ function leave_add_station_mode(form)
 }
 
 /**
+ * Resets the CSS-Class "is-invalid" from all form elements
+ * @param {} form 
+ */
+function reset_form_validation_state(form)
+{
+    for (const CONTROL_ELEMENT of Object.values(form.elements))
+    {
+        if (CONTROL_ELEMENT.classList.contains("is-invalid"))
+        {
+            CONTROL_ELEMENT.classList.remove("is-invalid")
+        }
+    }
+}
+
+
+/**
+ * Constructs an Error-Message from the error object
+ * @param {*} error Error object returned by "express-validators" validationResult() function.
+ * @param {} field Name of the Field in the control element, where the error occured
+ * @returns {string} The Error Message as a string
+ */
+function construct_error_message(error, field)
+{
+    return `Im Feld '${field}' ist ein Fehler. </br> Der fehlerhafte Wert ist: '${error.value}'. </br> Fehlernachricht: </br> ${error.msg} </br></br>`
+}
+
+
+/**
  * This functions sole purpose is to increase readability of this code. 
  * It wraps the initialisation of the map_form form element
  * @param {Object} map - Leaflet Map for form interactions
@@ -149,51 +177,87 @@ function prepare_map_form(map, drawnItems, drawControl)
             // send data to API
             let result = await add_new_station(request_body)
             
+            // check, whether a HTTP Error has occur from the API Call
             if (!result.ok) 
             {
                 let json_result = await result.json()
                 
                 console.log(result)
 
-                /* NOTE: Funktioniert noch nicht. Die Idee ist dass der Server pro Feld ein Fehlerobjekt zurückgibt (muss noch definiert werden). 
-                NOTE: Der Client prüft dann welche der ihm bekannten Felder im Fehlerobjekt auftauchen und konstruiert dementsprechende die Fehlernachricht. 
-                NOTE: Taucht ein Feld öfter auf, so wird der nächste Fehler an die passende Nachricht angehangen. */
-                if (json_result.error.path === 'properties.name')
+                for (const ERROR of json_result.errors)
                 {
-                    // add CSS-class to enable custom styling
-                    document.getElementById("input_name").classList.add("is-invalid")
+                    // TODO: all das evtl. in Function auslagern, der man den ERROR und das Element, an das die Error Message geklebt werden soll übergibt.
 
-                    // add error message from the server to the designated field
-                    document.getElementById("invalid_feedback_name").innerHTML = json_result.error_message
+                    if (!ERROR.path.includes('properties.name'))
+                    {
+                        // pass
+                    }
+                    else
+                    {
+                        // invalidate the control element just once
+                        if (!document.getElementById("input_name").classList.contains("is-invalid"))
+                        {
+                            // add CSS-class to enable custom styling
+                            document.getElementById("input_name").classList.add("is-invalid")
+                        }
+                        
+                        let name_error_message = ""
+                        name_error_message += construct_error_message(ERROR, "Name")
+
+                        // add error message from the server to the designated field
+                        document.getElementById("invalid_feedback_name").innerHTML = name_error_message
+
+                        continue
+                    }
+
+                    if (!ERROR.path.includes('properties.description'))
+                    {
+                        // pass
+                    }
+                    else
+                    {
+                        // invalidate the control element just once
+                        if (!document.getElementById("input_description").classList.contains("is-invalid"))
+                        {
+                            // add CSS-class to enable custom styling
+                            document.getElementById("input_description").classList.add("is-invalid")
+                        }
+
+                        let description_error_message = ""
+                        description_error_message += construct_error_message(ERROR, "Beschreibung")
+
+                        // add error message from the server to the designated field
+                        document.getElementById("invalid_feedback_description").innerHTML = description_error_message
+
+                        continue
+                    }
+
+                    if (!ERROR.path.includes('properties.url'))
+                    {
+                        // pass
+                    }
+                    else
+                    {
+                        // invalidate the control element just once
+                        if (!document.getElementById("input_url").classList.contains("is-invalid"))
+                        {
+                            // add CSS-class to enable custom styling
+                            document.getElementById("input_url").classList.add("is-invalid")
+                        }
+
+                        let url_error_message = ""
+                        url_error_message += construct_error_message(ERROR, "URL")
+
+                        // add error message from the server to the designated field
+                        document.getElementById("invalid_feedback_url").innerHTML = url_error_message
+                    }
                 }
-
-                if (json_result.error.path === 'properties.description')
-                {
-                    // add CSS-class to enable custom styling
-                    document.getElementById("input_description").classList.add("is-invalid")
-
-                    // add error message from the server to the designated field
-                    document.getElementById("invalid_feedback_description").innerHTML = json_result.error_message
-                }
-
-                if (json_result.error.path === 'properties.url')
-                {
-                    // add CSS-class to enable custom styling
-                    document.getElementById("input_url").classList.add("is-invalid")
-
-                    // add error message from the server to the designated field
-                    document.getElementById("invalid_feedback_url").innerHTML = json_result.error_message
-                }    
             }
             else
             {
                 MAP_FORM.reset()
 
-                // TODO: Hier einmal in allen kontrollelementen des Forms die CSS-Klasse entfernen, damit das Styling durch den Server und nicht durch den Client vorgenommen werden kann.
-                // if (textarea_geojson.classList.contains("is-invalid"))
-                // {
-                //     textarea_geojson.classList.remove("is-invalid")
-                // }
+                reset_form_validation_state(MAP_FORM)
 
                 // resets all elements drawn with the draw-tool
                 drawnItems.clearLayers()
@@ -214,6 +278,8 @@ function prepare_map_form(map, drawnItems, drawControl)
         map.removeControl(drawControl)
 
         MAP_FORM.reset()
+
+        reset_form_validation_state(MAP_FORM)
 
         // reset all unfinished map drawings
         drawnItems.clearLayers()
