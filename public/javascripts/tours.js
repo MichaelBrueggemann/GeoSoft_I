@@ -119,7 +119,8 @@ async function update_table() {
         let row = tbody.insertRow();
         row.addEventListener("click", async function(event) {
             if (event.target.tagName !== "BUTTON") {// only activates click event, if no button of the row is pressed
-                let map = await map_promise;
+                let init_values = await init_values_promise;
+                let map = init_values.map;
                 //Remove all tours from map
                 map.eachLayer(function(layer) {
                     if(layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
@@ -228,7 +229,8 @@ async function update_table() {
             //Initialize station_table with stations of tour
             await update_stationtable(stations);
             //set Highlighting on stations in Tour
-            let map = await map_promise;
+            let init_values = await init_values_promise;
+            let map = init_values.map;
             //ugly help-variables, because layer-information are very strange in Leaflet if you add your layers via L.GeoJSON
             //Esplanation of code: the order of layers is always the same and always the feature-layer of the geojson with its information abaut id and geometrytype came direct previously of the layer which defines this features style on the map
             //So you cant directly set Style on the layer which fullfills your whishes, but must do this on the following layer
@@ -309,10 +311,14 @@ async function initializeMap()
         }
     })
 
-    return map
+    return {
+        map: map,
+        stations_layer_group: stations_layer_group
+    }
 }
 
 function add_station_events(station, leaflet_object) {
+    //Event for Station-Infos-Popup
     leaflet_object.on("mouseover", function(event) {leaflet_object.openPopup();});
         //Select stations via click 
         leaflet_object.on("click", function(event) {
@@ -382,7 +388,8 @@ async function start_working_modi() {
     //scroll website to the map (there you can select the stations)
     document.getElementById('tour_map').scrollIntoView();
     working_on_tour_mode = true;
-    let map = await map_promise;
+    let init_values = await init_values_promise;
+    let map = init_values.map;
     //remove in table selected tour because if it stays on the map it confuses
     map.eachLayer(function(layer) {
         if(layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
@@ -407,17 +414,12 @@ async function stop_working_modi() {
     
     working_on_tour_mode = false;
     current_stations = [];
-    let map = await map_promise;
     //change style of all stations to default
-    map.eachLayer(function(layer) {
-        if (layer instanceof L.GeoJSON) {  
-            layer.options.color = "blue";
-            layer.setStyle({color: "blue"});
-        }
-        else if (layer instanceof L.Marker) {
-            layer.setIcon(BLUE_MARKER);
-        }
-    })
+    let init_values = await init_values_promise;
+    let stations_layer_group = await init_values.stations_layer_group;
+    stations_layer_group.getLayers().forEach(function(layer) {
+        default_style(layer);
+    });
     //clear selected_station_table
     let table = document.getElementById("selected_station_table")
     let tbody = table.querySelector('tbody');
@@ -535,5 +537,5 @@ function slice_tour(route, snapped_waypoints) {
     return segments;
 }
 
-let map_promise = initializeMap()
-update_table()
+let init_values_promise = initializeMap();
+update_table();
