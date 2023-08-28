@@ -448,7 +448,7 @@ UPDATE_BUTTON.addEventListener("click", async function() {
         }
       });
       //server-call for calculating tour
-    let res = await api_call("routing", {
+    let res = await api_call("routing/get_routing", {
         waypoints: waypoints,
     });
     let route = await res.json();
