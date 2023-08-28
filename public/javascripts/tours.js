@@ -230,27 +230,10 @@ async function update_table() {
             await update_stationtable(stations);
             //set Highlighting on stations in Tour
             let init_values = await init_values_promise;
-            let map = init_values.map;
-            //ugly help-variables, because layer-information are very strange in Leaflet if you add your layers via L.GeoJSON
-            //Esplanation of code: the order of layers is always the same and always the feature-layer of the geojson with its information abaut id and geometrytype came direct previously of the layer which defines this features style on the map
-            //So you cant directly set Style on the layer which fullfills your whishes, but must do this on the following layer
-            let id_true = false;
-            let point_true = false;
-            map.eachLayer(function(layer) {
-                if (id_true) {
-                    layer.options.color = "violet";
-                    layer.setStyle({color: "violet"});
-                    id_true = false;
-                    if (point_true) {
-                        layer.getLayers()[0].setIcon(PURPLE_MARKER);
-                        point_true = false;
-                    }
-                }
-            if (layer.hasOwnProperty('feature') && current_stations.map(obj => obj._id).includes(layer.feature._id)) {  
-                id_true = true;
-                if (layer.feature.geometry.type == 'Point') {
-                    point_true = true;
-                }
+            let stations_layer_group = init_values.stations_layer_group;
+            stations_layer_group.eachLayer(function(layer) {
+            if (current_stations.map(obj => obj._id).includes(layer._id)) {  
+                highlight(layer);
             }
             })
         })
@@ -298,6 +281,7 @@ async function initializeMap()
             let marker = L.marker([station.geometry.coordinates[1], station.geometry.coordinates[0]]).addTo(stations_layer_group)
             add_station_metadata(station, marker)
             add_station_events(station, marker)
+            marker._id = station._id;
         }
         else if (station.geometry.type === "Polygon")
         {
@@ -308,6 +292,7 @@ async function initializeMap()
             })).addTo(stations_layer_group)
             add_station_metadata(station, polygon)
             add_station_events(station, polygon)
+            polygon._id = station._id;
         }
     })
 
