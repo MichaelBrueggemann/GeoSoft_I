@@ -295,6 +295,7 @@ async function initializeMap()
         {
             let marker = L.marker([station.geometry.coordinates[1], station.geometry.coordinates[0]]).addTo(stations_layer_group)
             add_station_metadata(station, marker)
+            add_station_events(station, marker)
         }
         else if (station.geometry.type === "Polygon")
         {
@@ -304,27 +305,26 @@ async function initializeMap()
                 return [coord[1], coord[0]]
             })).addTo(stations_layer_group)
             add_station_metadata(station, polygon)
+            add_station_events(station, polygon)
         }
-        /*map_station.on("mouseover", function(event) {map_station.openPopup();});
+    })
+
+    return map
+}
+
+function add_station_events(station, leaflet_object) {
+    leaflet_object.on("mouseover", function(event) {leaflet_object.openPopup();});
         //Select stations via click 
-        map_station.on("click", function(event) {
+        leaflet_object.on("click", function(event) {
         //if you are editing a tour change state of station_table
         if (working_on_tour_mode) {
             //if the station wasnt selected before highlight it 
-            if (map_station.options.color == "blue") {
-                map_station.options.color = "violet";
-                map_station.setStyle({color: "violet"});
-                if (station.geometry.type == "Point") {
-                    map_station.getLayers()[0].setIcon(PURPLE_MARKER);
-                }
+            if (!leaflet_object.highlighted) {
+                highlight(leaflet_object);
             }
             //else dehighlight it
             else {
-                map_station.options.color = "blue";
-                map_station.setStyle({color: "blue"});
-                if (station.geometry.type == "Point") {
-                    map_station.getLayers()[0].setIcon(BLUE_MARKER);
-                }
+                default_style(leaflet_object);
             }
             update_stationtable([station]);
         }
@@ -335,10 +335,7 @@ async function initializeMap()
         let help_text = "Bitte klicken Sie auf -<strong>neue Tour anlegen</strong>- oder in der Tabelle bei der gewünschten Tour auf -<strong>Bearbeiten</strong>-, um Stationen auszuwählen und sie zu Touren zusammenzufügen.";
         document.getElementById("help_text").innerHTML = help_text;
         }
-       })*/
-    })
-
-    return map
+       })
 }
 
 // ----------------- station-table -----------------
