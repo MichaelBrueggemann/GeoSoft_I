@@ -170,6 +170,9 @@ async function update_table() {
             
         })
 
+        //invisible id for other methods
+        row.setAttribute("_id", _id);
+
         //name
         let tour_name = document.createElement("td");
         tour_name.innerText = name;
@@ -470,9 +473,20 @@ UPDATE_BUTTON.addEventListener("click", async function() {
     else {
         await update_tour(current_tour_id, tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
     }
-    //select worked-on tour
+    //select the updated Tour
     let table = document.getElementById('tour_table');
-    table.tBodies[0].rows[table.tBodies[0].rows.length - 1].click();
+    let tbody = table.tBodies[0];
+    if (current_tour_id == null) {
+        tbody.rows[table.tBodies[0].rows.length - 1].click();
+    }
+    else { 
+        for(const ROW of tbody.rows) {
+            if (ROW.getAttribute("_id") == current_tour_id) {
+                current_tour_id = null;
+                ROW.click();
+            }
+        };
+    }
     //change Working Modi
     stop_working_modi();
     }
