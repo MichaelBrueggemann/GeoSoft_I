@@ -181,17 +181,17 @@ ROUTER.post('/add_station', checkSchema(GEOJSON_ADD_SCHEMA, ['body']),
   // request was invalid
   if (ERRORS.length > 0)
   {
-    let error_message = ""
-    for (const error of ERRORS)
-    {
-      error_message += `Im Wert '${error.value}' ist ein Fehler. Bitte beachte die Fehlernachricht: </br> "${error.msg}"`
-      if (ERRORS.length > 1)
-      {
-        error_message += "</br>"
-      }
-    }
+    // let error_message = ""
+    // for (const error of ERRORS)
+    // {
+    //   error_message += `Im Wert '${error.value}' ist ein Fehler. Bitte beachte die Fehlernachricht: </br> "${error.msg}"`
+    //   if (ERRORS.length > 1)
+    //   {
+    //     error_message += "</br>"
+    //   }
+    // }
     
-    res.status(400).json({error_message: error_message})
+    res.status(400).json({errors: ERRORS})
   }
   else
   {
@@ -233,19 +233,19 @@ body('geometry.coordinates[0].*.*')
   // request was invalid
   if (ERRORS.length > 0)
   {
-    let error_message = ""
-    for (const error of ERRORS)
-    {
-      error_message += `Im Wert '${error.value}' ist ein Fehler. Bitte beachte die Fehlernachricht: </br> "${error.msg}"`
+    // let error_message = ""
+    // for (const error of ERRORS)
+    // {
+    //   error_message += `Im Wert '${error.value}' ist ein Fehler. Bitte beachte die Fehlernachricht: </br> "${error.msg}"`
       
-      // multiple errors need a new line 
-      if (ERRORS.length > 1)
-      {
-        error_message += "</br>"
-      }
-    }
+    //   // multiple errors need a new line 
+    //   if (ERRORS.length > 1)
+    //   {
+    //     error_message += "</br>"
+    //   }
+    // }
 
-    res.status(400).json({error_message: error_message})
+    res.status(400).json({errors: ERRORS})
   }
   else
   {
