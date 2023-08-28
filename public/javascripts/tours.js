@@ -293,7 +293,6 @@ async function initializeMap()
         }
         map_station.bindPopup(popup_content);
         map_station.on("mouseover", function(event) {map_station.openPopup();});
-        map_station.on("mouseout", function(event) {map_station.closePopup();});
         //Select stations via click 
         map_station.on("click", function(event) {
         //if you are editing a tour change state of station_table
