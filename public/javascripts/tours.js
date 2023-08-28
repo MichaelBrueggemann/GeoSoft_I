@@ -365,7 +365,9 @@ async function update_stationtable(stations) {
  * This function changes the state of the Website to editing-mode
  */
 async function start_working_modi() {
+    //set global variables
     current_tour_id = null;
+    working_on_tour_mode = true;
     //change visibilitys of html blocks
     let stat_div = document.getElementById("station_div")
     stat_div.style.display = 'block';
@@ -375,7 +377,6 @@ async function start_working_modi() {
     new_tour_button.style.display = 'none';
     //scroll website to the map (there you can select the stations)
     document.getElementById('tour_map').scrollIntoView();
-    working_on_tour_mode = true;
     let init_values = await init_values_promise;
     let map = init_values.map;
     //remove in table selected tour because if it stays on the map it confuses
@@ -390,6 +391,9 @@ async function start_working_modi() {
  * This function changes the state of the Website to default no-editing-mode
  */
 async function stop_working_modi() {
+    //set global variables
+    working_on_tour_mode = false;
+    current_stations = [];
     //change visibilitys of html blocks
     let stat_div = document.getElementById("station_div")
     stat_div.style.display = 'none';
@@ -397,11 +401,9 @@ async function stop_working_modi() {
     tour_div.style.display = 'block';
     let new_tour_button = document.getElementById("new_tour")
     new_tour_button.style.display = 'block';
+    //reset name field in stat_div
     let tour_name_input = document.getElementById("tour_name");
     tour_name_input.value = null;
-    
-    working_on_tour_mode = false;
-    current_stations = [];
     //change style of all stations to default
     let init_values = await init_values_promise;
     let stations_layer_group = await init_values.stations_layer_group;
@@ -536,5 +538,6 @@ function slice_tour(route, snapped_waypoints) {
     return segments;
 }
 
+//save map and layerGroup as promise in global variable and init Website
 let init_values_promise = initializeMap();
 update_table();
