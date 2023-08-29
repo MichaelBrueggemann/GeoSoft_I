@@ -1,5 +1,5 @@
 "use strict"
-import {zip_array_and_leaflet_layergroup, highlight, default_style, add_station_metadata} from "./map_helper.js"
+import {highlight, default_style, add_station_metadata} from "./map_helper.js"
 
 //Highlighted Marker
 const PURPLE_MARKER = new L.Icon({
@@ -108,6 +108,7 @@ async function delete_tour(id) {
 
 // ----------------- tour-table -----------------
 async function update_table() {
+    //Synchronize local tour_collection with DB via api
     tours_collection = await fetch("/api/tours")
     tours_collection = await tours_collection.json()
     // Fill table with tour entries
@@ -115,8 +116,8 @@ async function update_table() {
     let tbody = document.createElement('tbody')
     //Each tour gets one row
     tours_collection.forEach(function({ _id, name, stations, segments, instructions, distance }) {
-        //selection and highlighting of tours
         let row = tbody.insertRow();
+        //selection and highlighting of tours
         row.addEventListener("click", async function(event) {
             if (event.target.tagName !== "BUTTON") {// only activates click event, if no button of the row is pressed
                 let init_values = await init_values_promise;
@@ -435,9 +436,9 @@ CANCEL_BUTTON.addEventListener("click", function() {
 })
 
 // ----------------- Update - Button -----------------
-const UPDATE_BUTTON = document.getElementById("calculate_tour");
-UPDATE_BUTTON.setAttribute("class", "btn btn-primary")
-UPDATE_BUTTON.addEventListener("click", async function() {
+const CALCULATE_BUTTON = document.getElementById("calculate_tour");
+CALCULATE_BUTTON.setAttribute("class", "btn btn-primary")
+CALCULATE_BUTTON.addEventListener("click", async function() {
     //calculate Tour 
     //simplify stations to one point in {lat, lng}-format
     let waypoints = current_stations.map(function(station) {
