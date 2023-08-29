@@ -293,20 +293,8 @@ async function start_working_modi() {
     new_tour_button.style.display = 'none';
     //scroll website to the map (there you can select the stations)
     document.getElementById('tour_map').scrollIntoView();
-    let init_values = await init_values_promise;
-    let map = init_values.map;
-    //remove in tour_table selected tour because if it stays on the map it confuses
-    map.eachLayer(function(layer) {
-        if(layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
-            map.removeLayer(layer);
-        }
-    });
-    //also set all rows in the table on default color
-    let table = document.getElementById('tour_table');
-    const ROWS = table.tBodies[0].querySelectorAll("tr");
-    ROWS.forEach(function(row) {
-        row.setAttribute("class", ""); 
-    });
+    //reset tour selection in table and on map
+    dehighlight_tours()
 }
 
 /**
@@ -354,20 +342,8 @@ async function stop_working_modi() {
  */
 async function row_click_event_handling(tbody, row, event, _id, instructions, segments) {
     if (event.target.tagName !== "BUTTON") {// only activates click event, if no button of the row is pressed
-        //get access to the map
-        let init_values = await init_values_promise;
-        let map = init_values.map;
-        //Remove all tours from map
-        map.eachLayer(function(layer) {
-            if(layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
-                map.removeLayer(layer);
-            }
-        });
-        const ROWS = tbody.querySelectorAll("tr");
-        //also all rows in the table gets the default color
-        ROWS.forEach(function(row) {
-            row.setAttribute("class", ""); 
-        });
+        //Dehighlight Tours in table and on map
+        await dehighlight_tours();
         //if a highlighted tour is clicked again it only should be dehighlighted (which happens above)
         if (current_tour_id == _id) {
             current_tour_id = null;
@@ -390,6 +366,9 @@ async function row_click_event_handling(tbody, row, event, _id, instructions, se
                 }
             });
             //Show Tour on Map
+            //get access to the map
+            let init_values = await init_values_promise;
+            let map = init_values.map;
             let i = 0;
             let tour_layer = L.featureGroup().addTo(map);
             //each toursegment gets his own Popup (inkl. distance)
@@ -413,6 +392,29 @@ async function row_click_event_handling(tbody, row, event, _id, instructions, se
         }
     }
     
+}
+
+/**
+ * This function deletes all Tours from the map view
+ * and sets all table colors on default
+ */
+async function dehighlight_tours() {
+    //get map of tour-website
+    let init_values = await init_values_promise;
+    let map = init_values.map;
+    //remove in tour_table selected tour because if it stays on the map it confuses
+    map.eachLayer(function(layer) {
+        if(layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
+            map.removeLayer(layer);
+        }
+    });
+    //get rows of tour_table
+    let table = document.getElementById('tour_table');
+    const ROWS = table.tBodies[0].querySelectorAll("tr");
+    //set all rows in the table on default color
+    ROWS.forEach(function(row) {
+        row.setAttribute("class", ""); 
+    });
 }
 
 // ----------------- new Tour - Button -----------------
