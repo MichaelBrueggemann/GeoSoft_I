@@ -1,6 +1,6 @@
 "use strict"
 
-const {GEOJSON_SCHEMA, validate_input} = require("../express_validator_schemes/joi_schemas")
+const {GEOJSON_SCHEMA, validate_input} = require("../validation_schemes/joi_schemas")
 
 const EXPRESS = require('express');
 const ROUTER = EXPRESS.Router();
