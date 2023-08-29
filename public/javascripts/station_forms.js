@@ -158,6 +158,10 @@ function prepare_map_form(map, drawnItems, drawControl)
         }
         else
         {
+            if (MAP_FORM.classList.contains("was-validated"))
+            {
+                MAP_FORM.classList.remove("was-validated")
+            }
             // add bootstrap css-class for styling of the error messages
             //MAP_FORM.classList.add("was-validated")
 
