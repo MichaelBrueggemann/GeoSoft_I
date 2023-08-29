@@ -105,60 +105,8 @@ async function update_table() {
         let row = tbody.insertRow();
         // ---- selection and highlighting of tours ----
         row.addEventListener("click", async function(event) {
-            if (event.target.tagName !== "BUTTON") {// only activates click event, if no button of the row is pressed
-                //get access to the map
-                let init_values = await init_values_promise;
-                let map = init_values.map;
-                //Remove all tours from map
-                map.eachLayer(function(layer) {
-                    if(layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
-                        map.removeLayer(layer);
-                    }
-                });
-                //if a highlighted tour is clicked again it only should be dehighlighted (which happens above)
-                if (current_tour_id == _id) {
-                    current_tour_id = null;
-                }
-                else {
-                    current_tour_id = _id;
-                    //calculate Segment_distances and store them in an array
-                    let segment_distances = [];
-                    let current_distance = 0;
-                    //In GRAPHHOPPER-instructions is distance, so we can add these distances between the waypoints
-                    instructions.forEach(function(instruction) {
-                        if(instruction.text.startsWith("Waypoint") || instruction.text.startsWith("Arrive at destination")) {
-                            segment_distances.push(current_distance);
-                            current_distance = 0;
-                        }
-                        else {
-                            current_distance += instruction.distance;
-                        }
-                    });
-                    //Show Tour on Map
-                    let i = 0;
-                    let tour_layer = L.featureGroup().addTo(map);
-                    //each toursegment gets his own Popup (inkl. distance)
-                    segments.forEach(function(segment) {
-                        let polyline = L.polyline(segment, {color: 'cadetblue', weight: 4}).addTo(tour_layer);
-                        polyline.bindPopup("ca. " + Math.round(segment_distances[i]).toString() + "m");
-                        i++;
-                        //The Popup opens while hovering above the line-segment
-                        polyline.on("mouseover", function(event) {
-                            polyline.openPopup();
-                            //The current segment gets highlighted for visualization and easier hovering (weighting)
-                            polyline.setStyle({color: 'purple', weight: 7});
-                        });
-                        polyline.on("mouseout", function(event) {
-                            polyline.closePopup();
-                            polyline.setStyle({color: 'cadetblue', weight: 4});
-                        });
-                    });
-                    //Zoom on selected tour
-                    map.fitBounds(tour_layer.getBounds());
-                }
-            }
-            
-        })
+            row_click_event_handling(event, _id, instructions, segments);
+        });
 
         // ---- invisible id for other methods (f. e. highlighting) ----
         row.setAttribute("_id", _id);
@@ -180,8 +128,7 @@ async function update_table() {
         info_tour_button.addEventListener("click", function() {
             let info_text = build_info_text(stations, instructions, distance);
             document.getElementById("info_text").innerHTML = info_text;
-        })
-        
+        })   
         row.insertCell().appendChild(info_tour_button)
 
         // ---- Update-Button ----
@@ -207,7 +154,6 @@ async function update_table() {
                 }
             })
         })
-        
         row.insertCell().appendChild(update_tour_button)
 
         // ---- Delete-Button ----
@@ -218,7 +164,6 @@ async function update_table() {
         delete_tour_button.addEventListener("click",function() {
             delete_tour(_id)
         })
-        
         row.insertCell().appendChild(delete_tour_button)
     });
     
@@ -388,6 +333,62 @@ async function stop_working_modi() {
     if (tbody) {
         table.replaceChild(new_tbody, tbody);
     }
+}
+
+async function row_click_event_handling(event, _id, instructions, segments) {
+    if (event.target.tagName !== "BUTTON") {// only activates click event, if no button of the row is pressed
+        //get access to the map
+        let init_values = await init_values_promise;
+        let map = init_values.map;
+        //Remove all tours from map
+        map.eachLayer(function(layer) {
+            if(layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
+                map.removeLayer(layer);
+            }
+        });
+        //if a highlighted tour is clicked again it only should be dehighlighted (which happens above)
+        if (current_tour_id == _id) {
+            current_tour_id = null;
+        }
+        else {
+            current_tour_id = _id;
+            //calculate Segment_distances and store them in an array
+            let segment_distances = [];
+            let current_distance = 0;
+            //In GRAPHHOPPER-instructions is distance, so we can add these distances between the waypoints
+            instructions.forEach(function(instruction) {
+                if(instruction.text.startsWith("Waypoint") || instruction.text.startsWith("Arrive at destination")) {
+                    segment_distances.push(current_distance);
+                    current_distance = 0;
+                }
+                else {
+                    current_distance += instruction.distance;
+                }
+            });
+            //Show Tour on Map
+            let i = 0;
+            let tour_layer = L.featureGroup().addTo(map);
+            //each toursegment gets his own Popup (inkl. distance)
+            segments.forEach(function(segment) {
+                let polyline = L.polyline(segment, {color: 'cadetblue', weight: 4}).addTo(tour_layer);
+                polyline.bindPopup("ca. " + Math.round(segment_distances[i]).toString() + "m");
+                i++;
+                //The Popup opens while hovering above the line-segment
+                polyline.on("mouseover", function(event) {
+                    polyline.openPopup();
+                    //The current segment gets highlighted for visualization and easier hovering (weighting)
+                    polyline.setStyle({color: 'purple', weight: 7});
+                });
+                polyline.on("mouseout", function(event) {
+                    polyline.closePopup();
+                    polyline.setStyle({color: 'cadetblue', weight: 4});
+                });
+            });
+            //Zoom on selected tour
+            map.fitBounds(tour_layer.getBounds());
+        }
+    }
+    
 }
 
 // ----------------- new Tour - Button -----------------
