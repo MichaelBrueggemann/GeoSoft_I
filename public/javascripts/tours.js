@@ -311,6 +311,11 @@ async function initializeMap()
     }
 }
 
+/**
+ * This function adds needed event-listener to stations bzw their representational leaflet_objects
+ * @param {*} station - station which should get the eventlistener
+ * @param {*} leaflet_object - leaflet_object of station which should get the eventlistener
+ */
 function add_station_events(station, leaflet_object) {
     //Event for Station-Infos-Popup
     leaflet_object.on("mouseover", function(event) {leaflet_object.openPopup();});
