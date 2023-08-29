@@ -335,6 +335,15 @@ async function stop_working_modi() {
     }
 }
 
+/**
+ * This function handles the "click"-event on a row of the tour_table:
+ * Tours (dis)apearing on the map and their segments have Popups with distances
+ * 
+ * @param {*} event - click-event on the row
+ * @param {*} _id - _id of the tour which is clicked on
+ * @param {*} instructions - instructions of the tour which is clicked on
+ * @param {*} segments - segments of the tour which is clicked on
+ */
 async function row_click_event_handling(event, _id, instructions, segments) {
     if (event.target.tagName !== "BUTTON") {// only activates click event, if no button of the row is pressed
         //get access to the map
