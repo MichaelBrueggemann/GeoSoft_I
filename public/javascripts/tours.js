@@ -105,7 +105,7 @@ async function update_table() {
         let row = tbody.insertRow();
         // ---- selection and highlighting of tours ----
         row.addEventListener("click", async function(event) {
-            row_click_event_handling(event, _id, instructions, segments);
+            row_click_event_handling(tbody, row, event, _id, instructions, segments);
         });
 
         // ---- invisible id for other methods (f. e. highlighting) ----
@@ -301,6 +301,12 @@ async function start_working_modi() {
             map.removeLayer(layer);
         }
     });
+    //also set all rows in the table on default color
+    let table = document.getElementById('tour_table');
+    const ROWS = table.tBodies[0].querySelectorAll("tr");
+    ROWS.forEach(function(row) {
+        row.setAttribute("class", ""); 
+    });
 }
 
 /**
@@ -339,12 +345,14 @@ async function stop_working_modi() {
  * This function handles the "click"-event on a row of the tour_table:
  * Tours (dis)apearing on the map and their segments have Popups with distances
  * 
+ * @param {*} tbody - table-body in which a row is clicked
+ * @param {*} row - row that is clicked
  * @param {*} event - click-event on the row
  * @param {*} _id - _id of the tour which is clicked on
  * @param {*} instructions - instructions of the tour which is clicked on
  * @param {*} segments - segments of the tour which is clicked on
  */
-async function row_click_event_handling(event, _id, instructions, segments) {
+async function row_click_event_handling(tbody, row, event, _id, instructions, segments) {
     if (event.target.tagName !== "BUTTON") {// only activates click event, if no button of the row is pressed
         //get access to the map
         let init_values = await init_values_promise;
@@ -355,12 +363,19 @@ async function row_click_event_handling(event, _id, instructions, segments) {
                 map.removeLayer(layer);
             }
         });
+        const ROWS = tbody.querySelectorAll("tr");
+        //also all rows in the table gets the default color
+        ROWS.forEach(function(row) {
+            row.setAttribute("class", ""); 
+        });
         //if a highlighted tour is clicked again it only should be dehighlighted (which happens above)
         if (current_tour_id == _id) {
             current_tour_id = null;
         }
         else {
             current_tour_id = _id;
+            //highlight row in table
+            row.setAttribute("class", "table-primary"); 
             //calculate Segment_distances and store them in an array
             let segment_distances = [];
             let current_distance = 0;
