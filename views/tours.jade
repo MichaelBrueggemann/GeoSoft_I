@@ -26,16 +26,17 @@ block content
                         input#tour_name.form-control(type='tourname' aria-describedby='tour_name_help' placeholder='Hier Tournamen einfügen')
                         small#tour_name_help.form-text.text-muted Kein Pflichtfeld, eine möglichst eindeutige Eingabe wird aber dringenst empfohlen
 
-                table(width="100%")#selected_station_table
-                    thead
-                        th ausgewählte Stationen:
-                    tbody
+                .table-responsive
+                    table(width="100%")#selected_station_table
+                        thead
+                            th ausgewählte Stationen:
+                        tbody
                 button#cancel(type='button') Abbrechen
                 button#calculate_tour(type="button") Tour berechnen
     
     button#new_tour(type="button", style="display: block") neue Tour anlegen
     
-    .container-fluid(style="display: block")#tour_div
+    .table-responsive(style="display: block")#tour_div
         table(width="100%")#tour_table.table.table-striped.table-hover
             thead
                 th(scope="col") Name
