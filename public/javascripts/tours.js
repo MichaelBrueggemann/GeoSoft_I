@@ -21,7 +21,7 @@ let working_on_tour_mode = false;
 
 //if you are editing tours, this variable contains all involved stations for the current tour
 let current_stations = [];
-//This safes which tour is changing (null means its a new tour)
+//This safes which tour is highlighted or changing (null means nothing is highlighted and while creating its a new tour)
 let current_tour_id = null;
 
 //All availible tours are safed in the tours_collection
@@ -120,6 +120,7 @@ async function update_table() {
         //selection and highlighting of tours
         row.addEventListener("click", async function(event) {
             if (event.target.tagName !== "BUTTON") {// only activates click event, if no button of the row is pressed
+                //get access to the map
                 let init_values = await init_values_promise;
                 let map = init_values.map;
                 //Remove all tours from map
@@ -134,7 +135,7 @@ async function update_table() {
                 }
                 else {
                     current_tour_id = _id;
-                    //calculate Segment_distances
+                    //calculate Segment_distances and store them in an array
                     let segment_distances = [];
                     let current_distance = 0;
                     //In GRAPHHOPPER-instructions is distance, so we can add these distances between the waypoints
@@ -155,8 +156,10 @@ async function update_table() {
                         let polyline = L.polyline(segment, {color: 'cadetblue', weight: 4}).addTo(tour_layer);
                         polyline.bindPopup("ca. " + Math.round(segment_distances[i]).toString() + "m");
                         i++;
+                        //The Popup opens while hovering above the line-segment
                         polyline.on("mouseover", function(event) {
                             polyline.openPopup();
+                            //The current segment gets highlighted for visualization and easier hovering (weighting)
                             polyline.setStyle({color: 'purple', weight: 7});
                         });
                         polyline.on("mouseout", function(event) {
@@ -171,7 +174,7 @@ async function update_table() {
             
         })
 
-        //invisible id for other methods
+        //invisible id for other methods (f. e. highlighting)
         row.setAttribute("_id", _id);
 
         //name
@@ -232,13 +235,14 @@ async function update_table() {
             tour_name_input.value = name;
             //Initialize station_table with stations of tour
             await update_stationtable(stations);
-            //set Highlighting on stations in Tour
+            //get access to map
             let init_values = await init_values_promise;
             let stations_layer_group = init_values.stations_layer_group;
+            //set Highlighting on stations in Tour
             stations_layer_group.eachLayer(function(layer) {
-            if (current_stations.map(obj => obj._id).includes(layer._id)) {  
-                highlight(layer);
-            }
+                if (current_stations.map(obj => obj._id).includes(layer._id)) {  
+                    highlight(layer);
+                }
             })
         })
         
@@ -289,7 +293,7 @@ async function initializeMap()
         }
         else if (station.geometry.type === "Polygon")
         {
-            // "coordinates" are accessed at index "0" because geoJSOn wrappes the coordinates in an extra array
+            // "coordinates" are accessed at index "0" because geoJSON wrappes the coordinates in an extra array
             let polygon = L.polygon(station.geometry.coordinates[0].map(function(coord) // used to change coords from lng/lat to lat/lng
             {
                 return [coord[1], coord[0]]
@@ -311,25 +315,24 @@ function add_station_events(station, leaflet_object) {
     leaflet_object.on("mouseover", function(event) {leaflet_object.openPopup();});
         //Select stations via click 
         leaflet_object.on("click", function(event) {
-        //if you are editing a tour change state of station_table
-        if (working_on_tour_mode) {
-            //if the station wasnt selected before highlight it 
-            if (!leaflet_object.highlighted) {
-                highlight(leaflet_object);
+            //if you are editing a tour change state of station_table
+            if (working_on_tour_mode) {
+                //if the station wasnt selected before highlight it 
+                if (!leaflet_object.highlighted) {
+                    highlight(leaflet_object);
+                }
+                //else dehighlight it
+                else {
+                    default_style(leaflet_object);
+                }
+                update_stationtable([station]);
             }
-            //else dehighlight it
+            //help the user why he cant select a station when the edit-mode is off
             else {
-                default_style(leaflet_object);
+                $('#station_selection_help').modal('show');
+                let help_text = "Bitte klicken Sie auf -<strong>neue Tour anlegen</strong>- oder in der Tabelle bei der gewünschten Tour auf -<strong>Bearbeiten</strong>-, um Stationen auszuwählen und sie zu Touren zusammenzufügen.";
+                document.getElementById("help_text").innerHTML = help_text;
             }
-            update_stationtable([station]);
-        }
-        //else help the user why he cant select a station when the edit-mode is off
-        else 
-        {
-            $('#station_selection_help').modal('show');
-        let help_text = "Bitte klicken Sie auf -<strong>neue Tour anlegen</strong>- oder in der Tabelle bei der gewünschten Tour auf -<strong>Bearbeiten</strong>-, um Stationen auszuwählen und sie zu Touren zusammenzufügen.";
-        document.getElementById("help_text").innerHTML = help_text;
-        }
        })
 }
 
@@ -380,7 +383,7 @@ async function start_working_modi() {
     document.getElementById('tour_map').scrollIntoView();
     let init_values = await init_values_promise;
     let map = init_values.map;
-    //remove in table selected tour because if it stays on the map it confuses
+    //remove in tour_table selected tour because if it stays on the map it confuses
     map.eachLayer(function(layer) {
         if(layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
             map.removeLayer(layer);
@@ -449,8 +452,8 @@ CALCULATE_BUTTON.addEventListener("click", async function() {
         else {
           return calculate_centroid(station.geometry.coordinates);
         }
-      });
-      //server-call for calculating tour
+    });
+    //server-call for calculating tour
     let res = await api_call("routing/get_routing", {
         waypoints: waypoints,
     });
@@ -465,33 +468,35 @@ CALCULATE_BUTTON.addEventListener("click", async function() {
         document.getElementById("error_statement").innerHTML = error_statement;
     }
     else {
-    //Slicing tour in segments for each waypoint
-    let tour_segments = slice_tour(route.paths[0].points.coordinates, route.paths[0].snapped_waypoints.coordinates);
-    //Get Tourname from input-field
-    let tour_name = document.getElementById("tour_name").value;
-    //save Tour in DB
-    if (current_tour_id == null) {
-        await add_new_tour(tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
-    }
-    else {
-        await update_tour(current_tour_id, tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
-    }
-    //select the updated Tour
-    let table = document.getElementById('tour_table');
-    let tbody = table.tBodies[0];
-    if (current_tour_id == null) {
-        tbody.rows[table.tBodies[0].rows.length - 1].click();
-    }
-    else { 
-        for(const ROW of tbody.rows) {
-            if (ROW.getAttribute("_id") == current_tour_id) {
-                current_tour_id = null;
-                ROW.click();
-            }
-        };
-    }
-    //change Working Modi
-    stop_working_modi();
+        //Slicing tour in segments for each waypoint
+        let tour_segments = slice_tour(route.paths[0].points.coordinates, route.paths[0].snapped_waypoints.coordinates);
+        //Get Tourname from input-field
+        let tour_name = document.getElementById("tour_name").value;
+        //save Tour in DB
+        if (current_tour_id == null) {
+            await add_new_tour(tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
+        }
+        else {
+            await update_tour(current_tour_id, tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
+        }
+        //select the updated Tour for auto-highlight after successful worked-on
+        let table = document.getElementById('tour_table');
+        let tbody = table.tBodies[0];
+        if (current_tour_id == null) {
+            //if a new tour created we can simply highlight the last tour because it gets appended in the tour_table
+            tbody.rows[table.tBodies[0].rows.length - 1].click();
+        }
+        else { 
+            //else we search the right row via id comparision
+            for(const ROW of tbody.rows) {
+                if (ROW.getAttribute("_id") == current_tour_id) {
+                    current_tour_id = null;
+                    ROW.click();
+                }
+            };
+        }
+        //change Working Modi
+        stop_working_modi();
     }
 })
 
