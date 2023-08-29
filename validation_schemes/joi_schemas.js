@@ -1,12 +1,12 @@
 "use strict"
 const JOI = require("joi")
 
-// this schema defines a valid Point. I wasnt able to achieve typechecking to ensure that the value is a Float, or better a LatLng. I tried numerous libraries like "ajv", "joi", "express-validator", but unfurtunately couldn't achieve this.
+// this schema defines a valid Point. I wasnt able to achieve typechecking to ensure that the value is a Float, or better a LatLng. I tried numerous libraries like "ajv", "joi", "express-validator", but unfurtunately couldn't achieve this. We can't use a RegExp as Leaflet doesn't add coordinates as Strings, so this would cause unwanted errors.
 const POINT_SCHEMA = JOI.array().max(2).items(
     JOI.number().required()
     )
 
-// this schema defines a valid Polygon. I wasnt able to achieve typechecking to ensure that the value is a Float, or better a LatLng. I tried numerous libraries like "ajv", "joi", "express-validator", but unfurtunately couldn't achieve this.
+// this schema defines a valid Point. I wasnt able to achieve typechecking to ensure that the value is a Float, or better a LatLng. I tried numerous libraries like "ajv", "joi", "express-validator", but unfurtunately couldn't achieve this. We can't use a RegExp as Leaflet doesn't add coordinates as Strings, so this would cause unwanted errors.
 const POLYGON_SCHEMA = JOI.array().max(1).items(
     JOI.array().items(
         JOI.array().items(JOI.number().required())
