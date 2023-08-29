@@ -43,3 +43,43 @@ export function slice_tour(route, snapped_waypoints) {
     segments[last-1].push([snapped_waypoints[last][1],snapped_waypoints[last][0]]);
     return segments;
 }
+
+/**
+ * This function builds an infotext for a tour containing:
+ * 1. All stations get listed
+ * 2. Instructions for following the tour
+ * 3. Overall distance of the tour
+ * 
+ * @param {*} stations - stations of the tour
+ * @param {*} instructions - instructions of the tour
+ * @param {*} distance - distance of the tour
+ * @returns {*} - Infotext as String
+ */
+export function build_info_text(stations, instructions, distance) {
+    //list all stations of the tour
+    let info_text = "<strong>Stationen:</strong>";
+    stations.forEach( function({properties}) {
+            info_text += "<br>" + properties.name;
+    });
+            
+    //Give hints to instructions
+    info_text += "<br><br><strong>Anleitung zur Tour:</strong>"
+    info_text += "<br><div style='border:1px'>Diese Instruktionen kommen direkt von GRAPHHOPPER und sind somit leider nur auf englisch verfügbar.</div>"
+    //Tell user instructions how to follow the tour
+    instructions.forEach(function(instruction) {
+        if(instruction.text.startsWith("Waypoint")) {
+            info_text += "<br><strong>You arrived at one station</strong>";
+        }
+        else if (instruction.text.startsWith("Arrive at destination")){
+            info_text += "<br><strong>Arrive at destination</strong>";
+        }
+        else {
+            info_text += "<br>" + instruction.text + " and follow the path for " + Math.round(instruction.distance) + " metres";
+        }
+    })
+    //Overall distance of tour
+    info_text+="<br><br><strong>Gesamtlänge</strong>: "
+    info_text+= distance + "m";
+
+    return info_text;
+}

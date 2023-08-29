@@ -1,6 +1,6 @@
 "use strict"
 import {highlight, default_style, add_station_metadata} from "./map_helper.js"
-import {calculate_centroid, slice_tour} from "./tour_helper.js";
+import {build_info_text, calculate_centroid, slice_tour} from "./tour_helper.js";
 
 //Highlighted Marker
 const PURPLE_MARKER = new L.Icon({
@@ -118,7 +118,7 @@ async function update_table() {
     //Each tour gets one row
     tours_collection.forEach(function({ _id, name, stations, segments, instructions, distance }) {
         let row = tbody.insertRow();
-        //selection and highlighting of tours
+        // ---- selection and highlighting of tours ----
         row.addEventListener("click", async function(event) {
             if (event.target.tagName !== "BUTTON") {// only activates click event, if no button of the row is pressed
                 //get access to the map
@@ -175,15 +175,15 @@ async function update_table() {
             
         })
 
-        //invisible id for other methods (f. e. highlighting)
+        // ---- invisible id for other methods (f. e. highlighting) ----
         row.setAttribute("_id", _id);
 
-        //name
+        // ---- name ----
         let tour_name = document.createElement("td");
         tour_name.innerText = name;
         row.insertCell().appendChild(tour_name);
 
-        //Info-Button
+        // ---- Info-Button ----
         let info_tour_button = document.createElement("button")
         info_tour_button.innerText = "Informationen"
         info_tour_button.setAttribute("type", "button")
@@ -193,37 +193,13 @@ async function update_table() {
         
         // populate popUp with tour information
         info_tour_button.addEventListener("click", function() {
-            //list all stations of the tour
-            let info_text = "<strong>Stationen:</strong>";
-            stations.forEach( function({properties}) {
-                    info_text += "<br>" + properties.name;
-            })
-            
-            //Tell user instructions how to follow the tour
-            info_text += "<br><br><strong>Anleitung zur Tour:</strong>"
-            info_text += "<br><div style='border:1px'>Diese Instruktionen kommen direkt von GRAPHHOPPER und sind somit leider nur auf englisch verfügbar.</div>"
-
-            instructions.forEach(function(instruction) {
-                if(instruction.text.startsWith("Waypoint")) {
-                    info_text += "<br><strong>You arrived at one station</strong>";
-                }
-                else if (instruction.text.startsWith("Arrive at destination")){
-                    info_text += "<br><strong>Arrive at destination</strong>";
-                }
-                else {
-                    info_text += "<br>" + instruction.text + " and follow the path for " + Math.round(instruction.distance) + " metres";
-                }
-            })
-            //Overall distance of tour
-            info_text+="<br><br><strong>Gesamtlänge</strong>: "
-            info_text+= distance + "m";
-
+            let info_text = build_info_text(stations, instructions, distance);
             document.getElementById("info_text").innerHTML = info_text;
         })
         
         row.insertCell().appendChild(info_tour_button)
 
-        //Update-Button
+        // ---- Update-Button ----
         let update_tour_button = document.createElement("button")
         update_tour_button.innerText = "Bearbeiten"
         update_tour_button.setAttribute("type", "button")
@@ -249,7 +225,7 @@ async function update_table() {
         
         row.insertCell().appendChild(update_tour_button)
 
-        //Delete-Button
+        // ---- Delete-Button ----
         let delete_tour_button = document.createElement("button")
         delete_tour_button.innerText = "Löschen"
         delete_tour_button.setAttribute("type", "button")
