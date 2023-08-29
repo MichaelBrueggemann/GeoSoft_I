@@ -1,6 +1,7 @@
 "use strict"
 import {zip_array_and_leaflet_layergroup, highlight, default_style, add_station_metadata} from "./map_helper.js"
-import {prepare_form_buttons} from "./station_forms.js"
+import {construct_error_message, prepare_form_buttons} from "./station_forms.js"
+
 
 let station_collection = {};
 
@@ -70,16 +71,7 @@ async function update_station(id, geojson)
 }
 
 // ----------------- Stations Table -----------------
-/**
- * Constructs an Error-Message from the error object
- * @param {*} error Error object returned by "express-validators" validationResult() function.
- * @param {} field Name of the Field in the control element, where the error occured
- * @returns {string} The Error Message as a string
- */
-function construct_error_message(error, field)
-{
-    return `Im Feld '${field}' ist ein Fehler. </br> Fehlernachricht: </br> ${error.message} </br></br>`
-}
+
 
 
 export async function update_table() {

@@ -102,11 +102,11 @@ function reset_form_validation_state(form)
 
 /**
  * Constructs an Error-Message from the error object
- * @param {*} error Error object returned by "express-validators" validationResult() function.
+ * @param {*} error Error object returned by "joi" validate() function.
  * @param {} field Name of the Field in the control element, where the error occured
  * @returns {string} The Error Message as a string
  */
-function construct_error_message(error, field)
+export function construct_error_message(error, field)
 {
     return `Im Feld '${field}' ist ein Fehler. </br> Fehlernachricht: </br> ${error.message} </br></br>`
 }
@@ -158,12 +158,11 @@ function prepare_map_form(map, drawnItems, drawControl)
         }
         else
         {
+            // remove Class to enable server site error styling
             if (MAP_FORM.classList.contains("was-validated"))
             {
                 MAP_FORM.classList.remove("was-validated")
             }
-            // add bootstrap css-class for styling of the error messages
-            //MAP_FORM.classList.add("was-validated")
 
             let formData = new FormData(MAP_FORM)
         
