@@ -2,21 +2,6 @@
 import {highlight, default_style, add_station_metadata} from "./map_helper.js"
 import {build_info_text, calculate_centroid, slice_tour} from "./tour_helper.js";
 
-//Highlighted Marker
-const PURPLE_MARKER = new L.Icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-}); 
-//Default Marker
-const BLUE_MARKER  = L.icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-});
-
 //this site has two modi (edit tours & show stations/tours) in which some elements should behave diffrently
 let working_on_tour_mode = false;
 
