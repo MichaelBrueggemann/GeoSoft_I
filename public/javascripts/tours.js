@@ -1,6 +1,6 @@
 "use strict"
 import {highlight, default_style, add_station_metadata} from "./map_helper.js"
-import {build_info_text, calculate_centroid, slice_tour} from "./tour_helper.js";
+import {build_info_text, calculate_centroid, get_routing_error_text, slice_tour} from "./tour_helper.js";
 
 //this site has two modi (edit tours & show stations/tours) in which some elements should behave diffrently
 let working_on_tour_mode = false;
@@ -454,12 +454,7 @@ CALCULATE_BUTTON.addEventListener("click", async function() {
     let route = await res.json();
     //Check result
     if (route.hasOwnProperty("message")) {
-        $('#routing_error_popup').modal('show');
-        let error_statement = "Leider konnte mit den ausgewählten Stationen keine Tour erstellt werden. <br>";
-        error_statement += "Dies könnte beispielsweise daran liegen, dass eine falsche Anzahl von Stationen ausgewählt wurde (min. 2) oder die Stationen nicht via Fahrrad zu verbinden sind. <br>";
-        error_statement += "Aber auch andere Fehler können auftreten und wir bitten um Entschuldigung, dass es nicht geklappt hat. <br>";
-        error_statement += "<br><br>Bitte überprüfen Sie ihre aktuelle Stationenauswahl und versuchen Sie es erneut."
-        document.getElementById("error_statement").innerHTML = error_statement;
+        get_routing_error_text(route.message);
     }
     else {
         //Slicing tour in segments for each waypoint
