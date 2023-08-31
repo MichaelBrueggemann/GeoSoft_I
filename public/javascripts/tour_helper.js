@@ -46,8 +46,8 @@ export function slice_tour(route, snapped_waypoints) {
 
 /**
  * This function builds an infotext for a tour containing:
- * 1. All stations get listed
- * 2. Instructions for following the tour
+ * 1. All stations in a list
+ * 2. Instructions how to follow the tour
  * 3. Overall distance of the tour
  * 
  * @param {*} stations - stations of the tour
@@ -62,7 +62,7 @@ export function build_info_text(stations, instructions, distance) {
             info_text += "<br>" + properties.name;
     });
             
-    //Give hints to instructions
+    //Gives hint to instructions
     info_text += "<br><br><strong>Anleitung zur Tour:</strong>"
     info_text += "<br><div style='border:1px'>Diese Instruktionen kommen direkt von GRAPHHOPPER und sind somit leider nur auf englisch verfügbar.</div>"
     //Tell user instructions how to follow the tour
@@ -84,9 +84,13 @@ export function build_info_text(stations, instructions, distance) {
     return info_text;
 }
 
+/**
+ * This function specify the text of the error-Popup for the User depending on the technical error-Message
+ * @param {*} message - error-Message of a route
+ */
 export function get_routing_error_text(message)
 {
-    $('#routing_error_popup').modal('show'); console.log(message)
+    $('#routing_error_popup').modal('show');
     let error_statement = "Leider konnte mit den ausgewählten Stationen keine Tour erstellt werden. <br>";
     if (message.startsWith("Specify at least 2 points")) {
         error_statement += "<strong>Dies liegt unter anderem daran, dass Sie weniger als 2 Stationen ausgewählt haben.</strong> <br>";

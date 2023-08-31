@@ -2,21 +2,23 @@
 import {highlight, default_style, add_station_metadata} from "./map_helper.js"
 import {build_info_text, calculate_centroid, get_routing_error_text, slice_tour} from "./tour_helper.js";
 
-//this site has two modi (edit tours & show stations/tours) in which some elements should behave diffrently
+// ------------ Definition & Initialization of global variables -------------
+//This site has two Modi (edit tours & show stations/tours) in which some elements should behave differently
 let working_on_tour_mode = false;
 
-//if you are editing tours, this variable contains all involved stations for the current tour
+//If you are editing tours, this variable contains all involved stations for the current tour
 let current_stations = [];
 //This safes which tour is highlighted or changing (null means nothing is highlighted and while creating its a new tour)
 let current_tour_id = null;
 
-//All availible tours are safed in the tours_collection
+//All available tours are saved in the tours_collection
 let tours_collection = {};
-//All availible stations are safed in the tours_collection
+//All available stations are saved in the tours_collection
 let stat_collection = {};
+
 /**
  * Stations cant be edited on this site so one initialisation via api is enough
- * So this function gets called within the "map initialisation"
+ * So this function gets called within the "map initialization"
 */
 async function init_stations(){
     stat_collection = await fetch("/api/stations");
@@ -100,12 +102,12 @@ async function update_table() {
     // Fill table with tour entries
     let table = document.getElementById("tour_table")
     let tbody = document.createElement('tbody')
-    //Each tour gets one row
+    //Each tour gets his one row
     tours_collection.forEach(function({ _id, name, stations, segments, instructions, distance }) {
         let row = tbody.insertRow();
         // ---- selection and highlighting of tours ----
         row.addEventListener("click", async function(event) {
-            row_click_event_handling(tbody, row, event, _id, instructions, segments);
+            row_click_event_handling(row, event, _id, instructions, segments);
         });
 
         // ---- invisible id for other methods (f. e. highlighting) ----
@@ -147,7 +149,7 @@ async function update_table() {
             //get access to map
             let init_values = await init_values_promise;
             let stations_layer_group = init_values.stations_layer_group;
-            //set Highlighting on stations in Tour
+            //set highlighting on stations in Tour
             stations_layer_group.eachLayer(function(layer) {
                 if (current_stations.map(obj => obj._id).includes(layer._id)) {  
                     highlight(layer);
@@ -201,8 +203,7 @@ async function initializeMap()
         else if (station.geometry.type === "Polygon")
         {
             // "coordinates" are accessed at index "0" because geoJSON wrappes the coordinates in an extra array
-            let polygon = L.polygon(station.geometry.coordinates[0].map(function(coord) // used to change coords from lng/lat to lat/lng
-            {
+            let polygon = L.polygon(station.geometry.coordinates[0].map(function(coord) {// used to change coords from lng/lat to lat/lng
                 return [coord[1], coord[0]]
             })).addTo(stations_layer_group)
             add_station_metadata(station, polygon)
@@ -218,7 +219,7 @@ async function initializeMap()
 }
 
 /**
- * This function adds needed event-listener to stations bzw their representational leaflet_objects
+ * This function adds needed event-listener to stations respectivley their representational leaflet_objects
  * @param {*} station - station which should get the eventlistener
  * @param {*} leaflet_object - leaflet_object of station which should get the eventlistener
  */
@@ -227,7 +228,7 @@ function add_station_events(station, leaflet_object) {
     leaflet_object.on("mouseover", function(event) {leaflet_object.openPopup();});
         //Select stations via click 
         leaflet_object.on("click", function(event) {
-            //if you are editing a tour change state of station_table
+            //if you are editing a tour -> change state of station_table
             if (working_on_tour_mode) {
                 //if the station wasnt selected before highlight it 
                 if (!leaflet_object.highlighted) {
@@ -333,14 +334,13 @@ async function stop_working_modi() {
  * This function handles the "click"-event on a row of the tour_table:
  * Tours (dis)apearing on the map and their segments have Popups with distances
  * 
- * @param {*} tbody - table-body in which a row is clicked
  * @param {*} row - row that is clicked
  * @param {*} event - click-event on the row
  * @param {*} _id - _id of the tour which is clicked on
  * @param {*} instructions - instructions of the tour which is clicked on
  * @param {*} segments - segments of the tour which is clicked on
  */
-async function row_click_event_handling(tbody, row, event, _id, instructions, segments) {
+async function row_click_event_handling(row, event, _id, instructions, segments) {
     if (event.target.tagName !== "BUTTON") {// only activates click event, if no button of the row is pressed
         //Dehighlight Tours in table and on map
         await dehighlight_tours();
@@ -355,8 +355,9 @@ async function row_click_event_handling(tbody, row, event, _id, instructions, se
             //calculate Segment_distances and store them in an array
             let segment_distances = [];
             let current_distance = 0;
-            //In GRAPHHOPPER-instructions is distance, so we can add these distances between the waypoints
+            //In GRAPHHOPPER-instructions is distance, so we can add these instead of calculate it costly
             instructions.forEach(function(instruction) {
+                // We want the distances seperated by the waypoints 
                 if(instruction.text.startsWith("Waypoint") || instruction.text.startsWith("Arrive at destination")) {
                     segment_distances.push(current_distance);
                     current_distance = 0;
@@ -371,7 +372,7 @@ async function row_click_event_handling(tbody, row, event, _id, instructions, se
             let map = init_values.map;
             let i = 0;
             let tour_layer = L.featureGroup().addTo(map);
-            //each toursegment gets his own Popup (inkl. distance)
+            //each toursegment gets his own Popup (incl. distance)
             segments.forEach(function(segment) {
                 let polyline = L.polyline(segment, {color: 'cadetblue', weight: 4}).addTo(tour_layer);
                 polyline.bindPopup("ca. " + Math.round(segment_distances[i]).toString() + "m");
@@ -395,14 +396,14 @@ async function row_click_event_handling(tbody, row, event, _id, instructions, se
 }
 
 /**
- * This function deletes all Tours from the map view
+ * This function deletes all tours from the map view
  * and sets all table colors on default
  */
 async function dehighlight_tours() {
     //get map of tour-website
     let init_values = await init_values_promise;
     let map = init_values.map;
-    //remove in tour_table selected tour because if it stays on the map it confuses
+    //remove in tour_table selected tour (because if it stays on the map it confuses)
     map.eachLayer(function(layer) {
         if(layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
             map.removeLayer(layer);
