@@ -3,7 +3,7 @@
 /**
  * Calculates Centroid of Polygon
  * @param {*} polygon - Polygon-Coordinates from which the Centroid should be derieved
- * @returns {*} - Centroid of Polygon in LatLng-Format
+ * @returns {*} - Object with Centroid of Polygon in LatLng-Format
  */
 export function calculate_centroid(polygon) {
     const VERTICES = polygon[0];
