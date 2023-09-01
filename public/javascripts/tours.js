@@ -339,7 +339,7 @@ async function stop_working_modi() {
  * This function handles the "click"-event on a row of the tour_table:
  * Tours (dis)apearing on the map and their segments have Popups with distances
  * 
- * @param {*} row - row that is clicked
+ * @param {*} row - clicked row
  * @param {*} event - click-event on the row
  * @param {*} _id - _id of the tour which is clicked on
  * @param {*} instructions - instructions of the tour which is clicked on
