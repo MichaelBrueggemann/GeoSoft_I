@@ -20,6 +20,16 @@ async function api_call(route, body) {
 }
 
 /**
+ * Deletes a tour from the DB
+ * @param {*} id - ID of tour to delete
+ */
+async function delete_tour(id) {
+    await api_call("delete_tour", { id: id });
+
+    await update_table();
+}
+
+/**
  * Deletes a station from the DB
  * @param {*} id - ID of station to delete
  */
@@ -40,12 +50,25 @@ async function delete_station(id) {
             tours_with_this_station.forEach(function ({name}) {
                 warning_text += "<br>" + name;
             });
-            document.getElementById("warning_message").innerHTML = warning_text;
+            //Make text visible in HTML
+            let warning_message = document.getElementById("warning_message");
+            warning_message.innerHTML = warning_text;
+            
+            // ----------------- Delete_Station_And_Tours - Button -----------------
+            const CANCEL_BUTTON = document.getElementById("delete_station_and_tours");
+            CANCEL_BUTTON.addEventListener("click", async function() {
+                tours_with_this_station.forEach(async function(tour) {
+                    await delete_tour(tour._id);
+                });
+                await delete_station(id);
+                $('#station_deletion_popup').modal('hide');
+                await update_map()
+                await update_table()
+            });
         }
-      }
+    }
     await update_map()
     await update_table()
-    
 }
 
 /**
@@ -341,5 +364,4 @@ prepare_form_buttons(map, drawnItems, drawControl)
 
 update_map()
 update_table()
-
 
