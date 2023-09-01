@@ -146,12 +146,13 @@ async function update_table() {
             tour_name_input.value = name;
             // Initialize station_table with stations of tour
             await update_stationtable(stations);
-            // get access to map
+            // get access to station_layers of the map
             let init_values = await init_values_promise;
             let stations_layer_group = init_values.stations_layer_group;
-            // set highlighting on stations in Tour
+            // every station-layer gets checked if its one that represents a station of the selected tour
             stations_layer_group.eachLayer(function(layer) {
                 if (current_stations.map(obj => obj._id).includes(layer._id)) {  
+                    // set highlighting on stations in Tour
                     highlight(layer);
                 }
             })
