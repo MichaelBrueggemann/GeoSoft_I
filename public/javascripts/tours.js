@@ -363,7 +363,7 @@ async function row_click_event_handler(row, event, _id, instructions, segments) 
             let current_distance = 0;
             // calculate distances per segment via distance information provided by Graphhopper-API
             instructions.forEach(function(instruction) {
-                // We want the distances seperated by the waypoints 
+                // distances should be calculated per segment
                 if(instruction.text.startsWith("Waypoint") || instruction.text.startsWith("Arrive at destination")) {
                     segment_distances.push(current_distance);
                     current_distance = 0;
