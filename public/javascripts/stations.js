@@ -62,6 +62,9 @@ async function delete_station(id) {
             });
         }
     }
+    else {
+        console.error('Fehler bei der API-Anfrage');
+    }
     await update_map()
     await update_table()
 }
