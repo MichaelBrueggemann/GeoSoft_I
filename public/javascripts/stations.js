@@ -1,6 +1,7 @@
 "use strict"
 import {zip_array_and_leaflet_layergroup, highlight, default_style, add_station_metadata} from "./map_helper.js"
-import {prepare_form_buttons} from "./station_forms.js"
+import {construct_error_message, prepare_form_buttons} from "./station_forms.js"
+
 
 let station_collection = {};
 
@@ -70,6 +71,8 @@ async function update_station(id, geojson)
 }
 
 // ----------------- Stations Table -----------------
+
+
 
 export async function update_table() {
     station_collection = await fetch("/api/stations")
@@ -293,11 +296,97 @@ function prepare_update_station_button()
             {
                 let json_result = await result.json()
                     
-                // add CSS-class to enable custom styling
-                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
+                let update_error_message = ""
 
-                // add error message from the server to the designated field
-                document.getElementById("invalid_feedback_update_geojson").innerHTML = json_result.message
+                    for (const ERROR of json_result.errors)
+                    {
+                        if (!ERROR.context.label.includes('properties.name'))
+                        {
+                            // pass
+                        }
+                        else
+                        {
+                            // invalidate the control element just once
+                            if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+                            {
+                                // add CSS-class to enable custom styling
+                                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
+                            }
+                            
+                            update_error_message += construct_error_message(ERROR, "Name")
+
+                            continue
+                        }
+
+                        if (!ERROR.context.label.includes('properties.description'))
+                        {
+                            // pass
+                        }
+                        else
+                        {
+                            // invalidate the control element just once
+                            if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+                            {
+                                // add CSS-class to enable custom styling
+                                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
+                            }
+
+                            update_error_message += construct_error_message(ERROR, "description")
+
+                            continue
+                        }
+
+                        if (!ERROR.context.label.includes('properties.url'))
+                        {
+                            // pass
+                        }
+                        else
+                        {
+                            // invalidate the control element just once
+                            if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+                            {
+                                // add CSS-class to enable custom styling
+                                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
+                            }
+
+                            update_error_message += construct_error_message(ERROR, "url")
+                        }
+
+                        if (!ERROR.context.label.includes('coordinates'))
+                        {
+                            // pass
+                        }
+                        else
+                        {
+                            // invalidate the control element just once
+                            if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+                            {
+                                // add CSS-class to enable custom styling
+                                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
+                            }
+
+                            update_error_message += construct_error_message(ERROR, "coordinates")
+                        }
+
+                        if (!ERROR.context.label.includes('geometry.type'))
+                        {
+                            // pass
+                        }
+                        else
+                        {
+                            // invalidate the control element just once
+                            if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+                            {
+                                // add CSS-class to enable custom styling
+                                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
+                            }
+
+                            update_error_message += construct_error_message(ERROR, "geometry.type")
+                        }
+                    }
+
+                    // add error message from the server to the designated field
+                    document.getElementById("invalid_feedback_update_geojson").innerHTML = update_error_message
             }
             else
             {
@@ -314,9 +403,6 @@ function prepare_update_station_button()
 }
 
 // ----------------- Script Start -----------------
-
-//TODO: schauen, ob man den Code so ändern kann, das man die globalen Variablen los wird. 
-
 // initialisation of mandatory global variables
 let map_init = initializeMap()
 let map = map_init.map

@@ -1,11 +1,11 @@
 "use strict"
 
-const { GEOJSON_ADD_SCHEMA, GEOJSON_UPDATE_SCHEMA } = require("../express_validator_schemes/geojson_schema")
+const {GEOJSON_SCHEMA, validate_input} = require("../validation_schemes/joi_schemas")
 
 const EXPRESS = require('express');
 const ROUTER = EXPRESS.Router();
 const DOTENV = require('dotenv');
-const { body, checkSchema, validationResult } = require('express-validator')
+
 
 // --------------- DATABASE INITIALIZATION ---------------
 
@@ -159,47 +159,23 @@ ROUTER.get('/stations', async function(_req, res) {
 })
 
 
-// added middleware to check whether the request-body matches the schema
-// For some unclear reasons the last validation chain "body('geometry.coordinates[0].*.*')..." has to be defined outside of the schema to work porperly
-ROUTER.post('/add_station', checkSchema(GEOJSON_ADD_SCHEMA, ['body']), 
-  body('geometry.coordinates[0].*.*')
-  .trim()
-  .notEmpty()
-  .withMessage("Die Koordinaten dürfen nicht leer sein!")
-  .custom(function(value) 
-  { 
-    // test if input is a valid float like "123.00", "123.x", "x.132"
-    return /\d+\.\d+/.test(parseFloat(value)) 
-  })
-  .withMessage("Die Koordinate muss eine Gleitkommazahlen sein!"), function(req, res) {
-  
-  const RESULT = validationResult(req)
-  const ERRORS = RESULT.array()
-  console.log("valid errors", ERRORS)
-  console.log(req.body)
+ROUTER.post('/add_station', function(req, res) {
+  let validation_result = validate_input(req.body, GEOJSON_SCHEMA)
+  console.log("valid result", validation_result.errorDetails)
 
   // request was invalid
-  if (ERRORS.length > 0)
+  if (validation_result.hasError)
   {
-    // let error_message = ""
-    // for (const error of ERRORS)
-    // {
-    //   error_message += `Im Wert '${error.value}' ist ein Fehler. Bitte beachte die Fehlernachricht: </br> "${error.msg}"`
-    //   if (ERRORS.length > 1)
-    //   {
-    //     error_message += "</br>"
-    //   }
-    // }
-    
-    res.status(400).json({errors: ERRORS})
+    res.status(400).json({errors: validation_result.errorDetails})
   }
   else
   {
     add_item(req.body, station_collection);
-    res.status(200).json({error: "Alles ok."})
+    res.status(200).json({errors: "Alles ok."})
   }
   
 });
+
 
 ROUTER.post('/delete_station', function(req, res) {
   const ID = req.body.id;
@@ -208,49 +184,24 @@ ROUTER.post('/delete_station', function(req, res) {
 });
 
 
-ROUTER.post('/update_station', checkSchema(GEOJSON_UPDATE_SCHEMA, ['body']), 
-body('geometry.coordinates[0].*.*')
-.trim()
-.notEmpty()
-.withMessage("Die Koordinaten dürfen nicht leer sein!")
-.custom(function(value) 
-{ 
-  // test if input is a valid float like "123.00", "123.x", "x.132"
-  return /\d+\.\d+/.test(parseFloat(value)) 
-})
-.withMessage("Die Koordinate muss eine Gleitkommazahlen sein!"), function(req, res) {
+ROUTER.post('/update_station', function(req, res) {
 
   const ID = req.body.id;
   let new_data = {
     geojson: req.body.geojson
   }
 
-  const RESULT = validationResult(req)
-  const ERRORS = RESULT.array()
-  console.log("valid errors", ERRORS)
-  console.log("Request Body im Update route", req.body)
+  let validation_result = validate_input(req.body.geojson, GEOJSON_SCHEMA)
 
   // request was invalid
-  if (ERRORS.length > 0)
+  if (validation_result.hasError)
   {
-    // let error_message = ""
-    // for (const error of ERRORS)
-    // {
-    //   error_message += `Im Wert '${error.value}' ist ein Fehler. Bitte beachte die Fehlernachricht: </br> "${error.msg}"`
-      
-    //   // multiple errors need a new line 
-    //   if (ERRORS.length > 1)
-    //   {
-    //     error_message += "</br>"
-    //   }
-    // }
-
-    res.status(400).json({errors: ERRORS})
+    res.status(400).json({errors: validation_result.errorDetails})
   }
   else
   {
     update_item(ID, new_data, station_collection)
-    res.status(200).json({error: "Alles ok."})
+    res.status(200).json({errors: "Alles ok."})
   }
 
 });

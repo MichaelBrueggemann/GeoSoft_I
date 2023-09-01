@@ -4,7 +4,7 @@ let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 
-let indexRouter = require('./routes/index');
+let beeRouter = require('./routes/bee');
 let stationsRouter = require('./routes/stations_route');
 let tourRouter = require('./routes/tour_route');
 let apiRouter = require('./routes/api');
@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
+app.use('/', beeRouter);
 app.use('/api', apiRouter);
 app.use('/stationsverwaltung', stationsRouter)
 app.use('/tourverwaltung', tourRouter);
@@ -43,5 +43,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
 
 module.exports = app;
