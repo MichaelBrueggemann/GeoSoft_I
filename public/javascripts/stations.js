@@ -16,12 +16,7 @@ async function api_call(route, body) {
         headers: {"content-type": "application/json"},
         body: JSON.stringify(body),
     })
-    // only send return server response, if a new station was added or updated
-    if (route === "add_station" || route === "update_station")
-    {
-        return result
-    }
-    
+    return result 
 }
 
 /**
@@ -29,8 +24,25 @@ async function api_call(route, body) {
  * @param {*} id - ID of station to delete
  */
 async function delete_station(id) {
-    await api_call("delete_station", { id: id })
-
+    let response = await api_call("delete_station", { id: id })
+    //Control if the API is online and worked as plannend
+    if (response.ok) {
+        const data = await response.json();
+        //If the data has this property there are tours which contains the station which should be deleted
+        if (data.hasOwnProperty("tours_with_this_station")) {
+            //the API tells client which tours contain the station
+            let tours_with_this_station = data.tours_with_this_station;
+            //So the User gets informend about the general issue
+            $('#station_deletion_popup').modal('show');
+            let warning_text = "Sie sind im Begriff eine Station zu löschen, die Bestandteil von mindestens einer Tour ist."
+            warning_text += "<br>Wenn Sie fortfahren werden zur Wahrung der referentiellen Integrität die <strong>folgenden Touren unwideruflich gelöscht</strong>:"
+            //And the User gets informed which tours are involved
+            tours_with_this_station.forEach(function ({name}) {
+                warning_text += "<br>" + name;
+            });
+            document.getElementById("warning_message").innerHTML = warning_text;
+        }
+      }
     await update_map()
     await update_table()
     

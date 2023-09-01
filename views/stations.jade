@@ -138,4 +138,15 @@ block content
           textarea#sample_geojson_textarea(rows='15' cols='45' style='resize:none' readonly)
         .modal-footer
           button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen
+
+  #station_deletion_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
+    .modal-dialog.modal-dialog-centered(role='document')
+      .modal-content
+        .modal-header
+          h5.modal-title Warnung
+          button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
+        .modal-body(align="center")
+          #warning_message
+        .modal-footer
+          button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Abbrechen
           

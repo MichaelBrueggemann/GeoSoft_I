@@ -202,9 +202,11 @@ ROUTER.post('/add_station', checkSchema(GEOJSON_ADD_SCHEMA, ['body']),
 });
 
 ROUTER.post('/delete_station', async function(req, res) {
+  //On the preservation of refferential integrity the tours must be controlled if they consists among others of this station
   let tours = await fetch("http://localhost:3000/api/tours");
   tours = await tours.json();
   const ID = req.body.id;
+  // All tours where the station is one part get stored, because the user should be explicit informed about them
   let tours_with_this_station = [];
   tours.forEach(function(tour) {
     tour.stations.forEach(function({_id}) {
@@ -213,13 +215,20 @@ ROUTER.post('/delete_station', async function(req, res) {
       }
     });
   });
+  //If the station isnt part of any tour it can simply deleted
   if (tours_with_this_station.length < 1) {
     delete_item(ID, station_collection);
+    res.json({
+      message : "Alles ok."
+    });
   }
+  //Else the client gets Error-Message and the tours which contains this station
   else {
-    console.log("Meldung und Popup, etc")
+    res.json({
+      message : "referentielle Integrität gefährdet",
+      tours_with_this_station : tours_with_this_station
+    });
   }
-  res.send();
 });
 
 
