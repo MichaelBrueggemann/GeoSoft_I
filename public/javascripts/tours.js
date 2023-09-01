@@ -164,6 +164,11 @@ async function update_table() {
         delete_tour_button.setAttribute("type", "button")
         delete_tour_button.setAttribute("class", "btn btn-primary")
         delete_tour_button.addEventListener("click",function() {
+            // When the selected tour gets deleted it should disappear from the map
+            if (current_tour_id == _id) {
+                current_tour_id = null;
+                dehighlight_tours();
+            }
             delete_tour(_id)
         })
         row.insertCell().appendChild(delete_tour_button)
