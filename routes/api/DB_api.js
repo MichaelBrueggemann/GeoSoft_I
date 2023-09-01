@@ -202,7 +202,7 @@ ROUTER.post('/add_station', checkSchema(GEOJSON_ADD_SCHEMA, ['body']),
 });
 
 ROUTER.post('/delete_station', async function(req, res) {
-  //On the preservation of refferential integrity the tours must be controlled if they consists among others of this station
+  // To preserve referential integrity, the current tours have to be checked
   let tours = await fetch("http://localhost:3000/api/tours");
   tours = await tours.json();
   const ID = req.body.id;
