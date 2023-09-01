@@ -201,9 +201,24 @@ ROUTER.post('/add_station', checkSchema(GEOJSON_ADD_SCHEMA, ['body']),
   
 });
 
-ROUTER.post('/delete_station', function(req, res) {
+ROUTER.post('/delete_station', async function(req, res) {
+  let tours = await fetch("http://localhost:3000/api/tours");
+  tours = await tours.json();
   const ID = req.body.id;
-  delete_item(ID, station_collection);
+  let tours_with_this_station = [];
+  tours.forEach(function(tour) {
+    tour.stations.forEach(function({_id}) {
+      if (_id == ID) {
+        tours_with_this_station.push(tour);
+      }
+    });
+  });
+  if (tours_with_this_station.length < 1) {
+    delete_item(ID, station_collection);
+  }
+  else {
+    console.log("Meldung und Popup, etc")
+  }
   res.send();
 });
 
