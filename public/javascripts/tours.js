@@ -343,7 +343,7 @@ async function stop_working_modi() {
  * @param {*} event - click-event for the row
  * @param {*} _id - _id of the clicked tour
  * @param {*} instructions - instructions of the clicked tour 
- * @param {*} segments - segments of the tour which is clicked on
+ * @param {*} segments - segments of the clicked tour 
  */
 async function row_click_event_handling(row, event, _id, instructions, segments) {
     if (event.target.tagName !== "BUTTON") {// only activates click event, if no button of the row is pressed
