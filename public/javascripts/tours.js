@@ -342,7 +342,7 @@ async function stop_working_modi() {
  * @param {*} row - clicked row
  * @param {*} event - click-event for the row
  * @param {*} _id - _id of the clicked tour
- * @param {*} instructions - instructions of the tour which is clicked on
+ * @param {*} instructions - instructions of the clicked tour 
  * @param {*} segments - segments of the tour which is clicked on
  */
 async function row_click_event_handling(row, event, _id, instructions, segments) {
