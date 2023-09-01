@@ -375,7 +375,7 @@ async function row_click_event_handling(row, event, _id, instructions, segments)
             //each toursegment gets his own Popup (incl. distance)
             segments.forEach(function(segment) {
                 let polyline = L.polyline(segment, {color: 'cadetblue', weight: 4}).addTo(tour_layer);
-                polyline.bindPopup("ca. " + Math.round(segment_distances[i]).toString() + "m");
+                polyline.bindPopup("Distanz: ca. " + Math.round(segment_distances[i]).toString() + "m");
                 i++;
                 //The Popup opens while hovering above the line-segment
                 polyline.on("mouseover", function(event) {
