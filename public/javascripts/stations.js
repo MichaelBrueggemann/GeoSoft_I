@@ -40,15 +40,12 @@ async function delete_station(id) {
         if (data.hasOwnProperty("tours_with_this_station")) {
             //the API tells client which tours contain the station
             let tours_with_this_station = data.tours_with_this_station;
-            //So the User gets informend about the general issue
             $('#station_deletion_popup').modal('show');
             let warning_text = "Sie sind im Begriff eine Station zu löschen, die Bestandteil von mindestens einer Tour ist."
             warning_text += "<br>Wenn Sie fortfahren werden zur Wahrung der referentiellen Integrität die <strong>folgenden Touren unwideruflich gelöscht</strong>:"
-            //And the User gets informed which tours are involved
             tours_with_this_station.forEach(function ({name}) {
                 warning_text += "<br>" + name;
             });
-            //Make text visible in HTML
             let warning_message = document.getElementById("warning_message");
             warning_message.innerHTML = warning_text;
             
