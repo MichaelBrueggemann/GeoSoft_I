@@ -215,14 +215,14 @@ ROUTER.post('/delete_station', async function(req, res) {
       }
     });
   });
-  //If the station isnt part of any tour it can simply deleted
+  // If the station isnt part of any tour it can simply deleted
   if (tours_with_this_station.length < 1) {
     delete_item(ID, station_collection);
     res.json({
       message : "Alles ok."
     });
   }
-  //Else the client gets Error-Message and the tours which contains this station
+  // Else the client gets Error-Message and the tours which contains this station
   else {
     res.json({
       message : "referentielle Integrität gefährdet",
