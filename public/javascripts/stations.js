@@ -25,8 +25,6 @@ async function api_call(route, body) {
  */
 async function delete_tour(id) {
     await api_call("delete_tour", { id: id });
-
-    await update_table();
 }
 
 /**
