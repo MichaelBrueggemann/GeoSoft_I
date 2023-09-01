@@ -14,15 +14,15 @@ let current_tour_id = null;
 // All available tours are saved in the tours_collection
 let tours_collection = {};
 // All available stations are saved in the tours_collection
-let stat_collection = {};
+let station_collection = {};
 
 /**
  * Stations cant be edited on this site so one initialisation via api is enough
  * So this function gets called within the "map initialization"
 */
 async function init_stations(){
-    stat_collection = await fetch("/api/stations");
-    stat_collection = await stat_collection.json();
+    station_collection = await fetch("/api/stations");
+    station_collection = await station_collection.json();
 }
 
 
@@ -196,7 +196,7 @@ async function initializeMap()
     map.addLayer(stations_layer_group)
 
     // Show stations on map
-    stat_collection.forEach(function(station) {
+    station_collection.forEach(function(station) {
 
         if(station.geometry.type === "Point")
         {
