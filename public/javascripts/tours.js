@@ -340,7 +340,7 @@ async function stop_working_modi() {
  * Tours (dis)apearing on the map and their segments have Popups with distances
  * 
  * @param {*} row - clicked row
- * @param {*} event - click-event on the row
+ * @param {*} event - click-event for the row
  * @param {*} _id - _id of the tour which is clicked on
  * @param {*} instructions - instructions of the tour which is clicked on
  * @param {*} segments - segments of the tour which is clicked on
