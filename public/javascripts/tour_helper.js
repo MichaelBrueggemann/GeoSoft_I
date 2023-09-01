@@ -59,26 +59,28 @@ export function build_info_text(stations, instructions, distance) {
     //list all stations of the tour
     let info_text = "<strong>Stationen:</strong>";
     stations.forEach( function({properties}) {
-            info_text += "<br>" + properties.name;
+            info_text += "<li>" + properties.name + "</li>";
     });
             
     //Gives hint to instructions
-    info_text += "<br><br><strong>Anleitung zur Tour:</strong>"
-    info_text += "<br><div style='border:1px'>Diese Instruktionen kommen direkt von GRAPHHOPPER und sind somit leider nur auf englisch verfügbar.</div>"
+    info_text += "<br><strong>Anleitung zur Tour:</strong>"
+    info_text += "<br><div style='border: 1px solid grey; padding: 10px;'>Diese Instruktionen kommen direkt von GRAPHHOPPER und sind somit leider nur auf englisch verfügbar.</div>"
     //Tell user instructions how to follow the tour
+    info_text += "<ol>";
     instructions.forEach(function(instruction) {
         if(instruction.text.startsWith("Waypoint")) {
-            info_text += "<br><strong>You arrived at one station</strong>";
+            info_text += "<li><strong>You arrived at one station</strong></li>";
         }
         else if (instruction.text.startsWith("Arrive at destination")){
-            info_text += "<br><strong>Arrive at destination</strong>";
+            info_text += "<li><strong>Arrive at destination</strong></li>";
         }
         else {
-            info_text += "<br>" + instruction.text + " and follow the path for " + Math.round(instruction.distance) + " metres";
+            info_text += "<li>" + instruction.text + " and follow the path for " + Math.round(instruction.distance) + " metres</li>";
         }
     })
+    info_text += "</ol>";
     //Overall distance of tour
-    info_text+="<br><br><strong>Gesamtlänge</strong>: "
+    info_text+="<br><strong>Gesamtlänge</strong>: "
     info_text+= distance + "m";
 
     return info_text;
