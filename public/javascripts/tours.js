@@ -102,7 +102,7 @@ async function update_table() {
     // Fill table with tour entries
     let table = document.getElementById("tour_table")
     let tbody = document.createElement('tbody')
-    // Each tour gets his one row
+    // for each tour a row is inserted
     tours_collection.forEach(function({ _id, name, stations, segments, instructions, distance }) {
         let row = tbody.insertRow();
         // ---- selection and highlighting of tours ----
