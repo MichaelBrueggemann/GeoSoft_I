@@ -32,7 +32,11 @@ const PROPERTIES_SCHEMA = JOI.object(
         // the RegEx allows letters, numbers and whitespace
         name: JOI.string().pattern(/^[a-zA-Z0-9\s]*$/).required(), 
         description: JOI.string().pattern(/^[a-zA-Z0-9\s]*$/).required(),
-        url: JOI.string().uri().allow("")
+        url: JOI.string().uri({ 
+            allowRelative: false,
+            relativeOnly: false,
+            domain: {tlds: {allow: true}}
+        }).allow("").message("The URL has to be of format: 'https://DomainName.Domain'")
     }
 )
 
