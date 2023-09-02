@@ -7,7 +7,8 @@ let logger = require('morgan');
 let beeRouter = require('./routes/bee');
 let stationsRouter = require('./routes/stations_route');
 let tourRouter = require('./routes/tour_route');
-let apiRouter = require('./routes/api');
+let DB_apiRouter = require('./routes/api/DB_api');
+let Routing_apiRouter = require('./routes/api/Routing_api');
 let impressumRouter = require('./routes/impressum');
 
 let app = express();
@@ -22,8 +23,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 app.use('/', beeRouter);
-app.use('/api', apiRouter);
+app.use('/api', DB_apiRouter);
+app.use('/api/routing', Routing_apiRouter);
 app.use('/stationsverwaltung', stationsRouter)
 app.use('/tourverwaltung', tourRouter);
 app.use('/impressum', impressumRouter);
