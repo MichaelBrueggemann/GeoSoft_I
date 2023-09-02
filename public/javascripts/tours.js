@@ -409,7 +409,7 @@ async function dehighlight_tours() {
     // get map of tour-website
     let init_values = await init_values_promise;
     let map = init_values.map;
-    // remove in tour_table selected tour (because if it stays on the map it confuses)
+    // remove selected tour
     map.eachLayer(function(layer) {
         if(layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
             map.removeLayer(layer);
