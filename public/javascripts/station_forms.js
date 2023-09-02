@@ -1,5 +1,6 @@
 "use strict"
 import { add_new_station } from "./stations.js"
+import { prepare_server_error_message } from "./station_error_messages.js"
 
 /**
  * Tests if the input is a valid geojson
@@ -12,12 +13,6 @@ function is_geojson(object)
     {
       return false
     }  
-
-    // Check if the "type" is "Feature" as it should be for GeoJSON
-    // if (object.type !== 'Feature') 
-    // {
-    //     return false
-    // }
 
     // check if the mandatory properties exists and are not-empty strings
     if (!(object.properties.hasOwnProperty('name') && object.properties.name !== "" && object.properties.hasOwnProperty('description') && object.properties.description !== ""))
@@ -91,6 +86,21 @@ function leave_add_station_mode(form)
 }
 
 /**
+ * Resets the CSS-Class "is-invalid" from all form elements
+ * @param {} form 
+ */
+function reset_form_validation_state(form)
+{
+    for (const CONTROL_ELEMENT of Object.values(form.elements))
+    {
+        if (CONTROL_ELEMENT.classList.contains("is-invalid"))
+        {
+            CONTROL_ELEMENT.classList.remove("is-invalid")
+        }
+    }
+}
+
+/**
  * This functions sole purpose is to increase readability of this code. 
  * It wraps the initialisation of the map_form form element
  * @param {Object} map - Leaflet Map for form interactions
@@ -135,8 +145,11 @@ function prepare_map_form(map, drawnItems, drawControl)
         }
         else
         {
-            // add bootstrap css-class for styling of the error messages
-            MAP_FORM.classList.add("was-validated")
+            // remove Class to enable server site error styling
+            if (MAP_FORM.classList.contains("was-validated"))
+            {
+                MAP_FORM.classList.remove("was-validated")
+            }
 
             let formData = new FormData(MAP_FORM)
         
@@ -153,18 +166,95 @@ function prepare_map_form(map, drawnItems, drawControl)
             }
 
             // send data to API
-            add_new_station(request_body)
+            let result = await add_new_station(request_body)
             
-            MAP_FORM.reset()
+            // check, whether a HTTP Error has occur from the API Call
+            if (!result.ok) 
+            {
+                let json_result = await result.json()
 
-            // resets all elements drawn with the draw-tool
-            drawnItems.clearLayers() 
+                for (const ERROR of json_result.errors)
+                {
+                    if (!ERROR.context.label.includes('properties.name'))
+                    {
+                        // pass
+                    }
+                    else
+                    {
+                        // invalidate the control element just once
+                        if (!document.getElementById("input_name").classList.contains("is-invalid"))
+                        {
+                            // add CSS-class to enable custom styling
+                            document.getElementById("input_name").classList.add("is-invalid")
+                        }
+                        
+                        let name_error_message = ""
+                        name_error_message += construct_error_message(ERROR, "Name")
 
-            // deactivate draw control on map
-            map.removeControl(drawControl)
+                        // add error message from the server to the designated field
+                        document.getElementById("invalid_feedback_name").innerHTML = name_error_message
 
-            // hide coressponding form element
-            leave_add_station_mode(MAP_FORM)
+                        continue
+                    }
+
+                    if (!ERROR.context.label.includes('properties.description'))
+                    {
+                        // pass
+                    }
+                    else
+                    {
+                        // invalidate the control element just once
+                        if (!document.getElementById("input_description").classList.contains("is-invalid"))
+                        {
+                            // add CSS-class to enable custom styling
+                            document.getElementById("input_description").classList.add("is-invalid")
+                        }
+
+                        let description_error_message = ""
+                        description_error_message += construct_error_message(ERROR, "Beschreibung")
+
+                        // add error message from the server to the designated field
+                        document.getElementById("invalid_feedback_description").innerHTML = description_error_message
+
+                        continue
+                    }
+
+                    if (!ERROR.context.label.includes('properties.url'))
+                    {
+                        // pass
+                    }
+                    else
+                    {
+                        // invalidate the control element just once
+                        if (!document.getElementById("input_url").classList.contains("is-invalid"))
+                        {
+                            // add CSS-class to enable custom styling
+                            document.getElementById("input_url").classList.add("is-invalid")
+                        }
+
+                        let url_error_message = ""
+                        url_error_message += construct_error_message(ERROR, "URL")
+
+                        // add error message from the server to the designated field
+                        document.getElementById("invalid_feedback_url").innerHTML = url_error_message
+                    }
+                }
+            }
+            else
+            {
+                MAP_FORM.reset()
+
+                reset_form_validation_state(MAP_FORM)
+
+                // resets all elements drawn with the draw-tool
+                drawnItems.clearLayers()
+
+                // deactivate draw control on map
+                map.removeControl(drawControl)
+
+                // hide coressponding form element
+                leave_add_station_mode(MAP_FORM)
+            }
         }
     })
 
@@ -175,6 +265,8 @@ function prepare_map_form(map, drawnItems, drawControl)
         map.removeControl(drawControl)
 
         MAP_FORM.reset()
+
+        reset_form_validation_state(MAP_FORM)
 
         // reset all unfinished map drawings
         drawnItems.clearLayers()
@@ -207,52 +299,11 @@ function prepare_geojson_textarea_form()
 
     let textarea_geojson = document.getElementById("textarea_geoJSON")
 
-    // validate textarea_geoJSON control element
-    // document.getElementById("textarea_geoJSON").addEventListener("input", function()
-    // {
-    //     let value_of_geojson_textarea = this.value
-
-    //     let geojson = {}
-
-    //     try 
-    //     {
-    //         geojson = JSON.parse(value_of_geojson_textarea)
-    //     } 
-    //     catch (error) 
-    //     {
-    //         // console.log("Keine GeoJSON eingegeben: ", error)
-    //     }
-    //     // if the input isn't a correct GeoJSON
-    //     if (!is_geojson(geojson))
-    //     {
-    //         // invalidate textarea for later validation via HTML constraint validation API
-    //         this.setCustomValidity("noGeoJSON")
-    //     }
-    //     else
-    //     {
-    //         // reset, to prevent wrong validation results
-    //         this.setCustomValidity("")
-    //     }
-    // })
-
     // submit_geojson_textarea_form button
     document.getElementById("submit_geojson_textarea_form").addEventListener("click", async function(event)
     {
-        // if (!GEOJSON_TEXTAREA_FORM.checkValidity())
-        // {
-        //     event.preventDefault()
-
-        //     // add bootstrap css-class for styling of the error messages
-        //     GEOJSON_TEXTAREA_FORM.classList.add("was-validated")
-        // }
-        // else
-        {
             event.preventDefault()
 
-            // add bootstrap css-class for styling of the error messages
-            //GEOJSON_TEXTAREA_FORM.classList.add("was-validated")
-
-            
             try 
             {
                 // parse body from form
@@ -266,11 +317,10 @@ function prepare_geojson_textarea_form()
                 {
                     let json_result = await result.json()
                     
-                    // add CSS-class to enable custom styling
-                    textarea_geojson.classList.add("is-invalid")
+                    let error_message = prepare_server_error_message(json_result.errors, "textarea_geoJSON")
 
                     // add error message from the server to the designated field
-                    document.getElementById("invalid_feedback_geojson").innerHTML = json_result.message
+                    document.getElementById("invalid_feedback_geojson").innerHTML = error_message
                 }
                 else
                 {
@@ -283,16 +333,21 @@ function prepare_geojson_textarea_form()
                     // hide coressponding form element
                     leave_add_station_mode(GEOJSON_TEXTAREA_FORM)
                 }
-
-                
-            } 
+            }
+            // catches an error in the execution of "JSON.parse()"
             catch (error) 
             {
-                // console.log("Fehler beim Lesen der GeoJSON: ", error)
+                // invalidate the control element just once
+                if (!document.getElementById("textarea_geoJSON").classList.contains("is-invalid"))
+                {
+                    // add CSS-class to enable custom styling
+                    document.getElementById("textarea_geoJSON").classList.add("is-invalid")
+                }
+                // returns the error occured in "JSON.parse()" to the user
+                document.getElementById("invalid_feedback_geojson").innerHTML = error
             }
-            
-        }
     })
+    
 
     // cancel_geojson_textarea_form button
     document.getElementById("cancel_geojson_textarea_form").addEventListener("click", function()
@@ -433,16 +488,6 @@ function prepare_geojson_upload_form()
     // submit_geojson_upload_form button
     document.getElementById("submit_geojson_upload_form").addEventListener("click", async function(event)
     {
-        
-        // if (!GEOJSON_UPLOAD_FORM.checkValidity())
-        // {
-        //     event.preventDefault()
-
-        //     // add bootstrap css-class for styling of the error messages
-        //     GEOJSON_UPLOAD_FORM.classList.add("was-validated")
-        // }
-        // else
-        {
             event.preventDefault()
            
             let upload_form_data = document.getElementById("hidden_geojson_data_from_upload")
@@ -458,11 +503,10 @@ function prepare_geojson_upload_form()
                 {
                     let json_result = await result.json()
                     
-                    // add CSS-class to enable custom styling
-                    GEOJSON_FILE_UPLOAD.classList.add("is-invalid")
+                    let error_message = prepare_server_error_message(json_result.errors, "file_upload_geoJSON")
 
                     // add error message from the server to the designated field
-                    document.getElementById("invalid_feedback_fileupload_geojson").innerHTML = json_result.message
+                    document.getElementById("invalid_feedback_fileupload_geojson").innerHTML = error_message
                 }
                 else
                 {
@@ -483,11 +527,17 @@ function prepare_geojson_upload_form()
             } 
             catch (error) 
             {
-                // console.log("Keine GeoJSON eingegeben: ", error)
-                // if for some reason a error occurs nothing should happen after the event
+                // invalidate the control element just once
+                if (!document.getElementById("file_upload_geoJSON").classList.contains("is-invalid"))
+                {
+                    // add CSS-class to enable custom styling
+                    document.getElementById("file_upload_geoJSON").classList.add("is-invalid")
+                }
+                // returns the error occured in "JSON.parse()" to the user
+                document.getElementById("invalid_feedback_fileupload_geojson").innerHTML = error
             }  
-        }
     })
+    
 
     // cancel_geojson_upload_form button
     document.getElementById("cancel_geojson_upload_form").addEventListener("click", function()

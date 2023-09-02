@@ -1,6 +1,7 @@
 "use strict"
 import {zip_array_and_leaflet_layergroup, highlight, default_style, add_station_metadata} from "./map_helper.js"
 import {prepare_form_buttons} from "./station_forms.js"
+import { prepare_server_error_message } from "./station_error_messages.js"
 
 let station_collection = {};
 
@@ -103,6 +104,8 @@ async function update_station(id, geojson)
 }
 
 // ----------------- Stations Table -----------------
+
+
 
 export async function update_table() {
     station_collection = await fetch("/api/stations")
@@ -317,39 +320,50 @@ function prepare_update_station_button()
         // set/overwrite event on button "#update_station"
         if (event.target.id === 'update_station') {
             const UPDATE_STATION_TEXTAREA = document.getElementById(`update_stationGeoJSON`)
-            const UPDATED_STATION = JSON.parse(UPDATE_STATION_TEXTAREA.value)
-            const STATION_ID = UPDATE_STATION_TEXTAREA.dataset.station_id
-            
-            let result = await update_station(STATION_ID, UPDATED_STATION)
 
-            if (!result.ok)
+            try
             {
-                let json_result = await result.json()
-                    
-                // add CSS-class to enable custom styling
-                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
-
-                // add error message from the server to the designated field
-                document.getElementById("invalid_feedback_update_geojson").innerHTML = json_result.message
-            }
-            else
-            {
-                if (document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+                const UPDATED_STATION = JSON.parse(UPDATE_STATION_TEXTAREA.value)
+                const STATION_ID = UPDATE_STATION_TEXTAREA.dataset.station_id
+                
+                let result = await update_station(STATION_ID, UPDATED_STATION)
+    
+                if (!result.ok)
                 {
-                    document.getElementById("update_stationGeoJSON").classList.remove("is-invalid")
+                    let json_result = await result.json()
+                        
+                    let error_message = prepare_server_error_message(json_result.errors, "update_stationGeoJSON")
+                    
+                    // add error message from the server to the designated field
+                    document.getElementById("invalid_feedback_update_geojson").innerHTML = error_message
                 }
-
-                // manually hide modal
-                $('#edit_station_popup').modal('hide')
+                else
+                {
+                    if (document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+                    {
+                        document.getElementById("update_stationGeoJSON").classList.remove("is-invalid")
+                    }
+    
+                    // manually hide modal
+                    $('#edit_station_popup').modal('hide')
+                }
+            }
+            catch (error)
+            {
+                // invalidate the control element just once
+                if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+                {
+                    // add CSS-class to enable custom styling
+                    document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
+                }
+                // returns the error occured in "JSON.parse()" to the user
+                document.getElementById("invalid_feedback_update_geojson").innerHTML = error
             }
         }
     })
 }
 
 // ----------------- Script Start -----------------
-
-//TODO: schauen, ob man den Code so ändern kann, das man die globalen Variablen los wird. 
-
 // initialisation of mandatory global variables
 let map_init = initializeMap()
 let map = map_init.map

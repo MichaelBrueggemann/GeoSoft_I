@@ -2,8 +2,8 @@ let express = require('express');
 let router = express.Router();
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Fahrradtourplanung' });
-});
+router.get('/bee', function(req, res, next) {
+  res.render('bee');
+})
 
 module.exports = router;
