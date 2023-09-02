@@ -676,6 +676,43 @@ function prepare_geojson_upload_form()
 
                     for (const ERROR of json_result.errors)
                     {
+                        // invalidates any field that is not defined in the schemas in "joi_schemas.js"
+                        if (!ERROR.type.includes('object.unknown'))
+                        {
+                            // pass
+                        }
+                        else
+                        {
+                            // invalidate the control element just once
+                            if (!document.getElementById("file_upload_geoJSON").classList.contains("is-invalid"))
+                            {
+                                // add CSS-class to enable custom styling
+                                document.getElementById("file_upload_geoJSON").classList.add("is-invalid")
+                            }
+                            
+                            upload_error_message += construct_error_message(ERROR, `${ERROR.context.label}`)
+
+                            continue
+                        }
+
+                        if (!ERROR.context.label.includes('type'))
+                        {
+                            // pass
+                        }
+                        else
+                        {
+                            // invalidate the control element just once
+                            if (!document.getElementById("file_upload_geoJSON").classList.contains("is-invalid"))
+                            {
+                                // add CSS-class to enable custom styling
+                                document.getElementById("file_upload_geoJSON").classList.add("is-invalid")
+                            }
+                            
+                            upload_error_message += construct_error_message(ERROR, "type")
+
+                            continue
+                        }
+
                         if (!ERROR.context.label.includes('properties.name'))
                         {
                             // pass
@@ -728,6 +765,38 @@ function prepare_geojson_upload_form()
                             upload_error_message += construct_error_message(ERROR, "url")
                         }
 
+                        if (!ERROR.context.label.includes('geometry'))
+                        {
+                            // pass
+                        }
+                        else
+                        {
+                            // invalidate the control element just once
+                            if (!document.getElementById("file_upload_geoJSON").classList.contains("is-invalid"))
+                            {
+                                // add CSS-class to enable custom styling
+                                document.getElementById("file_upload_geoJSON").classList.add("is-invalid")
+                            }
+
+                            upload_error_message += construct_error_message(ERROR, "geometry")
+                        }
+                        
+                        if (!ERROR.context.label.includes('properties'))
+                        {
+                            // pass
+                        }
+                        else
+                        {
+                            // invalidate the control element just once
+                            if (!document.getElementById("file_upload_geoJSON").classList.contains("is-invalid"))
+                            {
+                                // add CSS-class to enable custom styling
+                                document.getElementById("file_upload_geoJSON").classList.add("is-invalid")
+                            }
+
+                            upload_error_message += construct_error_message(ERROR, "properties")
+                        }
+
                         if (!ERROR.context.label.includes('coordinates'))
                         {
                             // pass
@@ -760,6 +829,7 @@ function prepare_geojson_upload_form()
                             upload_error_message += construct_error_message(ERROR, "geometry.type")
                         }
                     }
+
                     // add error message from the server to the designated field
                     document.getElementById("invalid_feedback_fileupload_geojson").innerHTML = upload_error_message
                 }
@@ -782,8 +852,14 @@ function prepare_geojson_upload_form()
             } 
             catch (error) 
             {
-                // console.log("Keine GeoJSON eingegeben: ", error)
-                // if for some reason a error occurs nothing should happen after the event
+                // invalidate the control element just once
+                if (!document.getElementById("file_upload_geoJSON").classList.contains("is-invalid"))
+                {
+                    // add CSS-class to enable custom styling
+                    document.getElementById("file_upload_geoJSON").classList.add("is-invalid")
+                }
+                // returns the error occured in "JSON.parse()" to the user
+                document.getElementById("invalid_feedback_fileupload_geojson").innerHTML = error
             }  
     })
     
