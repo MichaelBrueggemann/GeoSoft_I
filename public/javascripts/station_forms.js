@@ -334,6 +334,25 @@ function prepare_geojson_textarea_form()
 
                     for (const ERROR of json_result.errors)
                     {
+                        // invalidates any field that is not defined in the schemas in "joi_schemas.js"
+                        if (!ERROR.type.includes('object.unknown'))
+                        {
+                            // pass
+                        }
+                        else
+                        {
+                            // invalidate the control element just once
+                            if (!document.getElementById("textarea_geoJSON").classList.contains("is-invalid"))
+                            {
+                                // add CSS-class to enable custom styling
+                                document.getElementById("textarea_geoJSON").classList.add("is-invalid")
+                            }
+                            
+                            textarea_error_message += construct_error_message(ERROR, `${ERROR.context.label}`)
+
+                            continue
+                        }
+
                         if (!ERROR.context.label.includes('type'))
                         {
                             // pass
