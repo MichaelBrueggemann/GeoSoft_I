@@ -1,7 +1,7 @@
 "use strict"
 import {zip_array_and_leaflet_layergroup, highlight, default_style, add_station_metadata} from "./map_helper.js"
-import {construct_error_message, prepare_form_buttons} from "./station_forms.js"
-
+import {prepare_form_buttons} from "./station_forms.js"
+import { prepare_server_error_message } from "./station_error_messages.js"
 
 let station_collection = {};
 
@@ -287,185 +287,44 @@ function prepare_update_station_button()
         // set/overwrite event on button "#update_station"
         if (event.target.id === 'update_station') {
             const UPDATE_STATION_TEXTAREA = document.getElementById(`update_stationGeoJSON`)
-            const UPDATED_STATION = JSON.parse(UPDATE_STATION_TEXTAREA.value)
-            const STATION_ID = UPDATE_STATION_TEXTAREA.dataset.station_id
-            
-            let result = await update_station(STATION_ID, UPDATED_STATION)
 
-            if (!result.ok)
+            try
             {
-                let json_result = await result.json()
-                    
-                let update_error_message = ""
-
-                    for (const ERROR of json_result.errors)
-                    {
-                        // invalidates any field that is not defined in the schemas in "joi_schemas.js"
-                        if (!ERROR.type.includes('object.unknown'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
-                            }
-                            
-                            update_error_message += construct_error_message(ERROR, `${ERROR.context.label}`)
-
-                            continue
-                        }
-
-                        if (!ERROR.context.label.includes('type'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
-                            }
-                            
-                            update_error_message += construct_error_message(ERROR, "type")
-
-                            continue
-                        }
-
-                        if (!ERROR.context.label.includes('properties.name'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
-                            }
-                            
-                            update_error_message += construct_error_message(ERROR, "Name")
-
-                            continue
-                        }
-
-                        if (!ERROR.context.label.includes('properties.description'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
-                            }
-
-                            update_error_message += construct_error_message(ERROR, "description")
-
-                            continue
-                        }
-
-                        if (!ERROR.context.label.includes('properties.url'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
-                            }
-
-                            update_error_message += construct_error_message(ERROR, "url")
-                        }
-
-                        if (!ERROR.context.label.includes('geometry'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
-                            }
-
-                            update_error_message += construct_error_message(ERROR, "geometry")
-                        }
-                        
-                        if (!ERROR.context.label.includes('properties'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
-                            }
-
-                            update_error_message += construct_error_message(ERROR, "properties")
-                        }
-
-                        if (!ERROR.context.label.includes('coordinates'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
-                            }
-
-                            update_error_message += construct_error_message(ERROR, "coordinates")
-                        }
-
-                        if (!ERROR.context.label.includes('geometry.type'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
-                            }
-
-                            update_error_message += construct_error_message(ERROR, "geometry.type")
-                        }
-                    }
-
-                    // add error message from the server to the designated field
-                    document.getElementById("invalid_feedback_update_geojson").innerHTML = update_error_message
-            }
-            else
-            {
-                if (document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+                const UPDATED_STATION = JSON.parse(UPDATE_STATION_TEXTAREA.value)
+                const STATION_ID = UPDATE_STATION_TEXTAREA.dataset.station_id
+                
+                let result = await update_station(STATION_ID, UPDATED_STATION)
+    
+                if (!result.ok)
                 {
-                    document.getElementById("update_stationGeoJSON").classList.remove("is-invalid")
+                    let json_result = await result.json()
+                        
+                    let error_message = prepare_server_error_message(json_result.errors, "update_stationGeoJSON")
+                    
+                    // add error message from the server to the designated field
+                    document.getElementById("invalid_feedback_update_geojson").innerHTML = error_message
                 }
-
-                // manually hide modal
-                $('#edit_station_popup').modal('hide')
+                else
+                {
+                    if (document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+                    {
+                        document.getElementById("update_stationGeoJSON").classList.remove("is-invalid")
+                    }
+    
+                    // manually hide modal
+                    $('#edit_station_popup').modal('hide')
+                }
+            }
+            catch (error)
+            {
+                // invalidate the control element just once
+                if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+                {
+                    // add CSS-class to enable custom styling
+                    document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
+                }
+                // returns the error occured in "JSON.parse()" to the user
+                document.getElementById("invalid_feedback_update_geojson").innerHTML = error
             }
         }
     })

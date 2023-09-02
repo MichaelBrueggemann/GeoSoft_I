@@ -13,7 +13,7 @@ function construct_error_message(error, field)
 }
 
 /**
- * This function checks each error of erros, if it's label is one of those defined in this function. If so, a custom error message is 
+ * This function checks each error of "erros", if it's label is one of those defined in this function. If so, a custom error message is 
  * added to the error_message string.
  * @param {*} errors - joi errors array returned by "schema.validate()"
  * @param {*} control_element - the control element which should be styled with an error message
