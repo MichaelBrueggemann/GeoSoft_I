@@ -49,11 +49,11 @@ const GEOJSON_SCHEMA = JOI.object(
         {
             throw new Error("'type' must be 'Feature'")
         }
-        }),
-        properties: PROPERTIES_SCHEMA,
-        geometry: GEOMETRY_SCHEMA
+        }).required(),
+        properties: PROPERTIES_SCHEMA.required(),
+        geometry: GEOMETRY_SCHEMA.required()
     }
-  ).options({abortEarly: false}) // makes sure, each error is return
+  ).required().options({abortEarly: false}) // makes sure, each error is returned
 
 
 /**

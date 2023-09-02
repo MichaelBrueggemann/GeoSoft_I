@@ -423,6 +423,38 @@ function prepare_geojson_textarea_form()
                             textarea_error_message += construct_error_message(ERROR, "url")
                         }
 
+                        if (!ERROR.context.label.includes('geometry'))
+                        {
+                            // pass
+                        }
+                        else
+                        {
+                            // invalidate the control element just once
+                            if (!document.getElementById("textarea_geoJSON").classList.contains("is-invalid"))
+                            {
+                                // add CSS-class to enable custom styling
+                                document.getElementById("textarea_geoJSON").classList.add("is-invalid")
+                            }
+
+                            textarea_error_message += construct_error_message(ERROR, "geometry")
+                        }
+                        
+                        if (!ERROR.context.label.includes('properties'))
+                        {
+                            // pass
+                        }
+                        else
+                        {
+                            // invalidate the control element just once
+                            if (!document.getElementById("textarea_geoJSON").classList.contains("is-invalid"))
+                            {
+                                // add CSS-class to enable custom styling
+                                document.getElementById("textarea_geoJSON").classList.add("is-invalid")
+                            }
+
+                            textarea_error_message += construct_error_message(ERROR, "properties")
+                        }
+
                         if (!ERROR.context.label.includes('coordinates'))
                         {
                             // pass
