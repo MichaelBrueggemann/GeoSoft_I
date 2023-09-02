@@ -1,5 +1,6 @@
 "use strict"
 import { add_new_station } from "./stations.js"
+import { prepare_server_error_message } from "./station_error_messages.js"
 
 /**
  * Tests if the input is a valid geojson
@@ -98,20 +99,6 @@ function reset_form_validation_state(form)
         }
     }
 }
-
-
-/**
- * Constructs an Error-Message from the error object
- * @param {*} error Error object returned by "joi" validate() function.
- * @param {} field Name of the Field in the control element, where the error occured
- * @returns {string} The Error Message as a string
- */
-export function construct_error_message(error, field)
-{
-    return `Im Feld '${field}' ist ein Fehler. </br> Fehlernachricht: </br> ${error.message} </br></br>`
-}
-
-
 
 /**
  * This functions sole purpose is to increase readability of this code. 
@@ -330,166 +317,10 @@ function prepare_geojson_textarea_form()
                 {
                     let json_result = await result.json()
                     
-                    let textarea_error_message = ""
-
-                    for (const ERROR of json_result.errors)
-                    {
-                        // invalidates any field that is not defined in the schemas in "joi_schemas.js"
-                        if (!ERROR.type.includes('object.unknown'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("textarea_geoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("textarea_geoJSON").classList.add("is-invalid")
-                            }
-                            
-                            textarea_error_message += construct_error_message(ERROR, `${ERROR.context.label}`)
-
-                            continue
-                        }
-
-                        if (!ERROR.context.label.includes('type'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("textarea_geoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("textarea_geoJSON").classList.add("is-invalid")
-                            }
-                            
-                            textarea_error_message += construct_error_message(ERROR, "type")
-
-                            continue
-                        }
-
-                        if (!ERROR.context.label.includes('properties.name'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("textarea_geoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("textarea_geoJSON").classList.add("is-invalid")
-                            }
-                            
-                            textarea_error_message += construct_error_message(ERROR, "Name")
-
-                            continue
-                        }
-
-                        if (!ERROR.context.label.includes('properties.description'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("textarea_geoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("textarea_geoJSON").classList.add("is-invalid")
-                            }
-
-                            textarea_error_message += construct_error_message(ERROR, "description")
-
-                            continue
-                        }
-
-                        if (!ERROR.context.label.includes('properties.url'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("textarea_geoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("textarea_geoJSON").classList.add("is-invalid")
-                            }
-
-                            textarea_error_message += construct_error_message(ERROR, "url")
-                        }
-
-                        if (!ERROR.context.label.includes('geometry'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("textarea_geoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("textarea_geoJSON").classList.add("is-invalid")
-                            }
-
-                            textarea_error_message += construct_error_message(ERROR, "geometry")
-                        }
-                        
-                        if (!ERROR.context.label.includes('properties'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("textarea_geoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("textarea_geoJSON").classList.add("is-invalid")
-                            }
-
-                            textarea_error_message += construct_error_message(ERROR, "properties")
-                        }
-
-                        if (!ERROR.context.label.includes('coordinates'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("textarea_geoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("textarea_geoJSON").classList.add("is-invalid")
-                            }
-
-                            textarea_error_message += construct_error_message(ERROR, "coordinates")
-                        }
-
-                        if (!ERROR.context.label.includes('geometry.type'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("textarea_geoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("textarea_geoJSON").classList.add("is-invalid")
-                            }
-
-                            textarea_error_message += construct_error_message(ERROR, "geometry.type")
-                        }
-                    }
+                    let error_message = prepare_server_error_message(json_result.errors, "textarea_geoJSON")
 
                     // add error message from the server to the designated field
-                    document.getElementById("invalid_feedback_geojson").innerHTML = textarea_error_message
+                    document.getElementById("invalid_feedback_geojson").innerHTML = error_message
                 }
                 else
                 {
@@ -502,9 +333,8 @@ function prepare_geojson_textarea_form()
                     // hide coressponding form element
                     leave_add_station_mode(GEOJSON_TEXTAREA_FORM)
                 }
-
-                
-            } 
+            }
+            // catches an error in the execution of "JSON.parse()"
             catch (error) 
             {
                 // invalidate the control element just once
@@ -672,166 +502,11 @@ function prepare_geojson_upload_form()
                 if (!result.ok) 
                 {
                     let json_result = await result.json()
-                    let upload_error_message = ""
-
-                    for (const ERROR of json_result.errors)
-                    {
-                        // invalidates any field that is not defined in the schemas in "joi_schemas.js"
-                        if (!ERROR.type.includes('object.unknown'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("file_upload_geoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("file_upload_geoJSON").classList.add("is-invalid")
-                            }
-                            
-                            upload_error_message += construct_error_message(ERROR, `${ERROR.context.label}`)
-
-                            continue
-                        }
-
-                        if (!ERROR.context.label.includes('type'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("file_upload_geoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("file_upload_geoJSON").classList.add("is-invalid")
-                            }
-                            
-                            upload_error_message += construct_error_message(ERROR, "type")
-
-                            continue
-                        }
-
-                        if (!ERROR.context.label.includes('properties.name'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("file_upload_geoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("file_upload_geoJSON").classList.add("is-invalid")
-                            }
-                            
-                            upload_error_message += construct_error_message(ERROR, "Name")
-
-                            continue
-                        }
-
-                        if (!ERROR.context.label.includes('properties.description'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("file_upload_geoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("file_upload_geoJSON").classList.add("is-invalid")
-                            }
-
-                            upload_error_message += construct_error_message(ERROR, "description")
-
-                            continue
-                        }
-
-                        if (!ERROR.context.label.includes('properties.url'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("file_upload_geoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("file_upload_geoJSON").classList.add("is-invalid")
-                            }
-
-                            upload_error_message += construct_error_message(ERROR, "url")
-                        }
-
-                        if (!ERROR.context.label.includes('geometry'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("file_upload_geoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("file_upload_geoJSON").classList.add("is-invalid")
-                            }
-
-                            upload_error_message += construct_error_message(ERROR, "geometry")
-                        }
-                        
-                        if (!ERROR.context.label.includes('properties'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("file_upload_geoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("file_upload_geoJSON").classList.add("is-invalid")
-                            }
-
-                            upload_error_message += construct_error_message(ERROR, "properties")
-                        }
-
-                        if (!ERROR.context.label.includes('coordinates'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("file_upload_geoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("file_upload_geoJSON").classList.add("is-invalid")
-                            }
-
-                            upload_error_message += construct_error_message(ERROR, "coordinates")
-                        }
-
-                        if (!ERROR.context.label.includes('geometry.type'))
-                        {
-                            // pass
-                        }
-                        else
-                        {
-                            // invalidate the control element just once
-                            if (!document.getElementById("file_upload_geoJSON").classList.contains("is-invalid"))
-                            {
-                                // add CSS-class to enable custom styling
-                                document.getElementById("file_upload_geoJSON").classList.add("is-invalid")
-                            }
-
-                            upload_error_message += construct_error_message(ERROR, "geometry.type")
-                        }
-                    }
+                    
+                    let error_message = prepare_server_error_message(json_result.errors, "file_upload_geoJSON")
 
                     // add error message from the server to the designated field
-                    document.getElementById("invalid_feedback_fileupload_geojson").innerHTML = upload_error_message
+                    document.getElementById("invalid_feedback_fileupload_geojson").innerHTML = error_message
                 }
                 else
                 {
