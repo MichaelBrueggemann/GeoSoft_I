@@ -206,7 +206,7 @@ ROUTER.post('/delete_station', async function(req, res) {
   let tours = await fetch("http://localhost:3000/api/tours");
   tours = await tours.json();
   const ID = req.body.id;
-  // All tours where the station is one part get stored, because the user should be explicit informed about them
+  // when the station that should be deleted is part of a tour, this tour gets saved. This is used to later inform the user about a possible cascading deletion of tours.
   let tours_with_this_station = [];
   tours.forEach(function(tour) {
     tour.stations.forEach(function({_id}) {
