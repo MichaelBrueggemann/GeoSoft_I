@@ -150,8 +150,9 @@ async function update_table() {
             let init_values = await init_values_promise;
             let stations_layer_group = init_values.stations_layer_group;
             // every station shown on the map gets checked, whether this station is part of the tour that gets updated
+            let current_station_ids = current_stations.map(obj => obj._id);
             stations_layer_group.eachLayer(function(layer) {
-                if (current_stations.map(obj => obj._id).includes(layer._id)) {  
+                if (current_station_ids.includes(layer._id)) {  
                     // set highlighting on stations in Tour
                     highlight(layer);
                 }
@@ -440,9 +441,9 @@ CANCEL_BUTTON.addEventListener("click", function() {
 })
 
 // ----------------- Update - Button -----------------
-const CALCULATE_BUTTON = document.getElementById("calculate_tour");
-CALCULATE_BUTTON.setAttribute("class", "btn btn-primary")
-CALCULATE_BUTTON.addEventListener("click", async function() {
+const CALCULATE_TOUR_BUTTON = document.getElementById("calculate_tour");
+CALCULATE_TOUR_BUTTON.setAttribute("class", "btn btn-primary")
+CALCULATE_TOUR_BUTTON.addEventListener("click", async function() {
     // calculate Tour 
     // simplify stations to one point in {lat, lng}-format
     let waypoints = current_stations.map(function(station) {
