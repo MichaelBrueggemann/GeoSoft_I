@@ -1,18 +1,17 @@
 "use strict"
 
-const { GEOJSON_ADD_SCHEMA, GEOJSON_UPDATE_SCHEMA } = require("../express_validator_schemes/geojson_schema")
+const { GEOJSON_ADD_SCHEMA, GEOJSON_UPDATE_SCHEMA } = require("../../express_validator_schemes/geojson_schema")
 
 const EXPRESS = require('express');
 const ROUTER = EXPRESS.Router();
-const DOTENV = require('dotenv');
 const { body, checkSchema, validationResult } = require('express-validator')
 
 // --------------- DATABASE INITIALIZATION ---------------
 
 const { ObjectId } = require('mongodb');
 const MONGO_CLIENT = require('mongodb').MongoClient;
-const URL = 'mongodb://127.0.0.1:/3000'; // connection URL
-const CLIENT = new MONGO_CLIENT(URL); // mongodb client
+const DB_URL = 'mongodb://127.0.0.1:/3000'; // connection URL
+const CLIENT = new MONGO_CLIENT(DB_URL); // mongodb client
 const DB_NAME = 'mydatabase'; // database name
 const COLLECTION_NAME_TOURS = 'touren'; // collection name
 const COLLECTION_NAME_STATIONS = 'stations'; // collection name
@@ -202,10 +201,34 @@ ROUTER.post('/add_station', checkSchema(GEOJSON_ADD_SCHEMA, ['body']),
   
 });
 
-ROUTER.post('/delete_station', function(req, res) {
+ROUTER.post('/delete_station', async function(req, res) {
+  // To preserve referential integrity, the current tours have to be checked
+  let tours = await fetch("http://localhost:3000/api/tours");
+  tours = await tours.json();
   const ID = req.body.id;
-  delete_item(ID, station_collection);
-  res.send();
+  // when the station that should be deleted is part of a tour, this tour gets saved. This is used to later inform the user about a possible cascading deletion of tours.
+  let tours_with_this_station = [];
+  tours.forEach(function(tour) {
+    tour.stations.forEach(function({_id}) {
+      if (_id == ID) {
+        tours_with_this_station.push(tour);
+      }
+    });
+  });
+  // If the station isnt part of any tour it can simply deleted
+  if (tours_with_this_station.length < 1) {
+    delete_item(ID, station_collection);
+    res.json({
+      message : "Alles ok."
+    });
+  }
+  // Else the client gets Error-Message and the tours which contains this station
+  else {
+    res.json({
+      message : "referentielle Integrität gefährdet",
+      tours_with_this_station : tours_with_this_station
+    });
+  }
 });
 
 
@@ -302,70 +325,6 @@ ROUTER.post('/update_tour', function(req, res) {
     update_item(ID, new_data, tour_collection);
     res.send()
 });
-
-// ------------------- Routing-Routes: Tour-Website -> Graphhopper -------------------
-//Load enviroment(API_KEY) from .env file
-DOTENV.config();
-const API_KEY = process.env.GRAPHHOPPER_API_KEY;
-
-/**
- * Routing via GRAPHHOPPER between multiple Points
- * @param {} waypoints - Points which should be visited 
- * @returns {*} - Route as Object (see GRAPHHOPPER Documentation for more Information)
- */
-async function get_routing(waypoints) {
-  //Prepare the Request-String for GRAPHHOPPER-API (every waypoint has to be in api-request and the api_key of course)
-  const API_URL = construct_Graphhopper_URL(waypoints);
-  //actual request on GRAPHHOPPER-API
-  try {
-      const RESPONSE = await fetch(API_URL);
-      const DATA = await RESPONSE.json();
-      return DATA;
-  } 
-  catch (error) {
-      console.error('Fehler beim GRAPHHOPPER_API-Aufruf:', error);
-      return null;
-  }
-}
-
-ROUTER.post('/routing', async function(req, res) {
-  const WAYPOINTS = req.body.waypoints;
-  try {
-    const ROUTE = await get_routing(WAYPOINTS); 
-
-    if (ROUTE) { 
-      res.json(ROUTE); 
-    } 
-    else {
-      res.status(404).json({ message: 'Keine Route gefunden' });
-    }
-  } 
-  catch (err) {
-    console.error('Fehler beim Routing einer Tour', err);
-    res.status(500).json({ message: 'Interner Serverfehler' });
-  }
- 
-});
-
-/**
- * Creates Request-URL for GRAPHHOPPER-API for a bicycle-tour
- * @param {*} waypoints - Array of Points (Lat, Lng) which should be connected
- * @returns {String} - GRAPHHOPPER-URL
- */
-function construct_Graphhopper_URL(waypoints) {
-  const BASE_URL = "https://graphhopper.com/api/1/route";
-  //As the waypoints-Array can contain different amounts of points, it must be stringyfied outside the other PARAMS
-  const WAYPOINT_STRING = 'point=' + waypoints.map(wp => `${wp.lat},${wp.lng}`).join('&point=');
-  const PARAMS = {
-      vehicle: "bike",
-      optimize: true,
-      points_encoded: false,
-      key: API_KEY
-  };
-  const PARAM_STRING = Object.entries(PARAMS).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join("&");
-
-  return `${BASE_URL}?${WAYPOINT_STRING}&${PARAM_STRING}`;
-}
 
 module.exports = ROUTER;
 

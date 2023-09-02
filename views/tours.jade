@@ -9,33 +9,36 @@ block scripts
     script(src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js' integrity='sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH' crossorigin='anonymous' defer)
   
     // internal scripts
-    script(src='/javascripts/tours.js' defer)
+    script(type="module" src='/javascripts/tours.js' defer)
 
 block content
     h1= title
-    p Auf dieser Seite kannst du die aktuell geladenen Stationen ansehen und diese zu Touren verknüpfen. Anschließend können sie auf dieser Seite verwaltet werden. Die Touren werden mittels der GRAPHHOPPER-API erstellt.
+    p Auf dieser Seite können Sie die aktuell geladenen Stationen ansehen und diese zu Touren verknüpfen. Anschließend können diese tabellarisch verwaltet werden. Die Touren werden mittels der GRAPHHOPPER-API erstellt.
     
     .container-fluid 
         .row 
             .col-sm-12.col-md-8
                 #tour_map
             .col-sm-12.col-md-4(style="display: none")#station_div
+                p Bitte wählen Sie auf der Karte alle Stationen aus, die Sie in der Tour verbinden wollen.
                 form
                     .form-group
-                        label.font-weight-bold(for='tourname') Tourname:
+                        label.font-weight-bold(for='tourname') <strong>Tourname</strong>:
                         input#tour_name.form-control(type='tourname' aria-describedby='tour_name_help' placeholder='Hier Tournamen einfügen')
                         small#tour_name_help.form-text.text-muted Kein Pflichtfeld, eine möglichst eindeutige Eingabe wird aber dringenst empfohlen
 
-                table(width="100%")#selected_station_table
-                    thead
-                        th ausgewählte Stationen:
-                    tbody
+                .table-responsive
+                    table(width="100%")#selected_station_table
+                        thead
+                            th ausgewählte Stationen:
+                        tbody
                 button#cancel(type='button') Abbrechen
                 button#calculate_tour(type="button") Tour berechnen
-    
+    hr
     button#new_tour(type="button", style="display: block") neue Tour anlegen
     
-    .container-fluid(style="display: block")#tour_div
+    .table-responsive(style="display: block")#tour_div
+        hr
         table(width="100%")#tour_table.table.table-striped.table-hover
             thead
                 th(scope="col") Name
@@ -47,7 +50,7 @@ block content
                 .modal-header
                     h5.modal-title Tour-Informationen
                     button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
-                .modal-body(align="center")
+                .modal-body(align="left")
                     #info_text
                 .modal-footer
                     button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen
