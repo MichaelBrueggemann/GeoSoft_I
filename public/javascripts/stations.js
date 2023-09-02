@@ -300,6 +300,43 @@ function prepare_update_station_button()
 
                     for (const ERROR of json_result.errors)
                     {
+                        // invalidates any field that is not defined in the schemas in "joi_schemas.js"
+                        if (!ERROR.type.includes('object.unknown'))
+                        {
+                            // pass
+                        }
+                        else
+                        {
+                            // invalidate the control element just once
+                            if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+                            {
+                                // add CSS-class to enable custom styling
+                                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
+                            }
+                            
+                            update_error_message += construct_error_message(ERROR, `${ERROR.context.label}`)
+
+                            continue
+                        }
+
+                        if (!ERROR.context.label.includes('type'))
+                        {
+                            // pass
+                        }
+                        else
+                        {
+                            // invalidate the control element just once
+                            if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+                            {
+                                // add CSS-class to enable custom styling
+                                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
+                            }
+                            
+                            update_error_message += construct_error_message(ERROR, "type")
+
+                            continue
+                        }
+
                         if (!ERROR.context.label.includes('properties.name'))
                         {
                             // pass
@@ -350,6 +387,38 @@ function prepare_update_station_button()
                             }
 
                             update_error_message += construct_error_message(ERROR, "url")
+                        }
+
+                        if (!ERROR.context.label.includes('geometry'))
+                        {
+                            // pass
+                        }
+                        else
+                        {
+                            // invalidate the control element just once
+                            if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+                            {
+                                // add CSS-class to enable custom styling
+                                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
+                            }
+
+                            update_error_message += construct_error_message(ERROR, "geometry")
+                        }
+                        
+                        if (!ERROR.context.label.includes('properties'))
+                        {
+                            // pass
+                        }
+                        else
+                        {
+                            // invalidate the control element just once
+                            if (!document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+                            {
+                                // add CSS-class to enable custom styling
+                                document.getElementById("update_stationGeoJSON").classList.add("is-invalid")
+                            }
+
+                            update_error_message += construct_error_message(ERROR, "properties")
                         }
 
                         if (!ERROR.context.label.includes('coordinates'))
