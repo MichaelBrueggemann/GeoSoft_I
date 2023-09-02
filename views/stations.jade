@@ -59,8 +59,8 @@ block content
               #invalid_feedback_description.invalid-feedback Bitte gib eine Beschreibung der Station an.
             .form-group.m-1
               label.fw-bold(for='input_url') URL
-              input#input_url.form-control(type='url' name="input_url" placeholder='URL eingeben')
-              #invalid_feedback_url.invalid-feedback Bitte gib eine URL im korrekten Format an (www."domainName"."domain").
+              input#input_url.form-control(type='text' name="input_url" placeholder='URL eingeben')
+              #invalid_feedback_url.invalid-feedback Bitte gib eine URL im korrekten Format an (https://"domainName"."domain").
             .form-group
               // Falls dieses Feld fehlt, hinweis an User, dass eine Station ausgewählt werden muss.
               textarea#hidden_geojson_data_from_map_feature.form-control(style="display:none" name="hidden_geojson_data_from_map_feature" required)
