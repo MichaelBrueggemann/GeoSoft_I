@@ -2,7 +2,7 @@
 
 /**
  * Calculates Centroid of Polygon
- * @param {*} polygon - Polygon-Coordinates from which the Centroid should be derieved
+ * @param {*} polygon - Polygon-Coordinates from which the Centroid should be derived
  * @returns {*} - Object with Centroid of Polygon in LatLng-Format
  */
 export function calculate_centroid(polygon) {
