@@ -334,6 +334,24 @@ function prepare_geojson_textarea_form()
 
                     for (const ERROR of json_result.errors)
                     {
+                        if (!ERROR.context.label.includes('type'))
+                        {
+                            // pass
+                        }
+                        else
+                        {
+                            // invalidate the control element just once
+                            if (!document.getElementById("textarea_geoJSON").classList.contains("is-invalid"))
+                            {
+                                // add CSS-class to enable custom styling
+                                document.getElementById("textarea_geoJSON").classList.add("is-invalid")
+                            }
+                            
+                            textarea_error_message += construct_error_message(ERROR, "type")
+
+                            continue
+                        }
+
                         if (!ERROR.context.label.includes('properties.name'))
                         {
                             // pass
@@ -438,7 +456,14 @@ function prepare_geojson_textarea_form()
             } 
             catch (error) 
             {
-                // console.log("Fehler beim Lesen der GeoJSON: ", error)
+                // invalidate the control element just once
+                if (!document.getElementById("textarea_geoJSON").classList.contains("is-invalid"))
+                {
+                    // add CSS-class to enable custom styling
+                    document.getElementById("textarea_geoJSON").classList.add("is-invalid")
+                }
+                // returns the error occured in "JSON.parse()" to the user
+                document.getElementById("invalid_feedback_geojson").innerHTML = error
             }
     })
     
