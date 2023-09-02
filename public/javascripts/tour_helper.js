@@ -65,7 +65,7 @@ export function build_info_text(stations, instructions, distance) {
     // Gives hint to instructions
     info_text += "<br><strong>Anleitung zur Tour:</strong>"
     info_text += "<br><div style='border: 1px solid grey; padding: 10px;'>Diese Instruktionen kommen direkt von GRAPHHOPPER und sind somit leider nur auf englisch verfügbar.</div>"
-    // Tell user instructions how to follow the tour
+    // give user instructions how to follow the tour
     info_text += "<ol>";
     instructions.forEach(function(instruction) {
         if(instruction.text.startsWith("Waypoint")) {
