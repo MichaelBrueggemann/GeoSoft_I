@@ -1,6 +1,6 @@
 "use strict"
 import { add_new_station } from "./stations.js"
-import { prepare_server_error_message } from "./station_error_messages.js"
+import { prepare_server_error_message, construct_error_message } from "./station_error_messages.js"
 
 /**
  * Tests if the input is a valid geojson
