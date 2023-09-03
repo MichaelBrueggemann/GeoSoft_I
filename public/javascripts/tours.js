@@ -17,7 +17,7 @@ let tours_collection = {};
 let station_collection = {};
 
 /**
- * Stations cant be edited on this site so one initialisation via api is enough
+ * Stations cant be edited on this site so one initialisation via API is enough
  * So this function gets called within the "map initialization"
 */
 async function init_stations(){
@@ -96,7 +96,7 @@ async function delete_tour(id) {
 
 // ----------------- tour-table -----------------
 async function update_table() {
-    // Synchronize local tour_collection with DB via api
+    // Synchronize local tour_collection with DB via API
     tours_collection = await fetch("/api/tours")
     tours_collection = await tours_collection.json()
     // Fill table with tour entries

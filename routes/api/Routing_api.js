@@ -16,7 +16,7 @@ const API_KEY = process.env.GRAPHHOPPER_API_KEY;
  * @returns {*} - Route as Object (see GRAPHHOPPER Documentation for more Information)
  */
 async function get_routing(waypoints) {
-  // Prepare the Request-String for GRAPHHOPPER-API (every waypoint has to be in api-request and the api_key of course)
+  // Prepare the Request-String for GRAPHHOPPER-API (every waypoint has to be in API-request and the API_KEY of course)
   const API_URL = construct_Graphhopper_URL(waypoints);
   // actual request on GRAPHHOPPER-API
   try {
