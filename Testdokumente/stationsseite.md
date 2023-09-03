@@ -7,6 +7,11 @@
 + Kann man in Workflows "falsch klicken" und die Seite brechen?
 
 ## Hinzufügen von Stationen
+### MediaWiki-API
++ Funktioniert der API-Call bei unterschiedlichen URLs?
++ Wird die Beschreibung korrekt ersetzt (add/update)?
+
+
 ### Über die Karte
 + Ist der Helptext sinnvoll?
 + Punkt-Station hinzufügen
