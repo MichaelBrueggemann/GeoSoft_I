@@ -34,11 +34,14 @@ async function delete_tour(id) {
  */
 async function delete_station(id) {
     let response = await api_call("delete_station", { id: id })
+    
     // Control if the API is online and worked as plannend
     if (response.ok) {
         const data = await response.json();
+        
         // If the data has this property there are tours which contains the station which should be deleted
         if (data.hasOwnProperty("tours_with_this_station")) {
+            
             // the API tells client which tours contain the station
             let tours_with_this_station = data.tours_with_this_station;
             $('#station_deletion_popup').modal('show');

@@ -6,6 +6,7 @@ const DOTENV = require('dotenv');
 const URL = require('url');
 
 // ------------------- Routing-Routes: Tour-Website -> Graphhopper -------------------
+
 // Load enviroment(API_KEY) from .env file
 DOTENV.config();
 const API_KEY = process.env.GRAPHHOPPER_API_KEY;
@@ -16,8 +17,10 @@ const API_KEY = process.env.GRAPHHOPPER_API_KEY;
  * @returns {*} - Route as Object (see GRAPHHOPPER Documentation for more Information)
  */
 async function get_routing(waypoints) {
+  
   // Prepare the Request-String for GRAPHHOPPER-API (every waypoint has to be in API-request and the API_KEY of course)
   const API_URL = construct_Graphhopper_URL(waypoints);
+  
   // actual request on GRAPHHOPPER-API
   try {
       const RESPONSE = await fetch(API_URL);
@@ -55,17 +58,23 @@ ROUTER.post('/get_routing', async function(req, res) {
  * @returns {String} - GRAPHHOPPER-URL
  */
 function construct_Graphhopper_URL(waypoints) {
+  
   // create URL with protokoll, domain and path
   const BASE_URL = "https://graphhopper.com/api/1/route";
   let url = new URL.URL(BASE_URL);
+  
   // Routing should be for bicycles
   url.searchParams.set("vehicle", "bike");
+  
   // The order in which the stations should be visited is not important, so can be optimized
   url.searchParams.set("optimize", true);
+  
   // its easyer to work with the result if its decoded
   url.searchParams.set("points_encoded", false);
+  
   // The API_KEY is required
   url.searchParams.set("key", API_KEY);
+  
   // Every waypoint has to be added to the request-url
   for(let waypoint of waypoints){
     let lat = waypoint.lat;

@@ -178,10 +178,12 @@ ROUTER.post('/add_station', function(req, res) {
 });
 
 ROUTER.post('/delete_station', async function(req, res) {
+  
   // To preserve referential integrity, the current tours have to be checked
   let tours = await fetch("http://localhost:3000/api/tours");
   tours = await tours.json();
   const ID = req.body.id;
+  
   // when the station that should be deleted is part of a tour, this tour gets saved. This is used to later inform the user about a possible cascading deletion of tours.
   let tours_with_this_station = [];
   tours.forEach(function(tour) {
@@ -191,6 +193,7 @@ ROUTER.post('/delete_station', async function(req, res) {
       }
     });
   });
+  
   // If the station isnt part of any tour it can simply deleted
   if (tours_with_this_station.length < 1) {
     delete_item(ID, station_collection);
@@ -198,6 +201,7 @@ ROUTER.post('/delete_station', async function(req, res) {
       message : "Alles ok."
     });
   }
+  
   // Else the client gets Error-Message and the tours which contains this station
   else {
     res.json({
