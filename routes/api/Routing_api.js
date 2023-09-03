@@ -16,11 +16,8 @@ const API_KEY = process.env.GRAPHHOPPER_API_KEY;
  * @param {} waypoints - Points which should be visited 
  * @returns {*} - Route as Object (see GRAPHHOPPER Documentation for more Information)
  */
-async function get_routing(waypoints) {
-  
-  // Prepare the Request-String for GRAPHHOPPER-API (every waypoint has to be in API-request and the API_KEY of course)
-  const API_URL = construct_Graphhopper_URL(waypoints);
-  
+async function get_routing(API_URL) {
+
   // actual request on GRAPHHOPPER-API
   try {
       const RESPONSE = await fetch(API_URL);
@@ -35,21 +32,30 @@ async function get_routing(waypoints) {
 
 ROUTER.post('/get_routing', async function(req, res) {
   try {
-    const WAYPOINTS = req.body.waypoints;
-    const ROUTE = await get_routing(WAYPOINTS); 
 
-    if (ROUTE) { 
-      res.json(ROUTE); 
+    // If the request is correct the associated URL gets created
+    const WAYPOINTS = req.body.waypoints;
+    const API_URL = construct_Graphhopper_URL(WAYPOINTS);
+  
+    try {
+      const ROUTE = await get_routing(API_URL); 
+  
+      if (ROUTE) { 
+        res.json(ROUTE); 
+      } 
+      else {
+        res.status(404).json({ message: 'Keine Route gefunden' });
+      }
     } 
-    else {
-      res.status(404).json({ message: 'Keine Route gefunden' });
+    catch (err) {
+      console.error('Fehler beim Routing einer Tour', err);
+      res.status(500).json({ message: 'Interner Serverfehler' });
     }
   } 
   catch (err) {
-    console.error('Fehler beim Routing einer Tour', err);
-    res.status(500).json({ message: 'Interner Serverfehler' });
+    console.error('Fehler beim Abrufen der Request-Parameter', err);
+    res.status(400).json({ message: 'Bad Request' });
   }
- 
 });
 
 /**
