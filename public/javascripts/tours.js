@@ -10,7 +10,8 @@ let working_on_tour_mode = false;
 // If you are editing tours, this variable contains all involved stations for the current tour
 let current_stations = [];
 
-// This safes which tour is highlighted or changing (null means nothing is highlighted and while creating its a new tour)
+// This variable stores the ID of the tour that is currently highlighted or in process
+//If the value is "null", no tour is highlighted or if a tour is in progress, it is a new tour
 let current_tour_id = null;
 
 // All available tours are saved in the tours_collection
