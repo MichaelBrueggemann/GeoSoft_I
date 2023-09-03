@@ -26,7 +26,6 @@ function create_MediaWiki_API_URL(url)
     let url_origin = url.origin
 
     // in Wikipedia Articles, the last part of the URL-path is always the name of the queried page
-    // TODO: sicherstellen, dass Umlaute im String keine Probleme bei der Abfrage machen
     let query_page = url.pathname.split("/").at(-1)
 
     let MediaWiki_api_path = "/w/api.php"
@@ -45,7 +44,8 @@ function create_MediaWiki_API_URL(url)
 
     add_search_params(MediaWiki_url, search_params)
 
-    return MediaWiki_url
+    // decode URI to prevent Errors from the MediaWiki-API with ASCII Characters
+    return decodeURI(MediaWiki_url)
 }
 
 /**
@@ -73,7 +73,7 @@ function get_first_sentence(MediaWiki_response_json)
  */
 async function fetch_first_sentence(MediaWiki_url)
 {
-    let data = await fetch(MediaWiki_url.href)
+    let data = await fetch(MediaWiki_url)
     let json = await data.json()
 
     let first_sentence = get_first_sentence(json)
