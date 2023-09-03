@@ -7,7 +7,7 @@
  * @param {} field Name of the Field in the control element, where the error occured
  * @returns {string} The Error Message as a string
  */
-function construct_error_message(error, field)
+export function construct_error_message(error, field)
 {
     return `Im Feld '${field}' ist ein Fehler. </br> Fehlernachricht: </br> ${error.message} </br></br>`
 }
