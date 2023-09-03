@@ -1,16 +1,5 @@
 "use strict"
 
-// Links aus dem Request ins Format der API umstrukturieren
-// URL in URL() Wrapper Class einbinden
-// Suchparameter zur URL ergänzen
-// API Call an Wikimedia-API richten
-// 1. Absatz aus dem Response Body parsen
-// Beschreibung im Req-Body durch den geparsten Absatz ersetzen
-// Req-Body mit daten zur Station in DB einfügen "add_station" 
-
-
-
-
 /**
  * Adds an arbitrary number of search parameters to an URL.
  * @param {URL} url_object URL() Object
@@ -77,6 +66,11 @@ function get_first_sentence(MediaWiki_response_json)
   return first_sentence
 }
 
+/**
+ * Fetches first sentence of the Wikipedia Page
+ * @param {URL} MediaWiki_url URL() Object created with "create_MediaWiki_API_URL()"
+ * @returns 
+ */
 async function fetch_first_sentence(MediaWiki_url)
 {
     let data = await fetch(MediaWiki_url.href)
