@@ -172,7 +172,6 @@ ROUTER.post('/add_station', async function(req, res) {
   {
     let url = req.body.properties.url
 
-    // TODO: bessere Überprüfung einfügen
     if (url.includes(".wikipedia.org/wiki/"))
     {
       let MediaWiki_url = create_MediaWiki_API_URL(url)
@@ -237,7 +236,6 @@ ROUTER.post('/update_station', async function(req, res) {
   {
     let url = new_data.geojson.properties.url
 
-    // TODO: bessere Überprüfung einfügen
     if (url.includes(".wikipedia.org/wiki/"))
     {
       let MediaWiki_url = create_MediaWiki_API_URL(url)
