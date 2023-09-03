@@ -7,8 +7,8 @@ let logger = require('morgan');
 let beeRouter = require('./routes/bee');
 let stationsRouter = require('./routes/stations_route');
 let tourRouter = require('./routes/tour_route');
-let DB_apiRouter = require('./routes/api/DB_api');
-let Routing_apiRouter = require('./routes/api/Routing_api');
+let DB_apiRouter = require('./routes/APIs/Database_API');
+let Routing_apiRouter = require('./routes/APIs/Routing_API');
 let impressumRouter = require('./routes/impressum');
 
 let app = express();
