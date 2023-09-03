@@ -1,69 +1,10 @@
 "use strict"
 
-
+const { create_MediaWiki_API_URL, fetch_first_sentence } = require("./MediaWiki_API")
 const {GEOJSON_SCHEMA, validate_input} = require("../../validation_schemes/joi_schemas")
 const EXPRESS = require('express');
 const ROUTER = EXPRESS.Router();
 
-
-
-
-/**
- * Adds an arbitrary number of search parameters to an URL.
- * @param {*} url_object URL() Object
- * @param {*} search_params Object with searchParams
- */
-function add_search_params(url_object, search_params)
-{
-    for (const [SEARCH_PARAM_KEY, SEARCH_PARAM_VALUE] of Object.entries(search_params))
-    {
-        url_object.searchParams.set(SEARCH_PARAM_KEY, SEARCH_PARAM_VALUE)
-    }
-}
-
-/**
- * THios function converts any Wikipedia Link into an MediaWiki-API URL that can later be supplemented with search parameters
- * @param {*} url - Wikipedia URL String
- * @returns URL-Object in Format of a MediaWiki-API URL (https://www.example.org/w/api.php)
- */
-function create_MediaWiki_API_URL(url)
-{
-    // Wrap into URL()-Class for better acces to all URL parts
-    url = new URL(url)
-
-    let url_origin = url.origin
-
-    // in Wikipedia Articles, the last part of the URL-path is always the name of the queried page
-    let query_page = url.pathname.split("/").at(-1)
-
-    let MediaWiki_api_path = "/w/api.php"
-
-    // create MediaWiki URL
-    let MediaWiki_url = new URL(MediaWiki_api_path, url_origin)
-
-    let search_params = {
-        action: "query",
-        format: "json",
-        prop: "extracts",
-        explaintext: "1",
-        titles: query_page
-    }
-
-    add_search_params(MediaWiki_url, search_params)
-
-    return MediaWiki_url
-}
-
-let testlink = "https://de.wikipedia.org/wiki/Haushund"
-let MediaWiki_url = create_MediaWiki_API_URL(testlink)
-
-async function f() {
-  let data = await fetch(MediaWiki_url.href)
-  let json = await data.json()
-  console.log(json.query.pages[0])
-}
-
-f()
 
 
 // --------------- DATABASE INITIALIZATION ---------------
@@ -218,7 +159,7 @@ ROUTER.get('/stations', async function(_req, res) {
 })
 
 
-ROUTER.post('/add_station', function(req, res) {
+ROUTER.post('/add_station', async function(req, res) {
   let validation_result = validate_input(req.body, GEOJSON_SCHEMA)
   console.log("valid result", validation_result.errorDetails)
 
@@ -229,6 +170,18 @@ ROUTER.post('/add_station', function(req, res) {
   }
   else
   {
+    let url = req.body.properties.url
+
+    // TODO: bessere Überprüfung einfügen
+    if (url.includes(".wikipedia.org/wiki/"))
+    {
+      let MediaWiki_url = create_MediaWiki_API_URL(url)
+      let first_sentence = await fetch_first_sentence(MediaWiki_url)
+
+      // replace description in request body
+      req.body.properties.description = first_sentence
+    }
+
     add_item(req.body, station_collection);
     res.status(200).json({errors: "Alles ok."})
   }
@@ -266,7 +219,7 @@ ROUTER.post('/delete_station', async function(req, res) {
 });
 
 
-ROUTER.post('/update_station', function(req, res) {
+ROUTER.post('/update_station', async function(req, res) {
 
   const ID = req.body.id;
   let new_data = {
@@ -282,6 +235,18 @@ ROUTER.post('/update_station', function(req, res) {
   }
   else
   {
+    let url = new_data.geojson.properties.url
+
+    // TODO: bessere Überprüfung einfügen
+    if (url.includes(".wikipedia.org/wiki/"))
+    {
+      let MediaWiki_url = create_MediaWiki_API_URL(url)
+      let first_sentence = await fetch_first_sentence(MediaWiki_url)
+
+      // replace description in new_data
+      new_data.geojson.properties.description = first_sentence
+    }
+
     update_item(ID, new_data, station_collection)
     res.status(200).json({errors: "Alles ok."})
   }
