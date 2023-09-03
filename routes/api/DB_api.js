@@ -2,6 +2,7 @@
 
 
 const {GEOJSON_SCHEMA, validate_input} = require("../../validation_schemes/joi_schemas")
+const {TOUR_SCHEMA} = require("../../validation_schemes/tour_schemas")
 const EXPRESS = require('express');
 const ROUTER = EXPRESS.Router();
 
@@ -255,9 +256,19 @@ ROUTER.get('/tours', async function(_req, res) {
 })
 
 ROUTER.post('/add_tour', function(req, res) {
-  add_item(req.body, tour_collection);
+  let validation_result = validate_input(req.body, TOUR_SCHEMA)
+  console.log("valid result", validation_result.errorDetails)
 
-  res.send()
+  // request was invalid
+  if (validation_result.hasError)
+  {
+    res.status(400).json({errors: validation_result.errorDetails})
+  }
+  else
+  {
+    add_item(req.body, tour_collection);
+    res.status(200).json({errors: "Alles ok."})
+  }
 });
 
 
@@ -277,9 +288,18 @@ ROUTER.post('/update_tour', function(req, res) {
     instructions: req.body.instructions,
     distance: req.body.distance
   };
-    
-    update_item(ID, new_data, tour_collection);
-    res.send()
+  let validation_result = validate_input(new_data, TOUR_SCHEMA)
+
+  // request was invalid
+  if (validation_result.hasError)
+  {
+    res.status(400).json({errors: validation_result.errorDetails})
+  }
+  else
+  {
+    update_item(ID, new_data, tour_collection)
+    res.status(200).json({errors: "Alles ok."})
+  }
 });
 
 module.exports = ROUTER;
