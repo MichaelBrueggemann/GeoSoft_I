@@ -34,8 +34,8 @@ async function get_routing(waypoints) {
 }
 
 ROUTER.post('/get_routing', async function(req, res) {
-  const WAYPOINTS = req.body.waypoints;
   try {
+    const WAYPOINTS = req.body.waypoints;
     const ROUTE = await get_routing(WAYPOINTS); 
 
     if (ROUTE) { 
