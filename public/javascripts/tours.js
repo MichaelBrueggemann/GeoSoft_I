@@ -529,6 +529,11 @@ CALCULATE_TOUR_BUTTON.addEventListener("click", async function() {
 
         if (tour_name !== null && tour_name !== undefined && tour_name !== "" && regex.test(tour_name)) {
             
+            // change style of input-field
+            if (document.getElementById("tour_name").classList.contains("is-invalid")) {
+                document.getElementById("tour_name").classList.remove("is-invalid")
+            }
+
             // save Tour in DB
             if (current_tour_id == null) {
                 await add_new_tour(tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
@@ -560,6 +565,12 @@ CALCULATE_TOUR_BUTTON.addEventListener("click", async function() {
             stop_working_modi();
         }
         else {
+            // change style of input-field
+            if (!document.getElementById("tour_name").classList.contains("is-invalid")) {
+                document.getElementById("tour_name").classList.add("is-invalid")
+            }
+
+            // Error-Popup
             $('#routing_error_popup').modal('show');
             let error_statement = "Der Tourname darf nicht aus Sonderzeichen bestehen und nicht leer sein";
             document.getElementById("error_statement").innerHTML = error_statement;

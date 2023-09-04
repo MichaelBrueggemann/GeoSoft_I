@@ -114,6 +114,9 @@ export function get_routing_error_text(message)
     else if (message.startsWith("Cannot find point")) {
         error_statement += "<strong>Dies liegt unter anderem daran, dass eine ausgewählte Station zu weit von einem Fahrradweg entfernt ist.</strong> <br>";
     }
+    else if (message.startsWith("API limit reached")) {
+        error_statement += "<strong>Dies liegt unter anderem daran, dass zur Zeit zu viele Anfragen gestellt wurden.</strong> <br>";
+    }
     else {
         error_statement += "Dies könnte beispielsweise daran liegen, dass gar keine Stationen ausgewählt wurden. <br>";
         error_statement += "Aber auch andere Fehler können auftreten und wir bitten um Entschuldigung, dass es nicht geklappt hat. <br>";

@@ -21,11 +21,11 @@ block content
                 #tour_map
             .col-sm-12.col-md-4(style="display: none")#station_div
                 p Bitte wählen Sie auf der Karte alle Stationen aus, die Sie in der Tour verbinden wollen.
-                form
+                form#tour_name_form.container.needs-validation(novalidate)
                     .form-group
-                        label.font-weight-bold(for='tourname') <strong>Tourname</strong>:
-                        input#tour_name.form-control(type='tourname' aria-describedby='tour_name_help' placeholder='Hier Tournamen einfügen')
-                        small#tour_name_help.form-text.text-muted Kein Pflichtfeld, eine möglichst eindeutige Eingabe wird aber dringenst empfohlen
+                        label.required.fw-bold(for='tourname') <strong>Tourname</strong>:
+                        input#tour_name.form-control(type='tourname' aria-describedby='tour_name_help' placeholder='Hier Tournamen einfügen' required)
+                        small#tour_name_help.form-text.text-muted Pflichtfeld, keine Sonderzeichen
 
                 .table-responsive
                     table(width="100%")#selected_station_table
