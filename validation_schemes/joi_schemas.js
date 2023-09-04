@@ -79,4 +79,4 @@ function validate_input(input, schema)
   }
 }
 
-module.exports = {GEOJSON_SCHEMA, validate_input}
+module.exports = {POINT_SCHEMA, GEOJSON_SCHEMA, validate_input}

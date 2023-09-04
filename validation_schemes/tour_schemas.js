@@ -1,7 +1,7 @@
 "use strict"
 
 const JOI = require("joi")
-const {GEOJSON_SCHEMA} = require ("./joi_schemas")
+const {POINT_SCHEMA, GEOJSON_SCHEMA} = require ("./joi_schemas")
 
 
 const TOUR_SCHEMA = JOI.object(
@@ -13,6 +13,11 @@ const TOUR_SCHEMA = JOI.object(
                 _id: JOI.string().pattern(/^[a-zA-Z0-9\s]*$/).required(),
             })
             ).min(2).required(),
+        segments: JOI.array().items(
+            JOI.array().items(
+                POINT_SCHEMA
+            ).required()
+        ).required(),
     }
 ).required().unknown(true)
 
