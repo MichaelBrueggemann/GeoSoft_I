@@ -27,8 +27,9 @@ const TOUR_SCHEMA = JOI.object(
                 }
             ).required().unknown(true)
         ).required(),
+        distance: JOI.number().required(),
     }
-).required().unknown(true)
+).required()
 
 
 module.exports = {TOUR_SCHEMA}
