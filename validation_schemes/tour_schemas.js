@@ -18,6 +18,15 @@ const TOUR_SCHEMA = JOI.object(
                 POINT_SCHEMA
             ).required()
         ).required(),
+        instructions: JOI.array().items(
+            JOI.object(
+                {
+                    distance: JOI.number().required(),
+                    text: JOI.string().required(),
+
+                }
+            ).required().unknown(true)
+        ).required(),
     }
 ).required().unknown(true)
 
