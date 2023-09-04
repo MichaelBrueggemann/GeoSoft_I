@@ -525,9 +525,10 @@ CALCULATE_TOUR_BUTTON.addEventListener("click", async function() {
         // Get Tourname from input-field
         let tour_name = document.getElementById("tour_name").value;
         
-        const regex = /^[a-zäöüßA-ZÄÖÜ0-9\s]*$/;
+        const tour_name_regex = /^[a-zäöüßA-ZÄÖÜ0-9\s]*$/;
 
-        if (tour_name !== null && tour_name !== undefined && tour_name !== "" && regex.test(tour_name)) {
+        // check if tour_name is valid
+        if (tour_name !== null && tour_name !== undefined && tour_name !== "" && tour_name_regex.test(tour_name)) {
             
             // change style of input-field
             if (document.getElementById("tour_name").classList.contains("is-invalid")) {
