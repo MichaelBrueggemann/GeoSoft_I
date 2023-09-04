@@ -3,9 +3,9 @@ const JOI = require("joi")
 
 // this schema defines a valid Point. 
 const POINT_SCHEMA = JOI.array().items(
-    JOI.number().min(-90).max(90), // Latitude
-    JOI.number().min(-180).max(180) // Longitude
-).length(2)
+    JOI.number().min(-90).max(90).required(),
+    JOI.number().min(-180).max(180).required()
+).length(2).required()
 
 // this schema defines a valid Polygon. 
 const POLYGON_SCHEMA = JOI.array().max(1).items(
@@ -71,6 +71,7 @@ function validate_input(input, schema)
   {
     let errorDetails = error.details
     let hasError = true
+    console.log(errorDetails)
     return {hasError, errorDetails}
   }
   else

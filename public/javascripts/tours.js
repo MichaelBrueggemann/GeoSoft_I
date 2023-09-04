@@ -489,7 +489,7 @@ CANCEL_BUTTON.addEventListener("click", function() {
     stop_working_modi();
 })
 
-// ----------------- Update - Button -----------------
+// ----------------- Calculate - Button -----------------
 const CALCULATE_TOUR_BUTTON = document.getElementById("calculate_tour");
 CALCULATE_TOUR_BUTTON.setAttribute("class", "btn btn-primary")
 CALCULATE_TOUR_BUTTON.addEventListener("click", async function() {
@@ -525,35 +525,45 @@ CALCULATE_TOUR_BUTTON.addEventListener("click", async function() {
         // Get Tourname from input-field
         let tour_name = document.getElementById("tour_name").value;
         
-        // save Tour in DB
-        if (current_tour_id == null) {
-            await add_new_tour(tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
+        const regex = /^[a-zäöüßA-ZÄÖÜ0-9\s]*$/;
+
+        if (tour_name !== null && tour_name !== undefined && tour_name !== "" && regex.test(tour_name)) {
+            
+            // save Tour in DB
+            if (current_tour_id == null) {
+                await add_new_tour(tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
+            }
+            else {
+                await update_tour(current_tour_id, tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
+            }
+            
+            // select the updated Tour for auto-highlight after successful worked-on
+            let table = document.getElementById('tour_table');
+            let tbody = table.tBodies[0];
+            if (current_tour_id == null) {
+            
+                // if a new tour created we can simply highlight the last tour because it gets appended in the tour_table
+                tbody.rows[table.tBodies[0].rows.length - 1].click();
+            }
+            else { 
+            
+                // else we search the right row via id comparision
+                for(const ROW of tbody.rows) {
+                    if (ROW.getAttribute("_id") == current_tour_id) {
+                        current_tour_id = null;
+                        ROW.click();
+                    }
+                };
+            }
+        
+            // change Working Modi
+            stop_working_modi();
         }
         else {
-            await update_tour(current_tour_id, tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
+            $('#routing_error_popup').modal('show');
+            let error_statement = "Der Tourname darf nicht aus Sonderzeichen bestehen und nicht leer sein";
+            document.getElementById("error_statement").innerHTML = error_statement;
         }
-        
-        // select the updated Tour for auto-highlight after successful worked-on
-        let table = document.getElementById('tour_table');
-        let tbody = table.tBodies[0];
-        if (current_tour_id == null) {
-            
-            // if a new tour created we can simply highlight the last tour because it gets appended in the tour_table
-            tbody.rows[table.tBodies[0].rows.length - 1].click();
-        }
-        else { 
-            
-            // else we search the right row via id comparision
-            for(const ROW of tbody.rows) {
-                if (ROW.getAttribute("_id") == current_tour_id) {
-                    current_tour_id = null;
-                    ROW.click();
-                }
-            };
-        }
-        
-        // change Working Modi
-        stop_working_modi();
     }
 })
 

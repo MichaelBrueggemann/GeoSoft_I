@@ -29,7 +29,7 @@ const TOUR_SCHEMA = JOI.object(
         ).required(),
         distance: JOI.number().required(),
     }
-).required()
+).required().options({abortEarly: false}) // makes sure, each error is returned
 
 
 module.exports = {TOUR_SCHEMA}
