@@ -28,8 +28,8 @@ let server = http.createServer(app);
 
 server.listen(port);
 
-console.log(`Listening to "localhost:${port}"`)
-console.log(`Arguments passed to Node.js: ${process.argv}`)
+console.log(`\nListening to "localhost:${port}"`)
+console.log(`Arguments passed to Node.js: ${process.argv}\n`)
 
 // delibaretly crash app, if API-Key is missing
 if (!process.argv[2])

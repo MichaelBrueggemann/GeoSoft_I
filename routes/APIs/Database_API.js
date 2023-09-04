@@ -30,7 +30,7 @@ async function initialize_DB() {
     station_collection = db.collection(COLLECTION_NAME_STATIONS);
     console.log(`Erfolgreich mit '${DB_NAME}.${COLLECTION_NAME_STATIONS}' verbunden`);
     tour_collection = db.collection(COLLECTION_NAME_TOURS);
-    console.log(`Erfolgreich mit '${DB_NAME}.${COLLECTION_NAME_TOURS}' verbunden`);
+    console.log(`Erfolgreich mit '${DB_NAME}.${COLLECTION_NAME_TOURS}' verbunden\n`);
   }
   catch (err) {
     console.log(err)
