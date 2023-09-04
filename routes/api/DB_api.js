@@ -187,13 +187,13 @@ ROUTER.post('/delete_station', async function(req, res) {
   
   // when the station that should be deleted is part of a tour, this tour gets saved. This is used to later inform the user about a possible cascading deletion of tours.
   let tours_with_this_station = [];
-  tours.forEach(function(tour) {
-    tour.stations.forEach(function({_id}) {
+  for (const TOUR of tours) {
+    TOUR.stations.forEach(function({_id}) {
       if (_id == ID) {
-        tours_with_this_station.push(tour);
+        tours_with_this_station.push(TOUR);
       }
     });
-  });
+  }
   
   // If the station isnt part of any tour it can simply deleted
   if (tours_with_this_station.length < 1) {

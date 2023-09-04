@@ -56,9 +56,9 @@ async function delete_station(id) {
             // ----------------- Delete_Station_And_Tours - Button -----------------
             const CANCEL_BUTTON = document.getElementById("delete_station_and_tours");
             CANCEL_BUTTON.addEventListener("click", async function() {
-                tours_with_this_station.forEach(async function(tour) {
-                    await delete_tour(tour._id);
-                });
+                for (const TOUR of tours_with_this_station) {
+                    await delete_tour(TOUR._id);
+                }
                 await delete_station(id);
                 $('#station_deletion_popup').modal('hide');
                 await update_map()

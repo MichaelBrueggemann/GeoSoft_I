@@ -213,26 +213,26 @@ async function initializeMap()
     map.addLayer(stations_layer_group)
 
     // Show stations on map
-    station_collection.forEach(function(station) {
+    for (const STATION of station_collection) {
 
-        if(station.geometry.type === "Point")
+        if(STATION.geometry.type === "Point")
         {
-            let marker = L.marker([station.geometry.coordinates[1], station.geometry.coordinates[0]]).addTo(stations_layer_group)
-            add_station_metadata(station, marker)
-            add_station_events(station, marker)
-            marker._id = station._id;
+            let marker = L.marker([STATION.geometry.coordinates[1], STATION.geometry.coordinates[0]]).addTo(stations_layer_group)
+            add_station_metadata(STATION, marker)
+            add_station_events(STATION, marker)
+            marker._id = STATION._id;
         }
-        else if (station.geometry.type === "Polygon")
+        else if (STATION.geometry.type === "Polygon")
         {
             // "coordinates" are accessed at index "0" because geoJSON wrappes the coordinates in an extra array
-            let polygon = L.polygon(station.geometry.coordinates[0].map(function(coord) {// used to change coords from lng/lat to lat/lng
+            let polygon = L.polygon(STATION.geometry.coordinates[0].map(function(coord) {// used to change coords from lng/lat to lat/lng
                 return [coord[1], coord[0]]
             })).addTo(stations_layer_group)
-            add_station_metadata(station, polygon)
-            add_station_events(station, polygon)
-            polygon._id = station._id;
+            add_station_metadata(STATION, polygon)
+            add_station_events(STATION, polygon)
+            polygon._id = STATION._id;
         }
-    })
+    }
 
     return {
         map: map,
@@ -285,18 +285,18 @@ function add_station_events(station, leaflet_object) {
 async function update_stationtable(stations) {
     
     // filter current selected (disselected) stations
-    stations.forEach(function(station) {
+    for (const STATION of stations) {
         
         // if station is already in current_stations, remove it from there
-        if (current_stations.map(obj => obj._id).includes(station._id)) {
-            current_stations = current_stations.filter(stat => stat._id !== station._id);
+        if (current_stations.map(obj => obj._id).includes(STATION._id)) {
+            current_stations = current_stations.filter(stat => stat._id !== STATION._id);
         } 
         
         // else add it
         else {
-            current_stations = current_stations.concat(station);
+            current_stations = current_stations.concat(STATION);
         }
-    });
+    }
     let table = document.getElementById("selected_station_table")
     let tbody = document.createElement('tbody')
     
@@ -358,9 +358,9 @@ async function stop_working_modi() {
     // change style of all stations to default
     let init_values = await init_values_promise;
     let stations_layer_group = await init_values.stations_layer_group;
-    stations_layer_group.getLayers().forEach(function(layer) {
-        default_style(layer);
-    });
+    for (const LAYER of stations_layer_group.getLayers()) {
+        default_style(LAYER);
+    }
     
     // clear selected_station_table
     let table = document.getElementById("selected_station_table")
@@ -402,17 +402,17 @@ async function row_click_event_handler(row, event, _id, instructions, segments) 
             let current_distance = 0;
             
             // calculate distances per segment via distance information provided by Graphhopper-API
-            instructions.forEach(function(instruction) {
+            for (const INSTRUCTION of instructions) {
                 
                 // distances should be calculated per segment
-                if(instruction.text.startsWith("Waypoint") || instruction.text.startsWith("Arrive at destination")) {
+                if(INSTRUCTION.text.startsWith("Waypoint") || INSTRUCTION.text.startsWith("Arrive at destination")) {
                     segment_distances.push(current_distance);
                     current_distance = 0;
                 }
                 else {
-                    current_distance += instruction.distance;
+                    current_distance += INSTRUCTION.distance;
                 }
-            });
+            }
             
             // ------- Show Tour on Map -------       
             // get access to the map
@@ -422,8 +422,8 @@ async function row_click_event_handler(row, event, _id, instructions, segments) 
             let tour_layer = L.featureGroup().addTo(map);
             
             // each toursegment gets his own Popup (incl. distance)
-            segments.forEach(function(segment) {
-                let polyline = L.polyline(segment, {color: 'cadetblue', weight: 3}).addTo(tour_layer);
+            for (const SEGMENT of segments) {
+                let polyline = L.polyline(SEGMENT, {color: 'cadetblue', weight: 3}).addTo(tour_layer);
                 polyline.bindPopup("Distanz: ca. " + Math.round(segment_distances[i]).toString() + "m");
                 i++;
                 
@@ -438,7 +438,7 @@ async function row_click_event_handler(row, event, _id, instructions, segments) 
                     polyline.closePopup();
                     polyline.setStyle({color: 'cadetblue', weight: 3});
                 });
-            });
+            }
             
             // Zoom on selected tour
             map.fitBounds(tour_layer.getBounds());
@@ -469,9 +469,9 @@ async function dehighlight_tours() {
     const ROWS = table.tBodies[0].querySelectorAll("tr");
     
     // set all rows in the table on default color
-    ROWS.forEach(function(row) {
-        row.setAttribute("class", ""); 
-    });
+    for (const ROW of ROWS) {
+        ROW.setAttribute("class", ""); 
+    }
 }
 
 // ----------------- new Tour - Button -----------------

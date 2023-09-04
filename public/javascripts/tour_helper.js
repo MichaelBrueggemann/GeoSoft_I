@@ -74,17 +74,17 @@ export function build_info_text(stations, instructions, distance) {
     
     // give user instructions how to follow the tour
     info_text += "<ol>";
-    instructions.forEach(function(instruction) {
-        if(instruction.text.startsWith("Waypoint")) {
+    for (const INSTRUCTION of instructions) {
+        if(INSTRUCTION.text.startsWith("Waypoint")) {
             info_text += "<li><strong>You arrived at one station</strong></li>";
         }
-        else if (instruction.text.startsWith("Arrive at destination")){
+        else if (INSTRUCTION.text.startsWith("Arrive at destination")){
             info_text += "<li><strong>Arrive at destination</strong></li>";
         }
         else {
-            info_text += "<li>" + instruction.text + " and follow the path for " + Math.round(instruction.distance) + " metres</li>";
+            info_text += "<li>" + INSTRUCTION.text + " and follow the path for " + Math.round(INSTRUCTION.distance) + " metres</li>";
         }
-    })
+    }
     info_text += "</ol>";
     
     // Overall distance of tour
