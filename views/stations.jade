@@ -22,25 +22,23 @@ block scripts
   
 
 block content
+  hr
   h1= title
+  // unfortunately, Bootstrap 5 doesn't support justified text anymore *sigh*
   p Auf dieser Seite kannst du die aktuell geladenen Stationen ansehen, diese anpassen oder neue Stationen ergänzen. Hierzu kannst du einen der Button unten auswählen, um eine Station hinzuzufügen.
-
+  hr
   .container-fluid 
-    hr.hr
-    .row
-      h2.container.d-flex.justify-content-center  Station hinzufügen
-    hr.hr
     .row 
         .col-sm-12.col-md-8
             #map1
         .col-sm-12.col-md-4
           div#add_station_button_area.container
             p.fw-bold Wie möchtest du deine Station hinzufügen:
-            .row.justify-content-center.p-3
+            .row.justify-content-center.p-2
               button#open_map_form.btn.btn-primary(type="button") über die Karte
-            .row.justify-content-center.p-3
+            .row.justify-content-center.p-2
               button#open_geojson_textarea_form.btn.btn-primary(type="button") über ein Textfeld
-            .row.justify-content-center.p-3
+            .row.justify-content-center.p-2
               button#open_geojson_upload_form.btn.btn-primary(type="button") über einen Dateiupload
 
           form#map_form.container.needs-validation(style="display:none" novalidate)
@@ -65,7 +63,7 @@ block content
               // Falls dieses Feld fehlt, hinweis an User, dass eine Station ausgewählt werden muss.
               textarea#hidden_geojson_data_from_map_feature.form-control(style="display:none" name="hidden_geojson_data_from_map_feature" required)
               .invalid-feedback Bitte wähle einen Standort über die Karte aus.
-            hr.hr
+            hr
             .row.justify-content-center
               button#submit_map_form.btn.btn-primary.m-1(type='button') Daten absenden
               button#cancel_map_form.btn.btn-primary.m-1(type='button') Abbrechen
@@ -80,7 +78,7 @@ block content
                 label.fw-bold(for="textarea_geoJSON") GeoJSON eingeben
                 textarea#textarea_geoJSON.form-control(cols="30" rows="10" style='resize:none' name="textarea_geoJSON" placeholder='Gib hier die Stationsdaten vollständig im GeoJSON-Format an.' required)
                 #invalid_feedback_geojson.invalid-feedback 
-            hr.hr
+            hr
             .row.justify-content-center
               button#submit_geojson_textarea_form.btn.btn-primary.m-1(type='button') Daten absenden
               button#cancel_geojson_textarea_form.btn.btn-primary.m-1(type='button') Abbrechen
@@ -97,12 +95,12 @@ block content
                 input#file_upload_geoJSON.form-control(type='file' accept="application/JSON, .json")
                 #invalid_feedback_fileupload_geojson.invalid-feedback 
                 textarea#hidden_geojson_data_from_upload.form-control(style="display:none" name="hidden_geojson_data_from_from_upload")
-            hr.hr
+            hr
             .row.justify-content-center
               button#submit_geojson_upload_form.btn.btn-primary.m-1(type='button') Daten absenden
               button#cancel_geojson_upload_form.btn.btn-primary.m-1(type='button') Abbrechen
 
-  hr.hr
+  hr
   .table-responsive
     table(style="width:100%")#station_table.table.table-striped.table-hover
       thead(style="width:100%")
