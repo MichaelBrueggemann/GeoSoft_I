@@ -115,7 +115,7 @@ async function update_table() {
         
         // ---- selection and highlighting of tours ----
         row.addEventListener("click", async function(event) {
-            row_click_event_handler(row, event, _id, instructions, segments);
+            row_click_event_handler(row, event, _id, stations, instructions, segments);
         });
 
         // ---- invisible id for other methods (f. e. highlighting) ----
@@ -211,28 +211,6 @@ async function initializeMap()
     // LayerGroup to store stations
     let stations_layer_group = L.layerGroup()
     map.addLayer(stations_layer_group)
-
-    // Show stations on map
-    for (const STATION of station_collection) {
-
-        if(STATION.geometry.type === "Point")
-        {
-            let marker = L.marker([STATION.geometry.coordinates[1], STATION.geometry.coordinates[0]]).addTo(stations_layer_group)
-            add_station_metadata(STATION, marker)
-            add_station_events(STATION, marker)
-            marker._id = STATION._id;
-        }
-        else if (STATION.geometry.type === "Polygon")
-        {
-            // "coordinates" are accessed at index "0" because geoJSON wrappes the coordinates in an extra array
-            let polygon = L.polygon(STATION.geometry.coordinates[0].map(function(coord) {// used to change coords from lng/lat to lat/lng
-                return [coord[1], coord[0]]
-            })).addTo(stations_layer_group)
-            add_station_metadata(STATION, polygon)
-            add_station_events(STATION, polygon)
-            polygon._id = STATION._id;
-        }
-    }
 
     return {
         map: map,
@@ -331,7 +309,9 @@ async function start_working_modi() {
     document.getElementById('tour_map').scrollIntoView();
     
     // reset tour selection in table and on map
-    dehighlight_tours()
+    await dehighlight_tours();
+
+    await show_stations_on_map(station_collection);
 }
 
 /**
@@ -355,12 +335,10 @@ async function stop_working_modi() {
     let tour_name_input = document.getElementById("tour_name");
     tour_name_input.value = null;
     
-    // change style of all stations to default
+    // clear Map from stations
     let init_values = await init_values_promise;
     let stations_layer_group = await init_values.stations_layer_group;
-    for (const LAYER of stations_layer_group.getLayers()) {
-        default_style(LAYER);
-    }
+    stations_layer_group.clearLayers();
     
     // clear selected_station_table
     let table = document.getElementById("selected_station_table")
@@ -381,7 +359,7 @@ async function stop_working_modi() {
  * @param {*} instructions - instructions of the clicked tour 
  * @param {*} segments - segments of the clicked tour 
  */
-async function row_click_event_handler(row, event, _id, instructions, segments) {
+async function row_click_event_handler(row, event, _id, stations, instructions, segments) {
     if (event.target.tagName !== "BUTTON") {// only activates click event, if no button of the row is pressed
         
         // Dehighlight Tours in table and on map
@@ -440,6 +418,8 @@ async function row_click_event_handler(row, event, _id, instructions, segments) 
                 });
             }
             
+            await show_stations_on_map(stations);
+            
             // Zoom on selected tour
             map.fitBounds(tour_layer.getBounds());
         }
@@ -471,6 +451,39 @@ async function dehighlight_tours() {
     // set all rows in the table on default color
     for (const ROW of ROWS) {
         ROW.setAttribute("class", ""); 
+    }
+
+    // clear Map from stations
+    let stations_layer_group = await init_values.stations_layer_group;
+    stations_layer_group.clearLayers();
+}
+
+async function show_stations_on_map(stations) {
+    
+    // get access to station_layers of the map
+    let init_values = await init_values_promise;
+    let stations_layer_group = init_values.stations_layer_group;
+    
+    // Show stations on map
+    for (const STATION of stations) {
+
+        if(STATION.geometry.type === "Point")
+        {
+            let marker = L.marker([STATION.geometry.coordinates[1], STATION.geometry.coordinates[0]]).addTo(stations_layer_group)
+            add_station_metadata(STATION, marker)
+            add_station_events(STATION, marker)
+            marker._id = STATION._id;
+        }
+        else if (STATION.geometry.type === "Polygon")
+        {
+            // "coordinates" are accessed at index "0" because geoJSON wrappes the coordinates in an extra array
+            let polygon = L.polygon(STATION.geometry.coordinates[0].map(function(coord) {// used to change coords from lng/lat to lat/lng
+                return [coord[1], coord[0]]
+            })).addTo(stations_layer_group)
+            add_station_metadata(STATION, polygon)
+            add_station_events(STATION, polygon)
+            polygon._id = STATION._id;
+        }
     }
 }
 
