@@ -1,15 +1,16 @@
 "use strict"
 const JOI = require("joi")
 
-// this schema defines a valid Point. I wasnt able to achieve typechecking to ensure that the value is a Float, or better a LatLng. I tried numerous libraries like "ajv", "joi", "express-validator", but unfurtunately couldn't achieve this. We can't use a RegExp as Leaflet doesn't add coordinates as Strings, so this would cause unwanted errors.
-const POINT_SCHEMA = JOI.array().max(2).items(
-    JOI.number().required()
-    )
+// this schema defines a valid Point. 
+const POINT_SCHEMA = JOI.array().items(
+    JOI.number().min(-90).max(90).required(),
+    JOI.number().min(-180).max(180).required()
+).length(2).required()
 
-// this schema defines a valid Point. I wasnt able to achieve typechecking to ensure that the value is a Float, or better a LatLng. I tried numerous libraries like "ajv", "joi", "express-validator", but unfurtunately couldn't achieve this. We can't use a RegExp as Leaflet doesn't add coordinates as Strings, so this would cause unwanted errors.
+// this schema defines a valid Polygon. 
 const POLYGON_SCHEMA = JOI.array().max(1).items(
     JOI.array().items(
-        JOI.array().items(JOI.number().required())
+        POINT_SCHEMA
     )).required()
 
 const GEOMETRY_SCHEMA = JOI.object(
@@ -74,6 +75,7 @@ function validate_input(input, schema)
   {
     let errorDetails = error.details
     let hasError = true
+    console.log(errorDetails)
     return {hasError, errorDetails}
   }
   else
@@ -83,4 +85,4 @@ function validate_input(input, schema)
   }
 }
 
-module.exports = {GEOJSON_SCHEMA, validate_input}
+module.exports = {POINT_SCHEMA, GEOJSON_SCHEMA, validate_input}

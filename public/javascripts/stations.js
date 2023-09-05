@@ -34,11 +34,14 @@ async function delete_tour(id) {
  */
 async function delete_station(id) {
     let response = await api_call("delete_station", { id: id })
+    
     // Control if the API is online and worked as plannend
     if (response.ok) {
         const data = await response.json();
+        
         // If the data has this property there are tours which contains the station which should be deleted
         if (data.hasOwnProperty("tours_with_this_station")) {
+            
             // the API tells client which tours contain the station
             let tours_with_this_station = data.tours_with_this_station;
             $('#station_deletion_popup').modal('show');
@@ -53,9 +56,9 @@ async function delete_station(id) {
             // ----------------- Delete_Station_And_Tours - Button -----------------
             const CANCEL_BUTTON = document.getElementById("delete_station_and_tours");
             CANCEL_BUTTON.addEventListener("click", async function() {
-                tours_with_this_station.forEach(async function(tour) {
-                    await delete_tour(tour._id);
-                });
+                for (const TOUR of tours_with_this_station) {
+                    await delete_tour(TOUR._id);
+                }
                 await delete_station(id);
                 $('#station_deletion_popup').modal('hide');
                 await update_map()

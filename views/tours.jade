@@ -13,7 +13,7 @@ block scripts
 
 block content
     h1= title
-    p Auf dieser Seite können Sie die aktuell geladenen Stationen ansehen und diese zu Touren verknüpfen. Anschließend können diese tabellarisch verwaltet werden. Die Touren werden mittels der GRAPHHOPPER-API erstellt.
+    p Auf dieser Seite können Sie durch einen Klick auf "neue Tour anlegen" die aktuell geladenen Stationen ansehen und diese zu Touren verknüpfen. Anschließend können die erstellten Touren tabellarisch verwaltet werden. Die Touren werden mittels der GRAPHHOPPER-API erstellt.
     
     .container-fluid 
         .row 
@@ -21,11 +21,11 @@ block content
                 #tour_map
             .col-sm-12.col-md-4(style="display: none")#station_div
                 p Bitte wählen Sie auf der Karte alle Stationen aus, die Sie in der Tour verbinden wollen.
-                form
+                form#tour_name_form.container.needs-validation(novalidate)
                     .form-group
-                        label.font-weight-bold(for='tourname') <strong>Tourname</strong>:
-                        input#tour_name.form-control(type='tourname' aria-describedby='tour_name_help' placeholder='Hier Tournamen einfügen')
-                        small#tour_name_help.form-text.text-muted Kein Pflichtfeld, eine möglichst eindeutige Eingabe wird aber dringenst empfohlen
+                        label.fw-bold(for='tourname') <strong>Tourname</strong>:
+                        input#tour_name.form-control(type='tourname' aria-describedby='tour_name_help' placeholder='Hier Tournamen einfügen' required)
+                        small#tour_name_help.form-text.text-muted Pflichtfeld, keine Sonderzeichen
 
                 .table-responsive
                     table(width="100%")#selected_station_table
@@ -45,7 +45,7 @@ block content
                 th(style="text-align:center" scope="col") Aktionen
             tbody 
     #tour_information_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
-        .modal-dialog.modal-dialog-centered(role='document')
+        .modal-dialog.modal-lg.modal-dialog-centered(role='document')
             .modal-content
                 .modal-header
                     h5.modal-title Tour-Informationen
