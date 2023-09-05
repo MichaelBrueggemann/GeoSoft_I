@@ -133,7 +133,7 @@ export async function update_table() {
                 }
                 else
                 {
-                    // reset higjlight in each row
+                    // reset highlight in each row
                     for (const ROW of tbody.children)
                     {
                         ROW.classList.remove("table-primary")
