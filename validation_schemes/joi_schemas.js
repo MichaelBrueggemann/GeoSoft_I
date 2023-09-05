@@ -30,9 +30,13 @@ const GEOMETRY_SCHEMA = JOI.object(
 const PROPERTIES_SCHEMA = JOI.object(
     {
         // the RegEx allows letters, numbers and whitespace
-        name: JOI.string().pattern(/^[a-zA-Z0-9\s]*$/).required(), 
-        description: JOI.string().pattern(/^[a-zA-Z0-9\s]*$/).required(),
-        url: JOI.string().uri({ 
+        name: JOI.string().pattern(/^[a-zäöüßA-ZÄÖÜ0-9\s]*$/).required(), 
+        description: JOI.string().pattern(/^[a-zäöüßA-ZÄÖÜ0-9\s]*$/).required(),
+        url: JOI.string().custom(function(value)
+        {
+            // wrap URL String in URL() Class to prevent errors regarding ASCII Characters in the URL String
+            return new URL(value)
+        }).uri({ 
             allowRelative: false,
             relativeOnly: false,
             domain: {tlds: {allow: true}}

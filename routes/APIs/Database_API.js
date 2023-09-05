@@ -1,10 +1,9 @@
 "use strict"
 
-
+const { create_MediaWiki_API_URL, fetch_first_sentence } = require("./MediaWiki_API")
 const {GEOJSON_SCHEMA, validate_input} = require("../../validation_schemes/joi_schemas")
 const EXPRESS = require('express');
 const ROUTER = EXPRESS.Router();
-
 
 
 
@@ -160,7 +159,7 @@ ROUTER.get('/stations', async function(_req, res) {
 })
 
 
-ROUTER.post('/add_station', function(req, res) {
+ROUTER.post('/add_station', async function(req, res) {
   let validation_result = validate_input(req.body, GEOJSON_SCHEMA)
   console.log("valid result", validation_result.errorDetails)
 
@@ -171,6 +170,17 @@ ROUTER.post('/add_station', function(req, res) {
   }
   else
   {
+    let url = req.body.properties.url
+
+    if (url.includes(".wikipedia.org/wiki/"))
+    {
+      let MediaWiki_url = create_MediaWiki_API_URL(url)
+      let first_sentence = await fetch_first_sentence(MediaWiki_url)
+
+      // replace description in request body
+      req.body.properties.description = first_sentence
+    }
+
     add_item(req.body, station_collection);
     res.status(200).json({errors: "Alles ok."})
   }
@@ -208,7 +218,7 @@ ROUTER.post('/delete_station', async function(req, res) {
 });
 
 
-ROUTER.post('/update_station', function(req, res) {
+ROUTER.post('/update_station', async function(req, res) {
 
   const ID = req.body.id;
   let new_data = {
@@ -224,6 +234,17 @@ ROUTER.post('/update_station', function(req, res) {
   }
   else
   {
+    let url = new_data.geojson.properties.url
+
+    if (url.includes(".wikipedia.org/wiki/"))
+    {
+      let MediaWiki_url = create_MediaWiki_API_URL(url)
+      let first_sentence = await fetch_first_sentence(MediaWiki_url)
+
+      // replace description in new_data
+      new_data.geojson.properties.description = first_sentence
+    }
+
     update_item(ID, new_data, station_collection)
     res.status(200).json({errors: "Alles ok."})
   }
