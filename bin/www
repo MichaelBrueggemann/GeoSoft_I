@@ -4,6 +4,7 @@
  * Module dependencies.
  */
 
+const { exit } = require('process');
 let app = require('../app');
 let debug = require('debug')('projektgruppe-01:server');
 let http = require('http');
@@ -26,7 +27,17 @@ let server = http.createServer(app);
  */
 
 server.listen(port);
-console.log(`Listening to "localhost:${port}"`)
+
+console.log(`\nListening to "localhost:${port}"`)
+console.log(`Arguments passed to Node.js: ${process.argv}\n`)
+
+// delibaretly crash app, if API-Key is missing
+if (!process.argv[2])
+{
+  console.error("Graphhopper-API-Key fehlt. Bitte starte den Server mit dem API-Key neu.")
+  process.exit(1)
+}
+
 server.on('error', onError);
 server.on('listening', onListening);
 

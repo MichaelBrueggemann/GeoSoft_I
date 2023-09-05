@@ -127,6 +127,23 @@ export async function update_table() {
         {
             if (event.target.tagName !== "BUTTON") // only activates click event, if no button of the row is pressed
             {
+                if (row.classList.contains("table-primary"))
+                {
+                    row.classList.remove("table-primary")
+                }
+                else
+                {
+                    // reset highlight in each row
+                    for (const ROW of tbody.children)
+                    {
+                        ROW.classList.remove("table-primary")
+                    }
+
+                    row.classList.add("table-primary")
+                }
+                
+                
+
                 if (LEAFLET_LAYER.highlighted)
                 {
                     default_style(LEAFLET_LAYER)
