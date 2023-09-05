@@ -14,7 +14,7 @@ function add_search_params(url_object, search_params)
 }
 
 /**
- * THios function converts any Wikipedia Link into an MediaWiki-API URL that can later be supplemented with search parameters
+ * This function converts any Wikipedia Link into an MediaWiki-API URL that can later be supplemented with search parameters
  * @param {*} url - Wikipedia URL String
  * @returns URL-Object in Format of a MediaWiki-API URL (https://www.example.org/w/api.php)
  */
