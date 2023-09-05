@@ -302,7 +302,7 @@ async function start_working_modi() {
     stat_div.style.display = 'block';
     let tour_div = document.getElementById("tour_div")
     tour_div.style.display = 'none';
-    let new_tour_button = document.getElementById("new_tour")
+    let new_tour_button = document.getElementById("new_tour_button_div")
     new_tour_button.style.display = 'none';
     
     // scroll website to the map (there you can select the stations)
@@ -328,7 +328,7 @@ async function stop_working_modi() {
     stat_div.style.display = 'none';
     let tour_div = document.getElementById("tour_div")
     tour_div.style.display = 'block';
-    let new_tour_button = document.getElementById("new_tour")
+    let new_tour_button = document.getElementById("new_tour_button_div")
     new_tour_button.style.display = 'block';
     
     // reset name field in stat_div
