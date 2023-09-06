@@ -147,7 +147,7 @@ async function update_table() {
         update_tour_button.setAttribute("type", "button")
         update_tour_button.setAttribute("class", "btn btn-primary")
         update_tour_button.addEventListener("click",async function() {
-            start_working_modi();
+            await start_working_modi();
             current_tour_id = _id;
             
             // Write name of tour in the inputfield
