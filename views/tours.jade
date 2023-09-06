@@ -11,7 +11,6 @@ block scripts
     script(type="module" src='/javascripts/tours.js' defer)
 
 block content
-    hr
     // unfortunately, Bootstrap 5 doesn't support justified text anymore *sigh*
     h1= title
     p Auf dieser Seite können Sie durch einen Klick auf "neue Tour anlegen" die aktuell geladenen Stationen ansehen und diese zu Touren verknüpfen. Anschließend können die erstellten Touren tabellarisch verwaltet werden. Die Touren werden mittels der "Graphhopper-API" erstellt.
@@ -20,13 +19,14 @@ block content
         .row 
             .col-sm-12.col-md-8
                 #tour_map
-            .col-sm-12.col-md-4(style="display: none")#station_div
-                p Bitte wählen Sie auf der Karte alle Stationen aus, die Sie in der Tour verbinden wollen.
-                form#tour_name_form.container.needs-validation(novalidate)
-                    .form-group
-                        label.fw-bold(for='tourname') Tourname:
-                        input#tour_name.form-control(type='tourname' aria-describedby='tour_name_help' placeholder='Hier Tournamen einfügen' required)
-                        small#tour_name_help.form-text.text-muted Pflichtfeld, keine Sonderzeichen
+            .col-sm-12.col-md-4
+                .container-fluid#station_div(style="display: none")
+                    p Bitte wählen Sie auf der Karte alle Stationen aus, die Sie in der Tour verbinden wollen.
+                    form#tour_name_form.container.needs-validation(novalidate)
+                        .form-group
+                            label.fw-bold(for='tourname') Tourname:
+                            input#tour_name.form-control(type='tourname' aria-describedby='tour_name_help' placeholder='Hier Tournamen einfügen' required)
+                            small#tour_name_help.form-text.text-muted Pflichtfeld, keine Sonderzeichen
                 .container
                     .table-responsive
                         table(width="100%")#selected_station_table
@@ -37,30 +37,39 @@ block content
                         button#calculate_tour(type="button") Tour berechnen
                     .row.m-1
                         button#cancel(type='button') Abbrechen
-                    
-    hr
-    .container#new_tour_button_div(style="display:block")
-        .row.justify-content-center
-            button#new_tour(type="button") neue Tour anlegen
+                hr.d-md-none
+                .container#new_tour_button_div(style="display:block")
+                    .row.justify-content-center
+                        button#new_tour(type="button") neue Tour anlegen
     
-    hr
-    .container 
-        .table-responsive(style="display: block")#tour_div
-            
+    .container-fluid(style="display: block")#tour_div
+        hr
+        .table-responsive
             table(width="100%")#tour_table.table.table-striped.table-hover
                 thead
                     th(scope="col") Name
                     th(style="text-align:center" colspan="3" scope="col") Aktionen
                 tbody 
-    hr
     #tour_information_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
-        .modal-dialog.modal-lg.modal-dialog-centered(role='document')
+        .modal-dialog.modal-lg.modal-fullscreen-sm-down.modal-dialog-centered(role='document')
             .modal-content
                 .modal-header
                     h5.modal-title Tour-Informationen
                     button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
-                .modal-body(align="left")
-                    #info_text
+                .modal-body
+                    .container
+                        .row
+                            p.fw-bold.mb-0 Stationen:
+                            #station_text
+                        hr
+                        .row
+                            p.fw-bold.mb-0 Anleitung zur Tour:
+                            .container.border.border-primary.rounded.m-1
+                                p.m-1 Diese Instruktionen kommen direkt von GRAPHHOPPER und sind somit leider nur auf englisch verfügbar.
+                            #instruction_text 
+                        hr
+                        .row 
+                            #distance_text
                 .modal-footer
                     button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen
     

@@ -1,6 +1,6 @@
 "use strict"
 import {highlight, default_style, add_station_metadata} from "./map_helper.js"
-import {build_info_text, calculate_centroid, get_routing_error_text, slice_tour} from "./tour_helper.js";
+import {show_info_text, calculate_centroid, get_routing_error_text, slice_tour} from "./tour_helper.js";
 
 // ------------ Definition & Initialization of global variables -------------
 
@@ -136,8 +136,7 @@ async function update_table() {
         
         // populate popUp with tour information
         info_tour_button.addEventListener("click", function() {
-            let info_text = build_info_text(stations, instructions, distance);
-            document.getElementById("info_text").innerHTML = info_text;
+            show_info_text(stations, instructions, distance);
         })   
         row.insertCell().appendChild(info_tour_button)
 
@@ -305,9 +304,6 @@ async function start_working_modi() {
     let new_tour_button = document.getElementById("new_tour_button_div")
     new_tour_button.style.display = 'none';
     
-    // scroll website to the map (there you can select the stations)
-    document.getElementById('tour_map').scrollIntoView();
-    
     // reset tour selection in table and on map
     await dehighlight_tours();
 
@@ -402,18 +398,22 @@ async function row_click_event_handler(row, event, _id, stations, instructions, 
             // each toursegment gets his own Popup (incl. distance)
             for (const SEGMENT of segments) {
                 let polyline = L.polyline(SEGMENT, {color: 'cadetblue', weight: 3}).addTo(tour_layer);
-                polyline.bindPopup("Distanz: ca. " + Math.round(segment_distances[i]).toString() + "m");
+                let popup = L.popup();
+                popup.setContent("Distanz: ca. " + Math.round(segment_distances[i]).toString() + "m");
                 i++;
                 
                 // The Popup opens while hovering above the line-segment
                 polyline.on("mouseover", function(event) {
-                    polyline.openPopup();
+                    
+                    // Get position of mouse for the position of the popup
+                    let mousePos = event.latlng;
+                    popup.setLatLng(mousePos).openOn(map);
                     
                     // The current segment gets highlighted for visualization and easier hovering (weighting)
                     polyline.setStyle({color: 'purple', weight: 4});
                 });
                 polyline.on("mouseout", function(event) {
-                    polyline.closePopup();
+                    map.closePopup(popup);
                     polyline.setStyle({color: 'cadetblue', weight: 3});
                 });
             }
