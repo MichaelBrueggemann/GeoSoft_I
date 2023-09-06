@@ -2,13 +2,13 @@
 
 /**
  * Zips together an array and a leaflet layergroup
- * @param {*} array - Arbitrary javascript array
- * @param {*} leaflet_layergroup - Leaflet LayerGroup
+ * @param {array} array - arbitrary javascript array
+ * @param {LayerGroup} leaflet_layergroup - Leaflet LayerGroup
  * @returns Array containing the zipped data.
  */
 export function zip_array_and_leaflet_layergroup(array, leaflet_layergroup)
 {
-    // Wrap each element in an array
+    // Wrap each element in an array. This is necessary, so later the "push()"-function can be used.
     array = array.map(element => [element])
     
     let counter = 0
@@ -23,7 +23,7 @@ export function zip_array_and_leaflet_layergroup(array, leaflet_layergroup)
 
 /**
  * This function sets the styling of the feature to the default styling
- * @param {*} feature - Leaflet Layer Object
+ * @param {Layer} feature - Leaflet Layer Object
  */
 export function default_style(feature)
 {
@@ -34,8 +34,8 @@ export function default_style(feature)
     else if (feature instanceof L.Marker)
     {
         let old_icon = feature.options.icon
-        let highlight_icon = L.icon({
-            // TODO: Discuss if this should be made independent of current leaflet version?
+        let highlight_icon = L.icon(
+        {
             iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
             shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
             // reuse default styling
@@ -52,7 +52,7 @@ export function default_style(feature)
 
 /**
  * This function highlights the choosen feature.
- * @param {} feature - Leaflet Layer Object
+ * @param {Layer} feature - Leaflet Layer Object
  */
 export function highlight(feature) 
 {
@@ -63,7 +63,8 @@ export function highlight(feature)
     else if (feature instanceof L.Marker)
     {
         let old_icon = feature.options.icon
-        let highlight_icon = L.icon({
+        let highlight_icon = L.icon(
+        {
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
             // reuse default styling
@@ -75,7 +76,6 @@ export function highlight(feature)
         feature.setIcon(highlight_icon)
     }
     feature.highlighted = true
-    
 }
 
 
@@ -87,7 +87,9 @@ export function highlight(feature)
 export function add_station_metadata(station, leaflet_object)
 {
     let popupcontent = `<strong> Name: </strong> ${station.properties.name}  <br> <strong> Beschreibung: </strong> ${station.properties.description}  <br>`
-    if (station.properties.url) // append only if exisitng, as its an optional parameter
+    
+    // append only if exisitng, as its an optional parameter
+    if (station.properties.url) 
     {
         popupcontent += `<strong> URL: </strong> <a href="${station.properties.url}" target="_blank"> ${station.properties.url} </a> `
     }

@@ -3,45 +3,9 @@ import { add_new_station } from "./stations.js"
 import { prepare_server_error_message, construct_error_message } from "./station_error_messages.js"
 
 /**
- * Tests if the input is a valid geojson
- * @param {} object Object to check.
+ * This function hides the button area "add_station_button_area" and shows the specified form, depending on the edit_style
+ * @param {string} edit_style name of the edit style
  */
-function is_geojson(object) 
-{
-    // Check if the object has the necessary GeoJSON properties
-    if (!(object.hasOwnProperty('type') && object.hasOwnProperty('properties')  && object.hasOwnProperty('geometry')))
-    {
-      return false
-    }  
-
-    // check if the mandatory properties exists and are not-empty strings
-    if (!(object.properties.hasOwnProperty('name') && object.properties.name !== "" && object.properties.hasOwnProperty('description') && object.properties.description !== ""))
-    {
-        return false
-    }
-
-    // check, if the given url is not-empty.
-    if (object.properties.hasOwnProperty("url") && object.properties.url === "")
-    {
-        return false
-    }
-
-    // Check if "geometry" itself contains "type" and "coordinates"
-    if (!(object.geometry.hasOwnProperty('type') && object.geometry.hasOwnProperty('coordinates')))
-    {
-        return false
-    }
-
-    // check if the "type" is correct
-    if (!(object.geometry.type === "Polygon" || object.geometry.type === "Point"))
-    {
-        return false
-    }
-    // else
-    return true
-}
-    
-
 function enter_add_station_mode(edit_style)
 {
     switch(edit_style)
@@ -103,7 +67,7 @@ function reset_form_validation_state(form)
 /**
  * This functions sole purpose is to increase readability of this code. 
  * It wraps the initialisation of the map_form form element
- * @param {Object} map - Leaflet Map for form interactions
+ * @param {object} map - Leaflet Map for form interactions
  * @param {object} drawnItems - Leaflet Draw Layer for a Leaflet Draw Control
  * @param {object} drawControl - Draw Control instance from Leaflet Draw
  * */
@@ -119,7 +83,6 @@ function prepare_map_form(map, drawnItems, drawControl)
         {
             MAP_FORM.classList.remove("was-validated")
         }
-
 
         // add stations via map
         enter_add_station_mode("map")
@@ -413,35 +376,6 @@ function prepare_geojson_file_upload()
         {
             let contents = event.target.result
             document.getElementById('hidden_geojson_data_from_upload').value = contents
-
-            // validate file_upload_geoJSON control element
-            let hidden_geojson_data_from_upload = document.getElementById('hidden_geojson_data_from_upload')
-
-            let geojson = {}
-
-            try 
-            {
-                geojson = JSON.parse(hidden_geojson_data_from_upload.value)
-            } 
-            catch (error) 
-            {
-                // console.log("Keine GeoJSON eingegeben: ", error)
-            }
-            finally
-            {
-                // if the input isn't a correct GeoJSON
-                if (!is_geojson(geojson))
-                {
-                    // invalidate textarea for later validation via HTML constraint validation API
-                    file_upload_geoJSON.setCustomValidity("noGeoJSON")
-                }
-                else
-                {
-                    // reset, to prevent wrong validation results
-                    file_upload_geoJSON.setCustomValidity("")
-                }
-            }
-            
         }
         reader.readAsText(file)
     })
@@ -574,53 +508,3 @@ export function prepare_form_buttons(map, drawnItems, drawControl)
     
     prepare_geojson_upload_form()
 }
-
-
-// Testing
-let correct_station = {
-    "type": "Feature",
-    "properties": {
-      "name": "Korrekte Station",
-      "description": "Das ist der Prinzipalmarkt",
-      "url": "https://de.wikipedia.org/wiki/Prinzipalmarkt"
-    },
-    "geometry": {
-      "coordinates": [
-        7.628199238097352,
-        51.962239849033296
-      ],
-      "type": "Point"
-    }
-  }
-
-let incorrect_station = {
-    "type": "Feature",
-    "properties": {
-        "name": "Test",
-        "description": "Test",
-        "url": "https://de.wikipedia.org/wiki/Prinzipalmarkt"
-      },
-    "geometry": {
-      "coordinates": [
-        [
-          [
-            "7579708",
-            "51.99079"
-          ],
-          [
-            "7.593269",
-            "51.992481"
-          ],
-          [
-            "7.579536",
-            "51.996497"
-          ],
-          [
-            "7.579708",
-            "51.99079"
-          ]
-        ]
-      ],
-      "type": "Polygon"
-    }
-  }
