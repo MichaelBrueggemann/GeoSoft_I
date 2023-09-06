@@ -73,18 +73,7 @@ function get_first_sentence(MediaWiki_response_json)
  */
 async function fetch_first_sentence(MediaWiki_url)
 {
-    // try 
-    // {
-        
-    // } 
-    // catch (error) 
-    // {
-        
-    // }
-    
     let data = await fetch(MediaWiki_url)
-
-    console.log(data)
 
     if (!data.ok)
     {
