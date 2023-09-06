@@ -1,7 +1,7 @@
 "use strict"
 
 const { create_MediaWiki_API_URL, fetch_first_sentence } = require("./MediaWiki_API")
-const {GEOJSON_SCHEMA, validate_input} = require("../../validation_schemes/joi_schemas")
+const {STATION_SCHEMA, validate_input} = require("../../validation_schemes/station_schemas")
 const {TOUR_SCHEMA} = require("../../validation_schemes/tour_schemas")
 const EXPRESS = require('express')
 const ROUTER = EXPRESS.Router()
@@ -188,7 +188,7 @@ ROUTER.post('/add_station', async function(req, res)
 {
   try 
   {
-    let validation_result = validate_input(req.body, GEOJSON_SCHEMA)
+    let validation_result = validate_input(req.body, STATION_SCHEMA)
     console.log("valid result", validation_result.errorDetails)
 
     // request was invalid
@@ -278,7 +278,7 @@ ROUTER.post('/update_station', async function(req, res)
     const ID = req.body.id
     let new_data = { geojson: req.body.geojson }
 
-    let validation_result = validate_input(req.body.geojson, GEOJSON_SCHEMA)
+    let validation_result = validate_input(req.body.geojson, STATION_SCHEMA)
 
     // request was invalid
     if (validation_result.hasError)
