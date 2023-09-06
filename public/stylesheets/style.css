@@ -10,7 +10,7 @@ a {
 
 #tour_map { height: 600px; }
 
-#map1 { height: 800px }
+#map1 { height: 900px }
 
 .required:after {
   content:"*";

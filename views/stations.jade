@@ -30,23 +30,24 @@ block content
     .row 
         .col-sm-12.col-md-8
             #map1
-        .col-sm-12.col-md-4
+        .col-sm-12.col-md-4.align-self-center
           hr.d-md-none
           div#add_station_button_area.container
-            p.fw-bold Wie möchtest du deine Station hinzufügen:
+            p.fw-bold.text-center Wie möchtest du deine Station hinzufügen:
             .row.justify-content-center.p-2
-              button#open_map_form.btn.btn-primary(type="button") über die Karte
+              button#open_map_form.btn.btn-primary(type="button" style="width:auto") über die Karte
             .row.justify-content-center.p-2
-              button#open_geojson_textarea_form.btn.btn-primary(type="button") über ein Textfeld
+              button#open_geojson_textarea_form.btn.btn-primary(type="button" style="width:auto") über ein Textfeld
             .row.justify-content-center.p-2
-              button#open_geojson_upload_form.btn.btn-primary(type="button") über einen Dateiupload
+              button#open_geojson_upload_form.btn.btn-primary(type="button" style="width:auto") über einen Dateiupload
 
           form#map_form.container.needs-validation(style="display:none" novalidate)
+            h3 Über Karte einfügen
             p.note(align="right")
               span(style='color: red;') *
               |  Pflichtfeld
-            h3 Stationsmetadaten
-            p Hier musst du über die Karte den Ort deiner Station auswählen. Die Daten zu deiner Station gibts du dann über die untenstehenden Eingabefelder an. Beachte, wenn du unter "URL" einen Link zu einer Wikipedia Seite angibts, wird deine Beschreibung durch den ersten Satz der Wikipedia Seite ersetzt.
+            p Hier musst du über die Karte den Ort deiner Station auswählen. Die Daten zu deiner Station gibts du dann über die untenstehenden Eingabefelder an. 
+            p Beachte, wenn du unter "URL" einen Link zu einer Wikipedia Seite angibts, wird deine Beschreibung durch den ersten Satz der Wikipedia Seite ersetzt.
             .form-group.m-1
               label.required.fw-bold(for='input_name') Name
               input#input_name.form-control(type='text' name="input_name" placeholder='Name eingeben' required)
@@ -65,13 +66,14 @@ block content
               .invalid-feedback Bitte wähle einen Standort über die Karte aus.
             hr
             .row.justify-content-center
-              button#submit_map_form.btn.btn-primary.m-1(type='button') Daten absenden
-              button#cancel_map_form.btn.btn-primary.m-1(type='button') Abbrechen
+              button#submit_map_form.btn.btn-primary.m-1(type='button' style="width:auto") Daten absenden
+              button#cancel_map_form.btn.btn-primary.m-1(type='button' style="width:auto") Abbrechen
 
           form#geojson_textarea_form.container.needs-validation(style="display:none" novalidate)
             .row.justify-content-center
-              h3 Stations-GeoJSON
-              p Hier kannst du eine Station erstellen, indem du eine GeoJSON mit allen nötigen Daten in das Textfeld einträgst. Bei Problemen, schau dir gerne das Beispiel an. Beachte, wenn du unter "url" einen Link zu einer Wikipedia Seite angibts, wird deine Beschreibung durch den ersten Satz der Wikipedia Seite ersetzt.
+              h3 Über Textfeld einfügen
+              p Hier kannst du eine Station erstellen, indem du eine GeoJSON mit allen nötigen Daten in das Textfeld einträgst. Bei Problemen, schau dir gerne das Beispiel an. 
+              p Beachte, wenn du unter "url" einen Link zu einer Wikipedia Seite angibts, wird deine Beschreibung durch den ersten Satz der Wikipedia Seite ersetzt.
               button#show_sample_geojson.btn.btn-secondary.m-3(type='button') Beispiel
             .row.justify-content-center
               .form-group 
@@ -80,12 +82,12 @@ block content
                 #invalid_feedback_geojson.invalid-feedback 
             hr
             .row.justify-content-center
-              button#submit_geojson_textarea_form.btn.btn-primary.m-1(type='button') Daten absenden
-              button#cancel_geojson_textarea_form.btn.btn-primary.m-1(type='button') Abbrechen
+              button#submit_geojson_textarea_form.btn.btn-primary.m-1(type='button' style="width:auto") Daten absenden
+              button#cancel_geojson_textarea_form.btn.btn-primary.m-1(type='button' style="width:auto") Abbrechen
 
           form#geojson_upload_form.container.needs-validation(style="display:none" novalidate)
             .row.justify-content-center
-              h3 Stations-GeoJSON
+              h3 Über Datei-Upload einfügen
               p Hier kannst du eine Station erstellen, indem du eine GeoJSON-Datei hochlädst. Bitte beachte, dass deine Datei die folgende Struktur erfüllt: 
             .row.justify-content-center
               textarea#sample_geojson.m-3(cols="30" rows="15" style='resize:none' readonly)
@@ -98,8 +100,8 @@ block content
                 textarea#hidden_geojson_data_from_upload.form-control(style="display:none" name="hidden_geojson_data_from_from_upload")
             hr
             .row.justify-content-center
-              button#submit_geojson_upload_form.btn.btn-primary.m-1(type='button') Daten absenden
-              button#cancel_geojson_upload_form.btn.btn-primary.m-1(type='button') Abbrechen
+              button#submit_geojson_upload_form.btn.btn-primary.m-1(type='button' style="width:auto") Daten absenden
+              button#cancel_geojson_upload_form.btn.btn-primary.m-1(type='button' style="width:auto") Abbrechen
 
   hr
   .container
@@ -112,7 +114,7 @@ block content
         tbody
   
   #edit_station_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
-    .modal-dialog.modal-dialog-centered(role='document')
+    .modal-dialog.modal-fullscreen-sm-down.modal-dialog-centered(role='document')
       .modal-content
         .modal-header
           h5.modal-title Station bearbeiten
@@ -121,26 +123,29 @@ block content
           form#update_station_form.container.needs-validation(novalidate)
             .row.justify-content-center
               .form-group 
-                label.fw-bold(for="update_stationGeoJSON") GeoJSON bearbeiten
-                textarea#update_stationGeoJSON(rows='25' cols='45' style='resize:none')
+                .row
+                  label.fw-bold(for="update_stationGeoJSON") GeoJSON bearbeiten
+                .row
+                  textarea#update_stationGeoJSON(rows='25' style='resize:none width:100%')
                 #invalid_feedback_update_geojson.invalid-feedback
         .modal-footer
           button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen
           button#update_station.btn.btn-primary(type="button") Aktualisieren
 
   #sample_geojson_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
-    .modal-dialog.modal-dialog-centered(role='document')
+    .modal-dialog.modal-fullscreen-sm-down.modal-dialog-centered(role='document')
       .modal-content
         .modal-header
           h5.modal-title Beispiel-GeoJSON
           button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
         .modal-body(align="center")
-          textarea#sample_geojson_textarea(rows='15' cols='45' style='resize:none' readonly)
+          .row
+            textarea#sample_geojson_textarea(rows='15' style='resize:none width:100%' readonly)
         .modal-footer
           button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen
 
   #station_deletion_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
-    .modal-dialog.modal-dialog-centered(role='document')
+    .modal-dialog.modal-fullscreen-sm-down.modal-dialog-centered(role='document')
       .modal-content
         .modal-header
           h5.modal-title Warnung
