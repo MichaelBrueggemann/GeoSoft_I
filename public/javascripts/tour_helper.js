@@ -63,10 +63,11 @@ export function slice_tour(route, snapped_waypoints) {
 export function show_info_text(stations, instructions, distance) {
     
     // list all stations of the tour
-    let station_text = "";
+    let station_text = "<ul class='mb-0'>";
     stations.forEach( function({properties}) {
             station_text += "<li>" + properties.name + "</li>";
-    });
+    })
+    station_text += "</ul>"
     document.getElementById("station_text").innerHTML = station_text;
     
     // give user instructions how to follow the tour
