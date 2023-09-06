@@ -46,7 +46,7 @@ block content
               span(style='color: red;') *
               |  Pflichtfeld
             h3 Stationsmetadaten
-            p Hier musst du über die Karte den Ort deiner Station auswählen. Die Daten zu deiner Station gibts du dann über die untenstehenden Eingabefelder an.
+            p Hier musst du über die Karte den Ort deiner Station auswählen. Die Daten zu deiner Station gibts du dann über die untenstehenden Eingabefelder an. Beachte, wenn du unter "URL" einen Link zu einer Wikipedia Seite angibts, wird deine Beschreibung durch den ersten Satz der Wikipedia Seite ersetzt.
             .form-group.m-1
               label.required.fw-bold(for='input_name') Name
               input#input_name.form-control(type='text' name="input_name" placeholder='Name eingeben' required)
@@ -71,7 +71,7 @@ block content
           form#geojson_textarea_form.container.needs-validation(style="display:none" novalidate)
             .row.justify-content-center
               h3 Stations-GeoJSON
-              p Hier kannst du eine Station erstellen, indem du eine GeoJSON mit allen nötigen Daten in das Textfeld einträgst. Bei Problemen, schau dir gerne das Beispiel an.
+              p Hier kannst du eine Station erstellen, indem du eine GeoJSON mit allen nötigen Daten in das Textfeld einträgst. Bei Problemen, schau dir gerne das Beispiel an. Beachte, wenn du unter "url" einen Link zu einer Wikipedia Seite angibts, wird deine Beschreibung durch den ersten Satz der Wikipedia Seite ersetzt.
               button#show_sample_geojson.btn.btn-secondary.m-3(type='button') Beispiel
             .row.justify-content-center
               .form-group 
@@ -89,6 +89,7 @@ block content
               p Hier kannst du eine Station erstellen, indem du eine GeoJSON-Datei hochlädst. Bitte beachte, dass deine Datei die folgende Struktur erfüllt: 
             .row.justify-content-center
               textarea#sample_geojson.m-3(cols="30" rows="15" style='resize:none' readonly)
+              p Beachte, wenn du unter "url" einen Link zu einer Wikipedia Seite angibts, wird deine Beschreibung durch den ersten Satz der Wikipedia Seite ersetzt.
             .row.justify-content-center
               .form-group
                 label.fw-bold(for='file_upload_geoJSON') GeoJSON-Datei hochladen
@@ -101,13 +102,14 @@ block content
               button#cancel_geojson_upload_form.btn.btn-primary.m-1(type='button') Abbrechen
 
   hr
-  .table-responsive
-    table(style="width:100%")#station_table.table.table-striped.table-hover
-      thead(style="width:100%")
-        tr
-          th(scope="col") Name
-          th(style="text-align:center" scope="col") Aktionen
-      tbody
+  .container
+    .table-responsive
+      table#station_table.table.table-striped.table-hover
+        thead
+          tr
+            th(scope="col") Name
+            th(style="text-align:center" scope="col" colspan="2") Aktionen
+        tbody
   
   #edit_station_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
     .modal-dialog.modal-dialog-centered(role='document')

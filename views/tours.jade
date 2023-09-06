@@ -27,7 +27,7 @@ block content
                             label.fw-bold(for='tourname') Tourname:
                             input#tour_name.form-control(type='tourname' aria-describedby='tour_name_help' placeholder='Hier Tournamen einfügen' required)
                             small#tour_name_help.form-text.text-muted Pflichtfeld, keine Sonderzeichen
-
+                .container
                     .table-responsive
                         table(width="100%")#selected_station_table
                             thead
@@ -37,7 +37,6 @@ block content
                         button#calculate_tour(type="button") Tour berechnen
                     .row.m-1
                         button#cancel(type='button') Abbrechen
-
                 hr.d-md-none
                 .container#new_tour_button_div(style="display:block")
                     .row.justify-content-center
@@ -49,7 +48,7 @@ block content
             table(width="100%")#tour_table.table.table-striped.table-hover
                 thead
                     th(scope="col") Name
-                    th(style="text-align:center" scope="col") Aktionen
+                    th(style="text-align:center" colspan="3" scope="col") Aktionen
                 tbody 
     #tour_information_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
         .modal-dialog.modal-lg.modal-fullscreen-sm-down.modal-dialog-centered(role='document')

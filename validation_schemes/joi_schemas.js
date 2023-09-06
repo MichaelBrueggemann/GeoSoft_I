@@ -30,9 +30,10 @@ const GEOMETRY_SCHEMA = JOI.object(
 
 const PROPERTIES_SCHEMA = JOI.object(
     {
-        // the RegEx allows letters, numbers and whitespace
-        name: JOI.string().pattern(/^[a-zäöüßA-ZÄÖÜ0-9\s]*$/).required(), 
-        description: JOI.string().pattern(/^[a-zäöüßA-ZÄÖÜ0-9\s]*$/).required(),
+        // names are just checked as Strings, as Users should free decide which language they are using.
+        name: JOI.string().required(), 
+        // descriptions are just checked as Strings, as Users should free decide which language they are using.
+        description: JOI.string().required(),
         url: JOI.string().custom(function(value)
         {
             // wrap URL String in URL() Class to prevent errors regarding ASCII Characters in the URL String
