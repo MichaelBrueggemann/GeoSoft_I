@@ -305,9 +305,6 @@ async function start_working_modi() {
     let new_tour_button = document.getElementById("new_tour_button_div")
     new_tour_button.style.display = 'none';
     
-    // scroll website to the map (there you can select the stations)
-    document.getElementById('tour_map').scrollIntoView();
-    
     // reset tour selection in table and on map
     await dehighlight_tours();
 
