@@ -402,18 +402,22 @@ async function row_click_event_handler(row, event, _id, stations, instructions, 
             // each toursegment gets his own Popup (incl. distance)
             for (const SEGMENT of segments) {
                 let polyline = L.polyline(SEGMENT, {color: 'cadetblue', weight: 3}).addTo(tour_layer);
-                polyline.bindPopup("Distanz: ca. " + Math.round(segment_distances[i]).toString() + "m");
+                let popup = L.popup();
+                popup.setContent("Distanz: ca. " + Math.round(segment_distances[i]).toString() + "m");
                 i++;
                 
                 // The Popup opens while hovering above the line-segment
                 polyline.on("mouseover", function(event) {
-                    polyline.openPopup();
+                    
+                    // Get position of mouse for the position of the popup
+                    let mousePos = event.latlng;
+                    popup.setLatLng(mousePos).openOn(map);
                     
                     // The current segment gets highlighted for visualization and easier hovering (weighting)
                     polyline.setStyle({color: 'purple', weight: 4});
                 });
                 polyline.on("mouseout", function(event) {
-                    polyline.closePopup();
+                    map.closePopup(popup);
                     polyline.setStyle({color: 'cadetblue', weight: 3});
                 });
             }
