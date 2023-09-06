@@ -93,8 +93,7 @@ async function update_tour(id, new_name, new_stations, new_segments, new_instruc
  * @param {*} id - ID of tour to delete
  */
 async function delete_tour(id) {
-    await api_call("delete_tour", { id: id });
-
+    api_call("delete_tour", { id: id });
     await update_table();
 }
 
