@@ -203,13 +203,23 @@ ROUTER.post('/add_station', async function(req, res)
       if (url.includes(".wikipedia.org/wiki/"))
       {
         let MediaWiki_url = create_MediaWiki_API_URL(url)
-        let first_sentence = await fetch_first_sentence(MediaWiki_url)
 
-        // replace description in request body
-        req.body.properties.description = first_sentence
+        try 
+        {
+          let first_sentence = await fetch_first_sentence(MediaWiki_url)
+          
+          // replace description in request body
+          req.body.properties.description = first_sentence
+        } 
+        catch (error) 
+        {
+          /* If the MediaWiki-APi can't fetch a ressource, the default description set by the user is used. 
+          The "wrong" link will still be set in the stations data, as giving the link was a choise by the user. Only behavior that threatens the Website will be stopped.*/
+          console.error("Der Link führt nicht zu einer Wikipedia-Seite! Folgender Fehler ist aufgetreten:", error)
+        }
       }
 
-      add_item(req.body, station_collection);
+      add_item(req.body, station_collection)
       res.status(200).json({errors: "Alles ok."})
     }
   } 
