@@ -36,7 +36,7 @@ async function delete_station(id) {
     let response = await api_call("delete_station", { id: id })
     
     // Control if the API is online and worked as plannend
-    if (response.ok) {
+    if (!response.ok) {
         const data = await response.json();
         
         // If the data has this property there are tours which contains the station which should be deleted
@@ -65,9 +65,6 @@ async function delete_station(id) {
                 await update_table()
             });
         }
-    }
-    else {
-        console.error('Fehler bei der API-Anfrage');
     }
     await update_map()
     await update_table()

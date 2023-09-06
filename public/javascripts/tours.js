@@ -177,7 +177,7 @@ async function update_table() {
         delete_tour_button.innerText = "Löschen"
         delete_tour_button.setAttribute("type", "button")
         delete_tour_button.setAttribute("class", "btn btn-primary")
-        delete_tour_button.addEventListener("click",function() {
+        delete_tour_button.addEventListener("click", function() {
             
             // When the selected tour gets deleted it should disappear from the map
             if (current_tour_id == _id) {
@@ -537,11 +537,9 @@ CALCULATE_TOUR_BUTTON.addEventListener("click", async function() {
         
         // Get Tourname from input-field
         let tour_name = document.getElementById("tour_name").value;
-        
-        const tour_name_regex = /^[a-zäöüßA-ZÄÖÜ0-9\s]*$/;
 
         // check if tour_name is valid
-        if (tour_name !== null && tour_name !== undefined && tour_name !== "" && tour_name_regex.test(tour_name)) {
+        if (tour_name !== null && tour_name !== undefined && tour_name !== "") {
             
             // change style of input-field
             if (document.getElementById("tour_name").classList.contains("is-invalid")) {

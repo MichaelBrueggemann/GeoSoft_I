@@ -26,8 +26,7 @@ const INSTRUCTIONS_SCHEMA = JOI.array().items(
 
 const TOUR_SCHEMA = JOI.object(
     {
-        // the RegEx allows letters, numbers and whitespace
-        name: JOI.string().pattern(/^[a-zäöüßA-ZÄÖÜ0-9\s]*$/).required(),
+        name: JOI.string().required(),
         stations: STATIONS_SCHEMA,
         segments: SEGMENTS_SCHEMA,
         instructions: INSTRUCTIONS_SCHEMA,
