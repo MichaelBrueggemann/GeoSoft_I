@@ -93,8 +93,7 @@ async function update_tour(id, new_name, new_stations, new_segments, new_instruc
  * @param {*} id - ID of tour to delete
  */
 async function delete_tour(id) {
-    await api_call("delete_tour", { id: id });
-
+    api_call("delete_tour", { id: id });
     await update_table();
 }
 
@@ -584,7 +583,7 @@ CALCULATE_TOUR_BUTTON.addEventListener("click", async function() {
 
             // Error-Popup
             $('#routing_error_popup').modal('show');
-            let error_statement = "Der Tourname darf nicht aus Sonderzeichen bestehen und nicht leer sein";
+            let error_statement = "<strong>Bitte geben Sie einen Tournamen an.</strong>";
             document.getElementById("error_statement").innerHTML = error_statement;
         }
     }

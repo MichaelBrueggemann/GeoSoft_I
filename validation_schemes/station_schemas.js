@@ -47,7 +47,7 @@ const PROPERTIES_SCHEMA = JOI.object(
 )
 
 
-const GEOJSON_SCHEMA = JOI.object(
+const STATION_SCHEMA = JOI.object(
     {
         type: JOI.string().custom(function(value)
         {
@@ -86,4 +86,4 @@ function validate_input(input, schema)
   }
 }
 
-module.exports = {POINT_SCHEMA, GEOJSON_SCHEMA, validate_input}
+module.exports = {POINT_SCHEMA, STATION_SCHEMA, validate_input}

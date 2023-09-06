@@ -1,10 +1,10 @@
 "use strict"
 
 const JOI = require("joi")
-const {POINT_SCHEMA, GEOJSON_SCHEMA} = require ("./joi_schemas")
+const {POINT_SCHEMA, STATION_SCHEMA} = require ("./station_schemas")
 
 const STATIONS_SCHEMA = JOI.array().items(
-    GEOJSON_SCHEMA.keys({
+    STATION_SCHEMA.keys({
         _id: JOI.string().pattern(/^[a-zA-Z0-9\s]*$/).required(),
     })
     ).min(2).required()
