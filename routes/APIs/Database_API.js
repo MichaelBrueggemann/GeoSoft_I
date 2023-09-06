@@ -200,23 +200,30 @@ ROUTER.post('/add_station', async function(req, res)
     {
       let url = req.body.properties.url
 
-      if (url.includes(".wikipedia.org/wiki/"))
+      try
       {
-        let MediaWiki_url = create_MediaWiki_API_URL(url)
+        if (url.includes(".wikipedia.org/wiki/"))
+        {
+          let MediaWiki_url = create_MediaWiki_API_URL(url)
 
-        try 
-        {
-          let first_sentence = await fetch_first_sentence(MediaWiki_url)
-          
-          // replace description in request body
-          req.body.properties.description = first_sentence
-        } 
-        catch (error) 
-        {
-          /* If the MediaWiki-APi can't fetch a ressource, the default description set by the user is used. 
-          The "wrong" link will still be set in the stations data, as giving the link was a choise by the user. Only behavior that threatens the Website will be stopped.*/
-          console.error("Der Link führt nicht zu einer Wikipedia-Seite! Folgender Fehler ist aufgetreten:", error)
+          try 
+          {
+            let first_sentence = await fetch_first_sentence(MediaWiki_url)
+            
+            // replace description in request body
+            req.body.properties.description = first_sentence
+          } 
+          catch (error) 
+          {
+            /* If the MediaWiki-APi can't fetch a ressource, the default description set by the user is used. 
+            The "wrong" link will still be set in the stations data, as giving the link was a choise by the user. Only behavior that threatens the Website will be stopped.*/
+            console.error("Der Link führt nicht zu einer Wikipedia-Seite! Folgender Fehler ist aufgetreten:", error)
+          }
         }
+      }
+      catch (error)
+      {
+        console.error(error)
       }
 
       add_item(req.body, station_collection)
@@ -226,7 +233,7 @@ ROUTER.post('/add_station', async function(req, res)
   catch (error) 
   {
     console.error('Fehler beim Hinzufügen der Station:', error)
-    res.status(500).json({ message: 'Interner Serverfehler' })
+    res.status(500).json({ errors: 'Interner Serverfehler' })
   }
 
 })
