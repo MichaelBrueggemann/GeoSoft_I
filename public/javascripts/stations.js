@@ -176,8 +176,11 @@ export async function update_table() {
         })
         let station_name = document.createElement("td")
         station_name.innerText = STATION.properties.name
-        station_name.id = `station_name${STATION._id}` // TODO: evtl löschen, da nicht genutzt
-        row.insertCell().appendChild(station_name)
+        // station_name.id = `station_name${STATION._id}` // TODO: evtl löschen, da nicht genutzt
+        
+        let cell1 = row.insertCell()
+        cell1.setAttribute("style", "width:auto text-align:center")
+        cell1.appendChild(station_name)
 
         let edit_station_button = document.createElement("button")
         edit_station_button.innerText = "Bearbeiten"
@@ -199,7 +202,9 @@ export async function update_table() {
                     properties: STATION.properties
                 }, null, 2)
         })
-        row.insertCell().appendChild(edit_station_button)
+        let cell2 = row.insertCell()
+        cell2.setAttribute("style", "width:auto text-align:center")
+        cell2.appendChild(edit_station_button)
 
         let delete_station_button = document.createElement("button")
         delete_station_button.innerText = "Löschen"
@@ -209,7 +214,9 @@ export async function update_table() {
         {
             delete_station(STATION._id)
         })
-        row.insertCell().appendChild(delete_station_button)
+        let cell3 = row.insertCell()
+        cell3.setAttribute("style", "width:auto text-align:center")
+        cell3.appendChild(delete_station_button)
     }
     table.tBodies[0].replaceWith(tbody)
 }

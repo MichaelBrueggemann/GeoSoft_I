@@ -102,13 +102,14 @@ block content
               button#cancel_geojson_upload_form.btn.btn-primary.m-1(type='button') Abbrechen
 
   hr
-  .table-responsive
-    table(style="width:100%")#station_table.table.table-striped.table-hover
-      thead(style="width:100%")
-        tr
-          th(scope="col") Name
-          th(style="text-align:center" scope="col") Aktionen
-      tbody
+  .container
+    .table-responsive
+      table#station_table.table.table-striped.table-hover
+        thead
+          tr
+            th(scope="col") Name
+            th(style="text-align:center" scope="col" colspan="2") Aktionen
+        tbody
   
   #edit_station_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
     .modal-dialog.modal-dialog-centered(role='document')
