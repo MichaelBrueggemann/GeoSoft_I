@@ -60,38 +60,35 @@ export function slice_tour(route, snapped_waypoints) {
  * @param {*} distance - distance of the tour
  * @returns {*} - Infotext as String
  */
-export function build_info_text(stations, instructions, distance) {
+export function show_info_text(stations, instructions, distance) {
     
     // list all stations of the tour
-    let info_text = "<strong>Stationen:</strong>";
+    let station_text = "";
     stations.forEach( function({properties}) {
-            info_text += "<li>" + properties.name + "</li>";
+            station_text += "<li>" + properties.name + "</li>";
     });
-            
-    // Gives hint to instructions
-    info_text += "<br><strong>Anleitung zur Tour:</strong>"
-    info_text += "<br><div style='border: 1px solid grey; padding: 10px;'>Diese Instruktionen kommen direkt von GRAPHHOPPER und sind somit leider nur auf englisch verfügbar.</div>"
+    document.getElementById("station_text").innerHTML = station_text;
     
     // give user instructions how to follow the tour
-    info_text += "<ol>";
+    let instruction_text = "<ol>";
     for (const INSTRUCTION of instructions) {
         if(INSTRUCTION.text.startsWith("Waypoint")) {
-            info_text += "<li><strong>You arrived at one station</strong></li>";
+            instruction_text += "<li><strong>You arrived at one station</strong></li>";
         }
         else if (INSTRUCTION.text.startsWith("Arrive at destination")){
-            info_text += "<li><strong>Arrive at destination</strong></li>";
+            instruction_text += "<li><strong>Arrive at destination</strong></li>";
         }
         else {
-            info_text += "<li>" + INSTRUCTION.text + " and follow the path for " + Math.round(INSTRUCTION.distance) + " metres</li>";
+            instruction_text += "<li>" + INSTRUCTION.text + " and follow the path for " + Math.round(INSTRUCTION.distance) + " meter</li>";
         }
     }
-    info_text += "</ol>";
+    instruction_text += "</ol>";
+    document.getElementById("instruction_text").innerHTML = instruction_text;
     
     // Overall distance of tour
-    info_text+="<br><strong>Gesamtlänge</strong>: "
-    info_text+= distance + "m";
-
-    return info_text;
+    let distance_text="<strong>Gesamtlänge</strong>: "
+    distance_text+= distance + "m";
+    document.getElementById("distance_text").innerHTML = distance_text;
 }
 
 /**

@@ -1,6 +1,6 @@
 "use strict"
 import {highlight, default_style, add_station_metadata} from "./map_helper.js"
-import {build_info_text, calculate_centroid, get_routing_error_text, slice_tour} from "./tour_helper.js";
+import {show_info_text, calculate_centroid, get_routing_error_text, slice_tour} from "./tour_helper.js";
 
 // ------------ Definition & Initialization of global variables -------------
 
@@ -136,8 +136,7 @@ async function update_table() {
         
         // populate popUp with tour information
         info_tour_button.addEventListener("click", function() {
-            let info_text = build_info_text(stations, instructions, distance);
-            document.getElementById("info_text").innerHTML = info_text;
+            show_info_text(stations, instructions, distance);
         })   
         row.insertCell().appendChild(info_tour_button)
 

@@ -57,8 +57,20 @@ block content
                 .modal-header
                     h5.modal-title Tour-Informationen
                     button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
-                .modal-body(align="left")
-                    #info_text
+                .modal-body
+                    .container
+                        .row
+                            p.fw-bold.mb-0 Stationen:
+                            #station_text
+                        hr
+                        .row
+                            p.fw-bold.mb-0 Anleitung zur Tour:
+                            .container.border.border-primary.rounded.m-1
+                                p.m-1 Diese Instruktionen kommen direkt von GRAPHHOPPER und sind somit leider nur auf englisch verfügbar.
+                            #instruction_text 
+                        hr
+                        .row 
+                            #distance_text
                 .modal-footer
                     button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen
     
