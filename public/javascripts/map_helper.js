@@ -92,4 +92,8 @@ export function add_station_metadata(station, leaflet_object)
         popupcontent += `<strong> URL: </strong> <a href="${station.properties.url}" target="_blank"> ${station.properties.url} </a> `
     }
     leaflet_object.bindPopup(popupcontent)
+    leaflet_object.on("mouseover", function() 
+    {
+        leaflet_object.openPopup()
+    })
 }
