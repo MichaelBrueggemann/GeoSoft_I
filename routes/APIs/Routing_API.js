@@ -2,26 +2,17 @@
 
 const EXPRESS = require('express')
 const ROUTER = EXPRESS.Router()
-const DOTENV = require('dotenv')
 const URL = require('url')
 
 // ------------------- Routing-Routes: Tour-Website -> Graphhopper -------------------
-// Load enviroment(API_KEY) from .env file
-DOTENV.config()
-// NOTE: Wird nicht mehr benötigt, da API Key nun als Argument an Node.js übergeben wird.
-// const API_KEY = process.env.GRAPHHOPPER_API_KEY
-
 
 /**
  * Routing via GRAPHHOPPER between multiple Points
  * @param {} waypoints - Points which should be visited 
  * @returns {*} - Route as Object (see GRAPHHOPPER Documentation for more Information)
  */
-async function get_routing(waypoints) 
-{
-  // Prepare the Request-String for GRAPHHOPPER-API (every waypoint has to be in api-request and the api_key of course)
-  const API_URL = construct_Graphhopper_URL(waypoints)
-  
+async function get_routing(API_URL) {
+
   // actual request on GRAPHHOPPER-API
   try 
   {
@@ -38,24 +29,36 @@ async function get_routing(waypoints)
 
 ROUTER.post('/get_routing', async function(req, res) 
 {
-  const WAYPOINTS = req.body.waypoints
   try 
   {
-    const ROUTE = await get_routing(WAYPOINTS) 
-
-    if (ROUTE) 
-    { 
-      res.status(200).json(ROUTE)
-    } 
-    else 
+    // If the request is correct the associated URL gets created
+    const WAYPOINTS = req.body.waypoints;
+    const API_URL = construct_Graphhopper_URL(WAYPOINTS);
+  
+    try 
     {
-      res.status(404).json({ message: 'Keine Route gefunden' })
+      const ROUTE = await get_routing(API_URL); 
+  
+      if (ROUTE) 
+      { 
+        res.json(ROUTE); 
+      } 
+      else 
+      {
+      res.status(404).json({ message: 'Keine Route gefunden' });
+      }
+    
+    } 
+    catch (err) 
+    {
+      console.error('Fehler beim Routing einer Tour', err)
+      res.status(500).json({ message: 'Interner Serverfehler' })
     }
-  } 
-  catch (err) 
+  }
+  catch
   {
-    console.error('Fehler beim Routing einer Tour', err)
-    res.status(500).json({ message: 'Interner Serverfehler' })
+    console.error('Fehler beim Abrufen der Request-Parameter', err);
+    res.status(400).json({ message: 'Bad Request' });
   }
  
 });

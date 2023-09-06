@@ -2,6 +2,7 @@
 
 const { create_MediaWiki_API_URL, fetch_first_sentence } = require("./MediaWiki_API")
 const {GEOJSON_SCHEMA, validate_input} = require("../../validation_schemes/joi_schemas")
+const {TOUR_SCHEMA} = require("../../validation_schemes/tour_schemas")
 const EXPRESS = require('express')
 const ROUTER = EXPRESS.Router()
 
@@ -231,16 +232,16 @@ ROUTER.post('/delete_station', async function(req, res)
   // when the station that should be deleted is part of a tour, this tour gets saved. This is used to later inform the user about a possible cascading deletion of tours.
   let tours_with_this_station = []
   
-  tours.forEach(function(tour) 
+  for (const TOUR of tours) 
   {
-    tour.stations.forEach(function({_id}) 
+    TOUR.stations.forEach(function({_id}) 
     {
       if (_id == ID) 
       {
-        tours_with_this_station.push(tour)
+        tours_with_this_station.push(TOUR)
       }
     })
-  })
+  }
   
   // If the station isnt part of any tour it can simply deleted
   if (tours_with_this_station.length < 1) 
@@ -326,8 +327,19 @@ ROUTER.post('/add_tour', function(req, res)
 {
   try 
   {
-    add_item(req.body, tour_collection)
-    res.status(200)
+    let validation_result = validate_input(req.body, TOUR_SCHEMA)
+    console.log("valid result", validation_result.errorDetails)
+    
+    // request was invalid
+    if (validation_result.hasError)
+    {
+      res.status(400).json({errors: validation_result.errorDetails})
+    }
+    else
+    {
+      add_item(req.body, tour_collection);
+      res.status(200).json({errors: "Alles ok."})
+    }
   } 
   catch (error) 
   {
@@ -368,8 +380,19 @@ ROUTER.post('/update_tour', function(req, res)
       instructions: req.body.instructions,
       distance: req.body.distance
     }
-    update_item(ID, new_data, tour_collection)
-    res.status(200)
+    
+    let validation_result = validate_input(new_data, TOUR_SCHEMA)
+
+    // request was invalid
+    if (validation_result.hasError)
+    {
+      res.status(400).json({errors: validation_result.errorDetails})
+    }
+    else
+    {
+      update_item(ID, new_data, tour_collection)
+      res.status(200).json({errors: "Alles ok."})
+    }
   } 
   catch (error) 
   {
