@@ -74,11 +74,17 @@ function get_first_sentence(MediaWiki_response_json)
 async function fetch_first_sentence(MediaWiki_url)
 {
     let data = await fetch(MediaWiki_url)
-    let json = await data.json()
 
-    let first_sentence = get_first_sentence(json)
-
-    return first_sentence
+    if (!data.ok)
+    {
+        throw new Error("Fehler beim Abrufen der API. Bitte prüfen Sie Ihre Eingabe!")
+    }
+    else
+    {
+        let json = await data.json()
+        let first_sentence = get_first_sentence(json)
+        return first_sentence
+    }
 }
 
 module.exports = {fetch_first_sentence, create_MediaWiki_API_URL}
