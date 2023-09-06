@@ -27,16 +27,16 @@ block content
                             label.fw-bold(for='tourname') Tourname:
                             input#tour_name.form-control(type='tourname' aria-describedby='tour_name_help' placeholder='Hier Tournamen einfügen' required)
                             small#tour_name_help.form-text.text-muted Pflichtfeld, keine Sonderzeichen
-                .container
-                    .table-responsive
-                        table(width="100%")#selected_station_table
-                            thead
-                                th ausgewählte Stationen:
-                            tbody
-                    .row.m-1
-                        button#calculate_tour(type="button") Tour berechnen
-                    .row.m-1
-                        button#cancel(type='button') Abbrechen
+                    .container
+                        .table-responsive
+                            table(width="100%")#selected_station_table
+                                thead
+                                    th ausgewählte Stationen:
+                                tbody
+                        .row.m-1
+                            button#calculate_tour(type="button") Tour berechnen
+                        .row.m-1
+                            button#cancel(type='button') Abbrechen
                 hr.d-md-none
                 .container#new_tour_button_div(style="display:block")
                     .row.justify-content-center
