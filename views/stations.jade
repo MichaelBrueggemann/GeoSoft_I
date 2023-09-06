@@ -22,7 +22,6 @@ block scripts
   
 
 block content
-  hr
   h1= title
   // unfortunately, Bootstrap 5 doesn't support justified text anymore *sigh*
   p Auf dieser Seite kannst du die aktuell geladenen Stationen ansehen, diese anpassen oder neue Stationen ergänzen. Hierzu kannst du einen der Button unten auswählen, um eine Station hinzuzufügen.
@@ -32,6 +31,7 @@ block content
         .col-sm-12.col-md-8
             #map1
         .col-sm-12.col-md-4
+          hr.d-md-none
           div#add_station_button_area.container
             p.fw-bold Wie möchtest du deine Station hinzufügen:
             .row.justify-content-center.p-2
