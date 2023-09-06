@@ -27,16 +27,16 @@ block content
                         label.fw-bold(for='tourname') Tourname:
                         input#tour_name.form-control(type='tourname' aria-describedby='tour_name_help' placeholder='Hier Tournamen einfügen' required)
                         small#tour_name_help.form-text.text-muted Pflichtfeld, keine Sonderzeichen
-
-                .table-responsive
-                    table(width="100%")#selected_station_table
-                        thead
-                            th ausgewählte Stationen:
-                        tbody
-                .row.m-1
-                    button#calculate_tour(type="button") Tour berechnen
-                .row.m-1
-                    button#cancel(type='button') Abbrechen
+                .container
+                    .table-responsive
+                        table(width="100%")#selected_station_table
+                            thead
+                                th ausgewählte Stationen:
+                            tbody
+                    .row.m-1
+                        button#calculate_tour(type="button") Tour berechnen
+                    .row.m-1
+                        button#cancel(type='button') Abbrechen
                     
     hr
     .container#new_tour_button_div(style="display:block")
@@ -44,13 +44,14 @@ block content
             button#new_tour(type="button") neue Tour anlegen
     
     hr
-    .table-responsive(style="display: block")#tour_div
-        
-        table(width="100%")#tour_table.table.table-striped.table-hover
-            thead
-                th(scope="col") Name
-                th(style="text-align:center" scope="col") Aktionen
-            tbody 
+    .container 
+        .table-responsive(style="display: block")#tour_div
+            
+            table(width="100%")#tour_table.table.table-striped.table-hover
+                thead
+                    th(scope="col") Name
+                    th(style="text-align:center" colspan="3" scope="col") Aktionen
+                tbody 
     hr
     #tour_information_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
         .modal-dialog.modal-lg.modal-dialog-centered(role='document')
