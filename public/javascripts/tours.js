@@ -395,11 +395,14 @@ async function row_click_event_handler(row, event, _id, stations, instructions, 
             let tour_layer = L.featureGroup().addTo(map);
             
             // each toursegment gets his own Popup (incl. distance)
-            for (const SEGMENT of segments) {
-                let polyline = L.polyline(SEGMENT, {color: 'cadetblue', weight: 3}).addTo(tour_layer);
-                let popup = L.popup();
-                popup.setContent("Distanz: ca. " + Math.round(segment_distances[i]).toString() + "m");
-                i++;
+            for (const SEGMENT of segments) 
+            {
+                
+                let polyline = L.polyline(SEGMENT, {color: 'cadetblue', weight: 3}).addTo(tour_layer)
+                let popup = L.popup({closeButton: false})
+                popup.setContent("<strong>Distanz: </strong>ca. " + Math.round(segment_distances[i]).toString() + "m")
+                
+                i++
                 
                 // The Popup opens while hovering above the line-segment
                 polyline.on("mouseover", function(event) {
