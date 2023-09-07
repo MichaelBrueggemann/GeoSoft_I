@@ -247,7 +247,7 @@ function add_station_events(station, leaflet_object) {
         // help the user why he cant select a station when the edit-mode is off
         else {
             $('#station_selection_help').modal('show');
-            let help_text = "Bitte klicken Sie auf -<strong>neue Tour anlegen</strong>- oder in der Tabelle bei der gewünschten Tour auf -<strong>Bearbeiten</strong>-, um Stationen auszuwählen und sie zu Touren zusammenzufügen.";
+            let help_text = "Bitte klicke auf -<strong>neue Tour anlegen</strong>- oder in der Tabelle bei der gewünschten Tour auf -<strong>Bearbeiten</strong>-, um Stationen auszuwählen und sie zu Touren zusammenzufügen.";
             document.getElementById("help_text").innerHTML = help_text;
         }
     })
@@ -586,7 +586,7 @@ CALCULATE_TOUR_BUTTON.addEventListener("click", async function() {
 
             // Error-Popup
             $('#routing_error_popup').modal('show');
-            let error_statement = "<strong>Bitte geben Sie einen Tournamen an.</strong>";
+            let error_statement = "<strong>Bitte gib einen Tournamen an.</strong>";
             document.getElementById("error_statement").innerHTML = error_statement;
         }
     }

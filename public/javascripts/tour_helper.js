@@ -101,10 +101,10 @@ export function get_routing_error_text(message)
     $('#routing_error_popup').modal('show');
     let error_statement = "Leider konnte mit den ausgewählten Stationen keine Tour erstellt werden. <br>";
     if (message.startsWith("Specify at least 2 points")) {
-        error_statement += "<strong>Dies liegt unter anderem daran, dass Sie weniger als 2 Stationen ausgewählt haben.</strong> <br>";
+        error_statement += "<strong>Dies liegt unter anderem daran, dass weniger als 2 Stationen ausgewählt wurden.</strong> <br>";
     }
     else if (message.endsWith("Upgrade your subscription or contact us.")) {
-        error_statement += "<strong>Dies liegt unter anderem daran, dass Sie zu viele Stationen ausgewählt haben.</strong> <br>";
+        error_statement += "<strong>Dies liegt unter anderem daran, dass zu viele Stationen ausgewählt wurden.</strong> <br>";
     }
     else if (message.startsWith("Connection between locations not found")) {
         error_statement += "<strong>Dies liegt unter anderem daran, dass zwischen den ausgewählten Stationen keine Fahrradweg-Verbindung existiert.</strong> <br>";
@@ -122,6 +122,6 @@ export function get_routing_error_text(message)
         error_statement += "Dies könnte beispielsweise daran liegen, dass gar keine Stationen ausgewählt wurden. <br>";
         error_statement += "Aber auch andere Fehler können auftreten und wir bitten um Entschuldigung, dass es nicht geklappt hat. <br>";
     }
-    error_statement += "<br><br>Bitte überprüfen Sie ihre aktuelle Stationenauswahl und versuchen Sie es erneut."
+    error_statement += "<br><br>Bitte überprüfe die aktuelle Stationenauswahl und versuche es erneut."
     document.getElementById("error_statement").innerHTML = error_statement;
 }
