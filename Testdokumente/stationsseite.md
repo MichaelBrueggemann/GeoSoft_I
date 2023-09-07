@@ -130,6 +130,7 @@ punkte jeweils für Punkte und Polygone überprüfen
 **was beim Testen sonst noch aufgefallen ist:**
 ## Bugs und unschönes
 + Beim Hinzufügen der Karte, kann es vorkommen, dass eine fehlerhafte URL (z.B. "s") zwischenzeitlich grün abgehakt wird, wenn andere Fehler zeitgleich vorkommen
+    - Wenn man Client- und Serverseitig validiert, kommt es häufig zu solchen optischen Ungenauigkeiten, aber das ist in diesem Fall ok
 
 ## Was eig vllt noch coole Features wären
 + Theoretisch wäre cool wenn man die Description auch leer lassen könnte, sofern man einen gültigen Wikipedia Link angibt🤔
