@@ -113,7 +113,7 @@
 + Funktioniert das Löschen?
     - Ja
 + Kaskadiert das Löschen?
-    - Ja, aber **clientseitiger Fehler** (vermutlich await zu viel)
+    - Ja
 
 ### Auswählen
 punkte jeweils für Punkte und Polygone überprüfen
