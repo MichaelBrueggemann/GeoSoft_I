@@ -60,9 +60,11 @@ async function add_new_tour(new_name, new_stations, new_segments, new_instructio
         instructions: new_instructions,
         distance: new_distance
     }
-    await api_call("add_tour", tour);
+    const RES = await api_call("add_tour", tour);
 
     await update_table()
+
+    return RES
 }
 
 /**
@@ -76,7 +78,7 @@ async function add_new_tour(new_name, new_stations, new_segments, new_instructio
  */
 async function update_tour(id, new_name, new_stations, new_segments, new_instructions, new_distance) {
 
-    await api_call("update_tour", {
+    const RES = await api_call("update_tour", {
             id: id,
             name: new_name,
             stations: new_stations,
@@ -86,6 +88,8 @@ async function update_tour(id, new_name, new_stations, new_segments, new_instruc
         });
 
     await update_table();
+
+    return RES
 }
 
 /**
@@ -527,7 +531,7 @@ CALCULATE_TOUR_BUTTON.addEventListener("click", async function() {
         waypoints: waypoints,
     });
     let route = await res.json();
-    
+
     // Check result
     if (route.hasOwnProperty("message")) {
         get_routing_error_text(route.message);
@@ -548,35 +552,47 @@ CALCULATE_TOUR_BUTTON.addEventListener("click", async function() {
                 document.getElementById("tour_name").classList.remove("is-invalid")
             }
 
+            // we need to check if the DB-interaction went wrong
+            let result;
+
             // save Tour in DB
             if (current_tour_id == null) {
-                await add_new_tour(tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
+                result = await add_new_tour(tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
             }
             else {
-                await update_tour(current_tour_id, tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
+                result = await update_tour(current_tour_id, tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
             }
+            if (result.ok) {
+                // select the updated Tour for auto-highlight after successful worked-on
+                let table = document.getElementById('tour_table');
+                let tbody = table.tBodies[0];
+                if (current_tour_id == null) {
+                
+                    // if a new tour created we can simply highlight the last tour because it gets appended in the tour_table
+                    tbody.rows[table.tBodies[0].rows.length - 1].click();
+                }
+                else { 
+                
+                    // else we search the right row via id comparision
+                    for(const ROW of tbody.rows) {
+                        if (ROW.getAttribute("_id") == current_tour_id) {
+                            current_tour_id = null;
+                            ROW.click();
+                        }
+                    };
+                }
             
-            // select the updated Tour for auto-highlight after successful worked-on
-            let table = document.getElementById('tour_table');
-            let tbody = table.tBodies[0];
-            if (current_tour_id == null) {
-            
-                // if a new tour created we can simply highlight the last tour because it gets appended in the tour_table
-                tbody.rows[table.tBodies[0].rows.length - 1].click();
+                // change Working Modi
+                stop_working_modi();
             }
-            else { 
-            
-                // else we search the right row via id comparision
-                for(const ROW of tbody.rows) {
-                    if (ROW.getAttribute("_id") == current_tour_id) {
-                        current_tour_id = null;
-                        ROW.click();
-                    }
-                };
+            else {
+                $('#routing_error_popup').modal('show');
+                let error_statement = "Leider ist beim berechnen der Tour etwas schief gegangen.";
+                if (result.status == 413) {
+                    error_statement += "<br><strong>Dies liegt unter anderem daran, dass zu viele Stationen zu weit voneinander entfernt sind, sodass die Tour insgesamt zu lang wäre."
+                }
+                document.getElementById("error_statement").innerHTML = error_statement;
             }
-        
-            // change Working Modi
-            stop_working_modi();
         }
         else {
             // change style of input-field
