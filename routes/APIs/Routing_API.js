@@ -82,6 +82,11 @@ function construct_Graphhopper_URL(waypoints)
   
   // its easyer to work with the result if its decoded
   url.searchParams.set("points_encoded", false)
+
+  // Routing for bicycles shouldnt involve seaways, motorways or fords if possible
+  url.searchParams.set("snap_prevention", "ferry")
+  url.searchParams.append("snap_prevention", "motorway")
+  url.searchParams.append("snap_prevention", "ford")
   
   try 
   {
