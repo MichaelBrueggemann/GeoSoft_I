@@ -126,7 +126,7 @@ block content
                 .row
                   label.fw-bold(for="update_stationGeoJSON") GeoJSON bearbeiten
                 .row
-                  textarea#update_stationGeoJSON(rows='25' style='resize:none width:100%')
+                  textarea#update_stationGeoJSON.form-control(rows='25' style='resize:none width:100%')
                 #invalid_feedback_update_geojson.invalid-feedback
         .modal-footer
           button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen
@@ -140,8 +140,9 @@ block content
           button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
         .modal-body(align="center")
           .row
-            textarea#sample_geojson_textarea(rows='15' style='resize:none width:100%' readonly)
+            textarea#sample_geojson_textarea.form-control(rows='15' style='resize:none width:100%' readonly)
         .modal-footer
+          button#copy_sample_geojson_to_clipbboard.btn.btn-secondary(type='button') Kopieren
           button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen
 
   #station_deletion_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
