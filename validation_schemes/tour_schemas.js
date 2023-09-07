@@ -26,7 +26,7 @@ const INSTRUCTIONS_SCHEMA = JOI.array().items(
 
 const TOUR_SCHEMA = JOI.object(
     {
-        name: JOI.string().required(),
+        name: JOI.string().pattern(/^\S+$/).required(),
         stations: STATIONS_SCHEMA,
         segments: SEGMENTS_SCHEMA,
         instructions: INSTRUCTIONS_SCHEMA,
