@@ -15,8 +15,9 @@ const POLYGON_SCHEMA = JOI.array().max(1).items(
 
 const GEOMETRY_SCHEMA = JOI.object(
     {
-    coordinates: 
-    JOI.alternatives().conditional('type', {is: 'Point', then: POINT_SCHEMA, otherwise: POLYGON_SCHEMA}),
+    coordinates:
+    // supplies the "conditional()"-function with an array of options, to validate against. If there is no match, the value is invalid (as "otherwise" is deliberatly ommitted)
+    JOI.alternatives().conditional('type', [{is: 'Point', then: POINT_SCHEMA}, {is: "Polygon", then: POLYGON_SCHEMA}]),
     type: 
     JOI.string().custom(function(value)
     {
@@ -63,7 +64,7 @@ const STATION_SCHEMA = JOI.object(
 
 
 /**
- * 
+ * Validates the input using "joi"s ".validate()"-method and provides custom return values for server side responses
  * @param {any} input - any input that should be validated.
  * @param {} schema - JOI-Schema to validate input against.
  * @returns The validated value. Else it returns an array of all errors
