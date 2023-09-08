@@ -105,8 +105,6 @@ async function update_station(id, geojson)
 
 // ----------------- Stations Table -----------------
 
-
-
 export async function update_table() {
     station_collection = await fetch("/api/stations")
     station_collection = await station_collection.json()
@@ -119,10 +117,9 @@ export async function update_table() {
     
     for (const [STATION, LEAFLET_LAYER] of stations_data) 
     {
-        // give Layer a property for later highlighting
-        //LEAFLET_LAYER["highlighted"] = false
-
         let row = tbody.insertRow()
+
+        // ---- selection and highlighting of stations ----
         row.addEventListener("click", function(event) 
         {
             if (event.target.tagName !== "BUTTON") // only activates click event, if no button of the row is pressed
@@ -162,7 +159,6 @@ export async function update_table() {
                     if (LEAFLET_LAYER instanceof L.Polygon)
                     {
                         map.fitBounds(LEAFLET_LAYER.getBounds())
-                        //map.setView(LEAFLET_LAYER.getCenter(), 30)
                     }
                     else if (LEAFLET_LAYER instanceof L.Marker)
                     {
@@ -171,14 +167,15 @@ export async function update_table() {
                 }
             } 
         })
+        // ---- name ----
         let station_name = document.createElement("td")
         station_name.innerText = STATION.properties.name
-        // station_name.id = `station_name${STATION._id}` // TODO: evtl löschen, da nicht genutzt
         
         let cell1 = row.insertCell()
         cell1.setAttribute("style", "width:auto text-align:center")
         cell1.appendChild(station_name)
 
+        // ---- Edit-Button ----
         let edit_station_button = document.createElement("button")
         edit_station_button.innerText = "Bearbeiten"
         edit_station_button.setAttribute("type", "button")
@@ -190,6 +187,7 @@ export async function update_table() {
         {
             // populate popUp with station data
             let station_update_textarea = document.getElementById("update_stationGeoJSON")
+
             // station-id set for later "onclick" event to update the edited station
             station_update_textarea.setAttribute("data-station_id", `${STATION._id}`)
             station_update_textarea.value = JSON.stringify(
@@ -203,6 +201,7 @@ export async function update_table() {
         cell2.setAttribute("style", "width:auto text-align:center")
         cell2.appendChild(edit_station_button)
 
+        // ---- Delete-Button ----
         let delete_station_button = document.createElement("button")
         delete_station_button.innerText = "Löschen"
         delete_station_button.setAttribute("type", "button")
