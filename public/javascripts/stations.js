@@ -222,7 +222,7 @@ export async function update_table() {
 function initializeMap()
 {
     // create map-object with initial view set to Münster, Germany
-    let map = new L.map('map1').setView([51.96918, 7.59579], 13)
+    let map = new L.map('station_map').setView([51.96918, 7.59579], 13)
 
     // initialize base map
     let osmLayer = new L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png',
