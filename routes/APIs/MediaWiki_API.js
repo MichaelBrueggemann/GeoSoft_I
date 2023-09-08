@@ -61,8 +61,6 @@ function get_first_sentence(MediaWiki_response_json)
   // get first match
   let first_matching_page = pages_array[0]
 
-  // let first_sentence = first_matching_page.extract.split(".")[0]
-
   // This RegEx matches any number of characters, that could be considered as a "full sentence" in the grammar we know. This is by far not complete, but as this a big current problem in computational linguistics, this is our best approach.
   let first_sentence_regex = /(^.*?[a-z]{2,}[.!?])\s+\W*[A-Z]/
 
