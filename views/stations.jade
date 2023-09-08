@@ -127,9 +127,9 @@ block content
                   label.fw-bold(for="update_stationGeoJSON") GeoJSON bearbeiten
                 .row
                   textarea#update_stationGeoJSON.form-control(rows='25' style='resize:none width:100%')
-                #invalid_feedback_update_geojson.invalid-feedback
+                  #invalid_feedback_update_geojson.invalid-feedback
         .modal-footer
-          button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen
+          button#close_edit_station_popup.btn.btn-secondary(type='button' data-bs-dismiss='modal') Schließen
           button#update_station.btn.btn-primary(type="button") Aktualisieren
 
   #sample_geojson_popup.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalCenterTitle' aria-hidden='true')
