@@ -1,6 +1,6 @@
 "use strict"
 import {highlight, default_style, add_station_metadata} from "./map_helper.js"
-import {show_info_text, calculate_centroid, get_routing_error_text, slice_tour} from "./tour_helper.js";
+import {show_info_text, calculate_centroid, show_routing_error_text, slice_tour, highlight_worked_on_tour} from "./tour_helper.js";
 
 // ------------ Definition & Initialization of global variables -------------
 
@@ -534,7 +534,7 @@ CALCULATE_TOUR_BUTTON.addEventListener("click", async function() {
 
     // Check result
     if (route.hasOwnProperty("message")) {
-        get_routing_error_text(route.message);
+        show_routing_error_text(route.message);
     }
     else {
         
@@ -544,7 +544,7 @@ CALCULATE_TOUR_BUTTON.addEventListener("click", async function() {
         // Get Tourname from input-field
         let tour_name = document.getElementById("tour_name").value;
 
-        // check if tour_name is valid
+        // check if tour_name is valid (does not contain only whitespace)
         if (tour_name !== null && tour_name !== undefined && !(/^\s*$/).test(tour_name)) {
             
             // change style of input-field
@@ -555,7 +555,7 @@ CALCULATE_TOUR_BUTTON.addEventListener("click", async function() {
             // we need to check if the DB-interaction went wrong
             let result;
 
-            // save Tour in DB
+            // try to save Tour in DB
             if (current_tour_id == null) {
                 result = await add_new_tour(tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
             }
@@ -564,46 +564,30 @@ CALCULATE_TOUR_BUTTON.addEventListener("click", async function() {
             }
             if (result.ok) {
                 // select the updated Tour for auto-highlight after successful worked-on
-                let table = document.getElementById('tour_table');
-                let tbody = table.tBodies[0];
-                if (current_tour_id == null) {
-                
-                    // if a new tour created we can simply highlight the last tour because it gets appended in the tour_table
-                    tbody.rows[table.tBodies[0].rows.length - 1].click();
-                }
-                else { 
-                
-                    // else we search the right row via id comparision
-                    for(const ROW of tbody.rows) {
-                        if (ROW.getAttribute("_id") == current_tour_id) {
-                            current_tour_id = null;
-                            ROW.click();
-                        }
-                    };
-                }
+                let worked_on_tour_id = current_tour_id;
+                current_tour_id = null;
+                highlight_worked_on_tour(worked_on_tour_id);
             
                 // change Working Modi
                 stop_working_modi();
             }
             else {
-                $('#routing_error_popup').modal('show');
-                let error_statement = "Leider ist beim berechnen der Tour etwas schief gegangen.";
+                // Error-Popup
+                let error_message_code = "DB-Error";
                 if (result.status == 413) {
-                    error_statement += "<br><strong>Dies liegt unter anderem daran, dass zu viele Stationen zu weit voneinander entfernt sind, sodass die Tour insgesamt zu lang wäre."
+                    error_message_code += "413";
+                    show_routing_error_text(error_message_code);
                 }
-                document.getElementById("error_statement").innerHTML = error_statement;
             }
         }
-        else {
+        else { // tour_name isnt valid
             // change style of input-field
             if (!document.getElementById("tour_name").classList.contains("is-invalid")) {
                 document.getElementById("tour_name").classList.add("is-invalid")
             }
 
             // Error-Popup
-            $('#routing_error_popup').modal('show');
-            let error_statement = "<strong>Bitte gib einen Tournamen an.</strong>";
-            document.getElementById("error_statement").innerHTML = error_statement;
+            show_routing_error_text("Tourname");
         }
     }
 })
