@@ -27,7 +27,7 @@ block content
                         span(style='color: red;') *
                         |  Pflichtfeld
                     p Bitte wähle auf der Karte alle Stationen aus, die du in der Tour verbinden willst.
-                    form#tour_name_form.container.needs-validation(novalidate)
+                    form#tour_name_form.container.needs-validation(novalidate onsubmit='return false;')
                         
                         .form-group
                             label.required.fw-bold(for='tourname') Tourname:
