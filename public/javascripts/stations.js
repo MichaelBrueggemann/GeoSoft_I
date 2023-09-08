@@ -105,8 +105,9 @@ async function update_station(id, geojson)
 
 // ----------------- Stations Table -----------------
 
-
-
+/**
+ * update stations displayed in the table + add functionality to table rows and buttons.
+ */
 export async function update_table() {
     station_collection = await fetch("/api/stations")
     station_collection = await station_collection.json()
@@ -220,6 +221,10 @@ export async function update_table() {
 
 // ----------------- Map -----------------
 
+/**
+ * This functions initializes the Leaflet map and adds core functionality to it.
+ * @returns Object with Leaflet and Leaflet-Draw objects to be used in later functions
+ */
 function initializeMap()
 {
     // create map-object with initial view set to Münster, Germany
@@ -245,9 +250,6 @@ function initializeMap()
             marker: true,
             circlemarker: false,
             rectangle: false
-        },
-        edit: {
-            featureGroup: drawnItems
         }
     })
 
@@ -271,25 +273,6 @@ function initializeMap()
         let textarea = document.getElementById("hidden_geojson_data_from_map_feature")
         textarea.value = JSON.stringify(layer.toGeoJSON(), null, 2)
     })
-
-    map.on(L.Draw.Event.EDITED, function(event) 
-    {
-        let textarea = document.getElementById("hidden_geojson_data_from_map_feature")
-
-        // the edited layer
-        let layer = Object.values(event.layers._layers)[0]
-
-        // updates data in the textarea
-        textarea.value = JSON.stringify(layer.toGeoJSON(), null, 2)
-    })
-
-    map.on(L.Draw.Event.DELETED, function() 
-    {
-        // reset content of textarea
-        let textarea = document.getElementById("hidden_geojson_data_from_map_feature")
-        textarea.value = ""
-    })
-
 
     return {
         map: map,
