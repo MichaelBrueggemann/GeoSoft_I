@@ -1,0 +1,17 @@
+version: '1'
+services: 
+    appservice: 
+        container_name: Radtour Seite
+        build: .
+        ports: 
+            - '3000:3000'
+        depends_on: 
+            - mongoservice
+    mongoservice:
+        container_name: mongo
+        image: mongo 
+        ports:
+            - '27017:27017'
+        #volumes:
+           # - ./mongo-init/:/docker-entrypoint-initdb.d/:ro
+           #- ./mongo-volume:/data/db
