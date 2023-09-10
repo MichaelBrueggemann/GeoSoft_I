@@ -32,7 +32,7 @@ console.log(`\nListening to "localhost:${port}"`)
 console.log(`Arguments passed to Node.js: ${process.argv}\n`)
 
 // delibaretly crash app, if API-Key is missing
-if (!process.argv[2])
+if (!process.argv[2] && !process.env.API_KEY)
 {
   console.error("Graphhopper-API-Key fehlt. Bitte starte den Server mit dem API-Key neu.")
   process.exit(1)
