@@ -1,12 +1,13 @@
 version: '1'
 services: 
     appservice: 
-        container_name: Radtour Seite
+        container_name: radtour_seite
         build: .
         ports: 
             - '3000:3000'
-        enviroment:
-            - API_KEY
+        environment:
+            # The API_KEY will be passed by the user
+            - API_KEY=${API_KEY}
         depends_on: 
             - mongoservice
     mongoservice:
@@ -14,8 +15,5 @@ services:
         image: mongo 
         ports:
             - '27017:27017'
-        enviroment: 
-            - DB_URI: mongodb://mongo:27017
-        #volumes:
-           # - ./mongo-init/:/docker-entrypoint-initdb.d/:ro
-           #- ./mongo-volume:/data/db
+        environment:
+            DB_URI: mongodb://mongo:27017
