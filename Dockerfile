@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:18
 
 # Copy app code source from our local folder into the docker /app working directory
 COPY . /app

@@ -35,7 +35,8 @@ Die Website bietet dem/der Nutzer:in eine grafische Oberfläche für folgende Ak
   - der Server muss mit dem Graphhopper-API-Key als erstes Argument gestartet werden, ansonsten ist die Graphhopper-API nicht erreichbar!
 
 ## mit Docker
-
+- [Docker Desktop](https://docs.docker.com/get-docker/) installieren.
+- Docker Desktop starten
 
 # Wie wurde dieses Projekt entwickelt?
 Um auch aus einer "Software-Engineering" Perspektive möglichst viel aus diesem Projekt mitzunehmen, haben wir uns dazu entschieden folgende Entwicklungsmethoden zu verwenden. Dies kann man in unserem Repository gut nachverfolgen.
