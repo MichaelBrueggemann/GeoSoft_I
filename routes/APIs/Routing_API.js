@@ -85,6 +85,8 @@ function construct_Graphhopper_URL(waypoints)
   url.searchParams.set("points_encoded", false)
 
   // Routing for bicycles shouldnt involve seaways, motorways or fords if possible
+  /* We also tried to forbid it completly with a "custom model" parameter, 
+    but this only work with a POST request, but we use the GET request endpoint in our application.*/
   url.searchParams.set("snap_prevention", "ferry")
   url.searchParams.append("snap_prevention", "motorway")
   url.searchParams.append("snap_prevention", "ford")
