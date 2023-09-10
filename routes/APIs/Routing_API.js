@@ -85,8 +85,8 @@ function construct_Graphhopper_URL(waypoints)
   
   try 
   {
-    // The API-KEY will be passed as an argument when starting the server via "npm start <api-key>"
-    url.searchParams.set("key", process.argv[2])
+    // The API-KEY will be passed as an argument when starting the server via "npm start <api-key>" or over the API_KEY argument passed to "docker compose"
+    url.searchParams.set("key", process.env.API_KEY ?? process.argv[2])
   } 
   catch (error) 
   {
