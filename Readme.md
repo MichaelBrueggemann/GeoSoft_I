@@ -32,15 +32,19 @@ Die Website bietet dem/der Nutzer:in eine grafische Oberfläche für folgende Ak
 - mit ```npm install``` alle Dependencies aus "package.json" installieren.
 - mit ```npm start <GRAPHHOPPER-API-KEY>``` den Server starten.
   - einen API-Key für die Graphhopper-API bekommst du unter: [Graphhopper-API-Key](https://support.graphhopper.com/support/solutions/articles/44001976027-create-an-api-key)
-  - der Server muss mit dem Graphhopper-API-Key als erstes Argument gestartet werden, ansonsten ist die Graphhopper-API nicht erreichbar!
+  - der Server muss mit dem Graphhopper-API-Key als erstes Argument gestartet werden, ansonsten ist die Website nicht erreichbar!
 
 ## mit Docker
 - [Docker Desktop](https://docs.docker.com/get-docker/) installieren.
 - Docker Desktop starten
+## Container noch nicht "gebaut"
 - in der Command-Line mit ```$env:API_KEY=<GRAPHHOPPER-API-KEY>``` den API Key der Graphhopper-API für den Container verfügbar machen
   - einen API-Key für die Graphhopper-API bekommst du unter: [Graphhopper-API-Key](https://support.graphhopper.com/support/solutions/articles/44001976027-create-an-api-key)
-  - der Server muss mit dem Graphhopper-API-Key als erstes Argument gestartet werden, ansonsten ist die Graphhopper-API nicht erreichbar!
+  - vor dem "bauen" des Containers muss der Graphhopper-API Key als Umgebungsvariable gesetzt werden, ansonsten ist die Website nicht erreichbar!
 - mit ```docker compose up --build -d``` den Server starten
+## Container bereits gebaut
+- über "Docker Desktop" den Server starten
+
 
 # Wie wurde dieses Projekt entwickelt?
 Um auch aus einer "Software-Engineering" Perspektive möglichst viel aus diesem Projekt mitzunehmen, haben wir uns dazu entschieden folgende Entwicklungsmethoden zu verwenden. Dies kann man in unserem Repository gut nachverfolgen.
