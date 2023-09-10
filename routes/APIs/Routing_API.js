@@ -77,7 +77,8 @@ function construct_Graphhopper_URL(waypoints)
   // Routing should be for bicycles
   url.searchParams.set("vehicle", "bike")
   
-  // The order in which the stations should be visited is not important, so can be optimized
+  // The order in which the stations should be visited must be optimized
+  // because the stations were transferred as unordered list
   url.searchParams.set("optimize", true)
   
   // its easyer to work with the result if its decoded
@@ -108,6 +109,9 @@ function construct_Graphhopper_URL(waypoints)
   }
 
   return url
+
+  // To learn more about the availible searchparameters and what they do visit graphhopper doku:
+  // https://docs.graphhopper.com/#operation/getRoute
 }
 
 module.exports = ROUTER
