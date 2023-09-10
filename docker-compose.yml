@@ -1,0 +1,19 @@
+version: '1'
+services: 
+    appservice: 
+        container_name: radtour_seite
+        build: .
+        ports: 
+            - '3000:3000'
+        environment:
+            # The API_KEY will be passed by the user
+            - API_KEY=${API_KEY}
+        depends_on: 
+            - mongoservice
+    mongoservice:
+        container_name: mongo
+        image: mongo 
+        ports:
+            - '27017:27017'
+        environment:
+            DB_URI: mongodb://mongo:27017

@@ -10,7 +10,7 @@ const ROUTER = EXPRESS.Router()
 
 const { ObjectId } = require('mongodb')
 const MONGO_CLIENT = require('mongodb').MongoClient
-const DB_URL = 'mongodb://127.0.0.1:/3000' // connection URL
+const DB_URL = process.env.DB_URI ?? 'mongodb://127.0.0.1:/3000' // connection URL
 const CLIENT = new MONGO_CLIENT(DB_URL) // mongodb client
 const DB_NAME = 'mydatabase' // database name
 const COLLECTION_NAME_TOURS = 'touren' // collection name
