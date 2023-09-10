@@ -77,11 +77,19 @@ function construct_Graphhopper_URL(waypoints)
   // Routing should be for bicycles
   url.searchParams.set("vehicle", "bike")
   
-  // The order in which the stations should be visited is not important, so can be optimized
+  // The order in which the stations should be visited must be optimized
+  // because the stations were transferred as unordered list
   url.searchParams.set("optimize", true)
   
   // its easyer to work with the result if its decoded
   url.searchParams.set("points_encoded", false)
+
+  // Routing for bicycles shouldnt involve seaways, motorways or fords if possible
+  /* We also tried to forbid it completly with a "custom model" parameter, 
+    but this only work with a POST request, but we use the GET request endpoint in our application.*/
+  url.searchParams.set("snap_prevention", "ferry")
+  url.searchParams.append("snap_prevention", "motorway")
+  url.searchParams.append("snap_prevention", "ford")
   
   try 
   {
@@ -103,6 +111,9 @@ function construct_Graphhopper_URL(waypoints)
   }
 
   return url
+
+  // To learn more about the availible searchparameters and what they do visit graphhopper doku:
+  // https://docs.graphhopper.com/#operation/getRoute
 }
 
 module.exports = ROUTER
