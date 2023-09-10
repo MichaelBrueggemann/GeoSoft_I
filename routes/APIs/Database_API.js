@@ -246,7 +246,8 @@ ROUTER.post('/delete_station', async function(req, res)
   tours = await tours.json();
   const ID = req.body.id;
   
-  // when the station that should be deleted is part of a tour, this tour gets saved. This is used to later inform the user about a possible cascading deletion of tours.
+  // when the station that should be deleted is part of a tour, this tour gets saved. 
+  // This is used to later inform the user about a possible cascading deletion of tours.
   let tours_with_this_station = []
   
   for (const TOUR of tours) 

@@ -96,15 +96,15 @@ export function show_info_text(stations, instructions, distance) {
  * This function specify the text of the error-Popup for the User depending on the technical error-Message
  * @param {*} message - error-Message of a route
  */
-export function get_routing_error_text(message)
+export function show_routing_error_text(message)
 {
     $('#routing_error_popup').modal('show');
     let error_statement = "Leider konnte mit den ausgewählten Stationen keine Tour erstellt werden. <br>";
     if (message.startsWith("Specify at least 2 points")) {
-        error_statement += "<strong>Dies liegt unter anderem daran, dass Sie weniger als 2 Stationen ausgewählt haben.</strong> <br>";
+        error_statement += "<strong>Dies liegt unter anderem daran, dass weniger als 2 Stationen ausgewählt wurden.</strong> <br>";
     }
     else if (message.endsWith("Upgrade your subscription or contact us.")) {
-        error_statement += "<strong>Dies liegt unter anderem daran, dass Sie zu viele Stationen ausgewählt haben.</strong> <br>";
+        error_statement += "<strong>Dies liegt unter anderem daran, dass zu viele Stationen ausgewählt wurden.</strong> <br>";
     }
     else if (message.startsWith("Connection between locations not found")) {
         error_statement += "<strong>Dies liegt unter anderem daran, dass zwischen den ausgewählten Stationen keine Fahrradweg-Verbindung existiert.</strong> <br>";
@@ -118,10 +118,42 @@ export function get_routing_error_text(message)
     else if (message.startsWith("Wrong credentials")) {
         error_statement += "<strong>Dies liegt unter anderem daran, dass ein ungültiger Graphhopper-API-Key benutzt wurde.</strong> <br>";
     }
+    else if (message.startsWith("Tourname")) {
+        error_statement += "<strong>Dies liegt unter anderem daran, dass kein gültiger Tourname angegeben wurde.</strong> <br>";
+    }
+    else if (message.startsWith("DB-Error")) {
+        error_statement += "Während des Speichervorgangs ist etwas schief gelaufen. <br>";
+        if (message.endsWith("413")) {
+            error_statement += "<br><strong>Dies liegt unter anderem daran, dass zu viele Stationen zu weit voneinander entfernt sind, sodass die Tour insgesamt zu lang wäre.</strong> <br>"
+        }
+    }
     else {
         error_statement += "Dies könnte beispielsweise daran liegen, dass gar keine Stationen ausgewählt wurden. <br>";
         error_statement += "Aber auch andere Fehler können auftreten und wir bitten um Entschuldigung, dass es nicht geklappt hat. <br>";
     }
-    error_statement += "<br><br>Bitte überprüfen Sie ihre aktuelle Stationenauswahl und versuchen Sie es erneut."
+    error_statement += "<br><br>Bitte überprüfe die aktuelle Stationenauswahl und versuche es erneut."
     document.getElementById("error_statement").innerHTML = error_statement;
+}
+
+/**
+ * This function highlightes a tour using its id. If id is null the last tour gets highlighted
+ * @param {*} id - id of updated tour (if its a new tour its null)
+ */
+export function highlight_worked_on_tour(id) {
+    let table = document.getElementById('tour_table');
+    let tbody = table.tBodies[0];
+    if (id == null) {
+    
+        // if a new tour created we can simply highlight the last tour because it gets appended in the tour_table
+        tbody.rows[table.tBodies[0].rows.length - 1].click();
+    }
+    else { 
+    
+        // else we search the right row via id comparision
+        for(const ROW of tbody.rows) {
+            if (ROW.getAttribute("_id") == id) {
+                ROW.click();
+            }
+        };
+    }
 }

@@ -1,6 +1,6 @@
 "use strict"
 import {highlight, default_style, add_station_metadata} from "./map_helper.js"
-import {show_info_text, calculate_centroid, get_routing_error_text, slice_tour} from "./tour_helper.js";
+import {show_info_text, calculate_centroid, show_routing_error_text, slice_tour, highlight_worked_on_tour} from "./tour_helper.js";
 
 // ------------ Definition & Initialization of global variables -------------
 
@@ -60,9 +60,11 @@ async function add_new_tour(new_name, new_stations, new_segments, new_instructio
         instructions: new_instructions,
         distance: new_distance
     }
-    await api_call("add_tour", tour);
+    const RES = await api_call("add_tour", tour);
 
     await update_table()
+
+    return RES
 }
 
 /**
@@ -76,7 +78,7 @@ async function add_new_tour(new_name, new_stations, new_segments, new_instructio
  */
 async function update_tour(id, new_name, new_stations, new_segments, new_instructions, new_distance) {
 
-    await api_call("update_tour", {
+    const RES = await api_call("update_tour", {
             id: id,
             name: new_name,
             stations: new_stations,
@@ -86,6 +88,8 @@ async function update_tour(id, new_name, new_stations, new_segments, new_instruc
         });
 
     await update_table();
+
+    return RES
 }
 
 /**
@@ -247,7 +251,7 @@ function add_station_events(station, leaflet_object) {
         // help the user why he cant select a station when the edit-mode is off
         else {
             $('#station_selection_help').modal('show');
-            let help_text = "Bitte klicken Sie auf -<strong>neue Tour anlegen</strong>- oder in der Tabelle bei der gewünschten Tour auf -<strong>Bearbeiten</strong>-, um Stationen auszuwählen und sie zu Touren zusammenzufügen.";
+            let help_text = "Bitte klicke auf -<strong>neue Tour anlegen</strong>- oder in der Tabelle bei der gewünschten Tour auf -<strong>Bearbeiten</strong>-, um Stationen auszuwählen und sie zu Touren zusammenzufügen.";
             document.getElementById("help_text").innerHTML = help_text;
         }
     })
@@ -527,10 +531,10 @@ CALCULATE_TOUR_BUTTON.addEventListener("click", async function() {
         waypoints: waypoints,
     });
     let route = await res.json();
-    
+
     // Check result
     if (route.hasOwnProperty("message")) {
-        get_routing_error_text(route.message);
+        show_routing_error_text(route.message);
     }
     else {
         
@@ -540,54 +544,50 @@ CALCULATE_TOUR_BUTTON.addEventListener("click", async function() {
         // Get Tourname from input-field
         let tour_name = document.getElementById("tour_name").value;
 
-        // check if tour_name is valid
-        if (tour_name !== null && tour_name !== undefined && tour_name !== "") {
+        // check if tour_name is valid (does not contain only whitespace)
+        if (tour_name !== null && tour_name !== undefined && !(/^\s*$/).test(tour_name)) {
             
             // change style of input-field
             if (document.getElementById("tour_name").classList.contains("is-invalid")) {
                 document.getElementById("tour_name").classList.remove("is-invalid")
             }
 
-            // save Tour in DB
+            // we need to check if the DB-interaction went wrong
+            let result;
+
+            // try to save Tour in DB
             if (current_tour_id == null) {
-                await add_new_tour(tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
+                result = await add_new_tour(tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
             }
             else {
-                await update_tour(current_tour_id, tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
+                result = await update_tour(current_tour_id, tour_name, current_stations, tour_segments, route.paths[0].instructions, route.paths[0].distance);
             }
+            if (result.ok) {
+                // select the updated Tour for auto-highlight after successful worked-on
+                let worked_on_tour_id = current_tour_id;
+                current_tour_id = null;
+                highlight_worked_on_tour(worked_on_tour_id);
             
-            // select the updated Tour for auto-highlight after successful worked-on
-            let table = document.getElementById('tour_table');
-            let tbody = table.tBodies[0];
-            if (current_tour_id == null) {
-            
-                // if a new tour created we can simply highlight the last tour because it gets appended in the tour_table
-                tbody.rows[table.tBodies[0].rows.length - 1].click();
+                // change Working Modi
+                stop_working_modi();
             }
-            else { 
-            
-                // else we search the right row via id comparision
-                for(const ROW of tbody.rows) {
-                    if (ROW.getAttribute("_id") == current_tour_id) {
-                        current_tour_id = null;
-                        ROW.click();
-                    }
-                };
+            else {
+                // Error-Popup
+                let error_message_code = "DB-Error";
+                if (result.status == 413) {
+                    error_message_code += "413";
+                    show_routing_error_text(error_message_code);
+                }
             }
-        
-            // change Working Modi
-            stop_working_modi();
         }
-        else {
+        else { // tour_name isnt valid
             // change style of input-field
             if (!document.getElementById("tour_name").classList.contains("is-invalid")) {
                 document.getElementById("tour_name").classList.add("is-invalid")
             }
 
             // Error-Popup
-            $('#routing_error_popup').modal('show');
-            let error_statement = "<strong>Bitte geben Sie einen Tournamen an.</strong>";
-            document.getElementById("error_statement").innerHTML = error_statement;
+            show_routing_error_text("Tourname");
         }
     }
 })
