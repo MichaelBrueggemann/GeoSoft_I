@@ -8,6 +8,7 @@ services:
         environment:
             # The API_KEY will be passed by the user
             - API_KEY=${API_KEY}
+            - DB_URI=mongodb://mongo:27017
         depends_on: 
             - mongoservice
     mongoservice:
@@ -15,5 +16,4 @@ services:
         image: mongo 
         ports:
             - '27017:27017'
-        environment:
-            DB_URI: mongodb://mongo:27017
+        
