@@ -32,9 +32,9 @@ const GEOMETRY_SCHEMA = JOI.object(
 const PROPERTIES_SCHEMA = JOI.object(
     {
         // names are just checked as Strings, as Users should free decide which language they are using.
-        name: JOI.string().pattern(/^\S+$/).message("The string shouldn't contain just whitespace").required(), 
+        name: JOI.string().pattern(/^(?! *$).*$/).message("The string shouldn't contain just whitespace").required(), 
         // descriptions are just checked as Strings, as Users should free decide which language they are using.
-        description: JOI.string().pattern(/^\S+$/).message("The string shouldn't contain just whitespace").required(),
+        description: JOI.string().pattern(/^(?! *$).*$/).message("The string shouldn't contain just whitespace").required(),
         url: JOI.string().custom(function(value)
         {
             // wrap URL String in URL() Class to prevent errors regarding ASCII Characters in the URL String

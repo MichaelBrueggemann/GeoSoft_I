@@ -545,7 +545,7 @@ CALCULATE_TOUR_BUTTON.addEventListener("click", async function() {
         let tour_name = document.getElementById("tour_name").value;
 
         // check if tour_name is valid (does not contain only whitespace)
-        if (tour_name !== null && tour_name !== undefined && !(/^\s*$/).test(tour_name)) {
+        if (tour_name !== null && tour_name !== undefined && (/^(?! *$).*$/).test(tour_name)) {
             
             // change style of input-field
             if (document.getElementById("tour_name").classList.contains("is-invalid")) {
