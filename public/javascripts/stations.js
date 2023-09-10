@@ -388,6 +388,40 @@ function prepare_close_edit_station_popup_button()
     })
 }
 
+/**
+ * This functions sole purpose is to increase readability of this code. 
+ * It wraps the initialisation of the x_close_edit_station_popup button element.
+ * */
+function prepare_x_close_edit_station_popup_button()
+{
+    const X_CLOSE_EDIT_STATION_POPUP_BUTTON = document.getElementById("x_close_edit_station_popup")
+    X_CLOSE_EDIT_STATION_POPUP_BUTTON.addEventListener("click", function()
+    {
+        
+        if (document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+        {
+            // remove invalidation styling
+            document.getElementById("update_stationGeoJSON").classList.remove("is-invalid")
+        }
+    })
+}
+
+/**
+ * This functions sole purpose is to increase readability of this code. 
+ * It wraps the initialisation of the edit_station_popup modal element.
+ * */
+function prepare_edit_station_modal()
+{
+    const EDIT_STATION_MODAL = document.getElementById("edit_station_popup")
+    EDIT_STATION_MODAL.addEventListener("hidden.bs.modal", function()
+    {
+        if (document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+        {
+            // remove invalidation styling
+            document.getElementById("update_stationGeoJSON").classList.remove("is-invalid")
+        }
+    })
+}
 
 // ----------------- Script Start -----------------
 // initialisation of mandatory global variables
@@ -398,6 +432,8 @@ let drawnItems = map_init.drawnItems
 let drawControl = map_init.drawControl
 
 prepare_close_edit_station_popup_button()
+prepare_x_close_edit_station_popup_button()
+prepare_edit_station_modal()
 prepare_update_station_button()
 prepare_form_buttons(map, drawnItems, drawControl)
 
