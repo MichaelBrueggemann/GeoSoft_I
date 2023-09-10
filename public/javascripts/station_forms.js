@@ -327,6 +327,22 @@ function prepare_geojson_textarea_form()
         leave_add_station_mode(GEOJSON_TEXTAREA_FORM)
     })
 
+    let sample_geojson = {
+        "type": "Feature",
+        "properties": {
+            "name": "Prinzipalmarkt",
+            "description": "Das ist der Prinzipalmarkt",
+            "url": "https://de.wikipedia.org/wiki/Prinzipalmarkt"
+        },
+        "geometry": {
+          "coordinates": [
+            7.628199238097352,
+            51.962239849033296
+          ],
+          "type": "Point"
+        }
+    }
+
     // show_sample_geojson button
     let show_sample_geojson_button = document.getElementById("show_sample_geojson")
     show_sample_geojson_button.setAttribute("data-bs-toggle", "modal")
@@ -334,22 +350,21 @@ function prepare_geojson_textarea_form()
     show_sample_geojson_button.addEventListener("click", function()
     {
         let textarea = document.getElementById("sample_geojson_textarea")
-        textarea.value = JSON.stringify(
+        textarea.value = JSON.stringify(sample_geojson, null, 2)
+    })
+
+    // copy_sample_geojson_to_clipbboard button
+    let copy_sample_geojson_to_clipbboard_button = document.getElementById("copy_sample_geojson_to_clipbboard")
+    copy_sample_geojson_to_clipbboard_button.addEventListener("click", async function() 
+    {
+        // adds sample_geojson to clipboard
+        await navigator.clipboard.writeText(JSON.stringify(sample_geojson, null, 2))
+        copy_sample_geojson_to_clipbboard_button.innerText = "✔️"
+
+        setTimeout(function()
         {
-            "type": "Feature",
-            "properties": {
-                "name": "Prinzipalmarkt",
-                "description": "Das ist der Prinzipalmarkt",
-                "url": "https://de.wikipedia.org/wiki/Prinzipalmarkt"
-            },
-            "geometry": {
-              "coordinates": [
-                7.628199238097352,
-                51.962239849033296
-              ],
-              "type": "Point"
-            }
-        }, null, 2)
+            copy_sample_geojson_to_clipbboard_button.innerText = "Kopieren"
+        }, 750)
     })
 }
 

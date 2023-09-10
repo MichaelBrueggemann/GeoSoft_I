@@ -105,6 +105,9 @@ async function update_station(id, geojson)
 
 // ----------------- Stations Table -----------------
 
+/**
+ * update stations displayed in the table + add functionality to table rows and buttons.
+ */
 export async function update_table() {
     station_collection = await fetch("/api/stations")
     station_collection = await station_collection.json()
@@ -219,6 +222,10 @@ export async function update_table() {
 
 // ----------------- Map -----------------
 
+/**
+ * This functions initializes the Leaflet map and adds core functionality to it.
+ * @returns Object with Leaflet and Leaflet-Draw objects to be used in later functions
+ */
 function initializeMap()
 {
     // create map-object with initial view set to Münster, Germany
@@ -244,9 +251,6 @@ function initializeMap()
             marker: true,
             circlemarker: false,
             rectangle: false
-        },
-        edit: {
-            featureGroup: drawnItems
         }
     })
 
@@ -270,25 +274,6 @@ function initializeMap()
         let textarea = document.getElementById("hidden_geojson_data_from_map_feature")
         textarea.value = JSON.stringify(layer.toGeoJSON(), null, 2)
     })
-
-    map.on(L.Draw.Event.EDITED, function(event) 
-    {
-        let textarea = document.getElementById("hidden_geojson_data_from_map_feature")
-
-        // the edited layer
-        let layer = Object.values(event.layers._layers)[0]
-
-        // updates data in the textarea
-        textarea.value = JSON.stringify(layer.toGeoJSON(), null, 2)
-    })
-
-    map.on(L.Draw.Event.DELETED, function() 
-    {
-        // reset content of textarea
-        let textarea = document.getElementById("hidden_geojson_data_from_map_feature")
-        textarea.value = ""
-    })
-
 
     return {
         map: map,
@@ -386,6 +371,59 @@ function prepare_update_station_button()
     })
 }
 
+/**
+ * This functions sole purpose is to increase readability of this code. 
+ * It wraps the initialisation of the close_edit_station_popup button element.
+ * */
+function prepare_close_edit_station_popup_button()
+{
+    const CLOSE_EDIT_STATION_POPUP_BUTTON = document.getElementById("close_edit_station_popup")
+    CLOSE_EDIT_STATION_POPUP_BUTTON.addEventListener("click", function()
+    {
+        
+        if (document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+        {
+            // remove invalidation styling
+            document.getElementById("update_stationGeoJSON").classList.remove("is-invalid")
+        }
+    })
+}
+
+/**
+ * This functions sole purpose is to increase readability of this code. 
+ * It wraps the initialisation of the x_close_edit_station_popup button element.
+ * */
+function prepare_x_close_edit_station_popup_button()
+{
+    const X_CLOSE_EDIT_STATION_POPUP_BUTTON = document.getElementById("x_close_edit_station_popup")
+    X_CLOSE_EDIT_STATION_POPUP_BUTTON.addEventListener("click", function()
+    {
+        
+        if (document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+        {
+            // remove invalidation styling
+            document.getElementById("update_stationGeoJSON").classList.remove("is-invalid")
+        }
+    })
+}
+
+/**
+ * This functions sole purpose is to increase readability of this code. 
+ * It wraps the initialisation of the edit_station_popup modal element.
+ * */
+function prepare_edit_station_modal()
+{
+    const EDIT_STATION_MODAL = document.getElementById("edit_station_popup")
+    EDIT_STATION_MODAL.addEventListener("hidden.bs.modal", function()
+    {
+        if (document.getElementById("update_stationGeoJSON").classList.contains("is-invalid"))
+        {
+            // remove invalidation styling
+            document.getElementById("update_stationGeoJSON").classList.remove("is-invalid")
+        }
+    })
+}
+
 // ----------------- Script Start -----------------
 // initialisation of mandatory global variables
 let map_init = initializeMap()
@@ -394,6 +432,9 @@ let stations_layer_group = map_init.stations_layer_group
 let drawnItems = map_init.drawnItems
 let drawControl = map_init.drawControl
 
+prepare_close_edit_station_popup_button()
+prepare_x_close_edit_station_popup_button()
+prepare_edit_station_modal()
 prepare_update_station_button()
 prepare_form_buttons(map, drawnItems, drawControl)
 
