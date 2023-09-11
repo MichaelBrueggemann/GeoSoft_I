@@ -27,8 +27,10 @@ Die Website bietet dem/der Nutzer:in eine grafische Oberfläche für folgende Ak
 - Eine **dynamische Verwaltung der auf der Website angezeigten Elemente**, um einen Informationsüberfluss für den/die Nutzer:in zu verhindern ("es wird nur das angezeigt, was gerade benötigt wird")
 
 # Wie starte ich den Server?
+- Clone Repository
 ## mit Node.js
-- EVTL ERKLÄREN WIE MAN MONGODB STARTET
+- node.js inklusive npm installieren (über offizielle Website)
+- mongodb installieren (über offizielle Website)
 - mit ```npm install``` alle Dependencies aus "package.json" installieren.
 - mit ```npm start <GRAPHHOPPER-API-KEY>``` den Server starten.
   - einen API-Key für die Graphhopper-API bekommst du unter: [Graphhopper-API-Key](https://support.graphhopper.com/support/solutions/articles/44001976027-create-an-api-key)
