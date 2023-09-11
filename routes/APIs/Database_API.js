@@ -226,7 +226,7 @@ ROUTER.post('/add_station', async function(req, res)
         console.error(error)
       }
 
-      add_item(req.body, station_collection)
+      await add_item(req.body, station_collection)
       res.status(200).json({errors: "Alles ok."})
     }
   } 
@@ -264,7 +264,7 @@ ROUTER.post('/delete_station', async function(req, res)
   // If the station isnt part of any tour it can simply deleted
   if (tours_with_this_station.length < 1) 
   {
-    delete_item(ID, station_collection)
+    await delete_item(ID, station_collection)
     res.status(200).json({errors: "Alles ok."})
   }
   // Else the client gets Error-Message and the tours which contains this station
@@ -305,7 +305,7 @@ ROUTER.post('/update_station', async function(req, res)
         // replace description in new_data
         new_data.geojson.properties.description = first_sentence
       }
-      update_item(ID, new_data, station_collection)
+      await update_item(ID, new_data, station_collection)
       res.status(200).json({errors: "Alles ok."})
     }
   } 
@@ -341,7 +341,7 @@ ROUTER.get('/tours', async function(req, res)
   }
 })
 
-ROUTER.post('/add_tour', function(req, res) 
+ROUTER.post('/add_tour', async function(req, res) 
 {
   try 
   {
@@ -355,7 +355,7 @@ ROUTER.post('/add_tour', function(req, res)
     }
     else
     {
-      add_item(req.body, tour_collection);
+      await add_item(req.body, tour_collection);
       res.status(200).json({errors: "Alles ok."})
     }
   } 
@@ -368,12 +368,12 @@ ROUTER.post('/add_tour', function(req, res)
 })
 
 
-ROUTER.post('/delete_tour', function(req, res) 
+ROUTER.post('/delete_tour', async function(req, res) 
 {
   try 
   {
     const ID = req.body.id
-    delete_item(ID, tour_collection)
+    await delete_item(ID, tour_collection)
     res.status(200)
   } 
   catch (error) 
@@ -385,7 +385,7 @@ ROUTER.post('/delete_tour', function(req, res)
 })
 
 
-ROUTER.post('/update_tour', function(req, res) 
+ROUTER.post('/update_tour', async function(req, res) 
 {
   try 
   {
@@ -408,7 +408,7 @@ ROUTER.post('/update_tour', function(req, res)
     }
     else
     {
-      update_item(ID, new_data, tour_collection)
+      await update_item(ID, new_data, tour_collection)
       res.status(200).json({errors: "Alles ok."})
     }
   } 
