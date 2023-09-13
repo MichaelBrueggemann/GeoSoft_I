@@ -40,7 +40,7 @@ Die Website bietet dem/der Nutzer:in eine grafische Oberfläche für folgende Ak
 - [Docker Desktop](https://docs.docker.com/get-docker/) installieren.
 - Docker Desktop starten
 ### Container noch nicht "gebaut"
-- in der Command-Line mit ```$env:API_KEY=<GRAPHHOPPER-API-KEY>``` den API Key der Graphhopper-API für den Container verfügbar machen
+- in der Command-Line mit ```$env:API_KEY="<GRAPHHOPPER-API-KEY>"``` den API Key der Graphhopper-API für den Container verfügbar machen
   - einen API-Key für die Graphhopper-API bekommst du unter: [Graphhopper-API-Key](https://support.graphhopper.com/support/solutions/articles/44001976027-create-an-api-key)
   - vor dem "bauen" des Containers muss der Graphhopper-API Key als Umgebungsvariable gesetzt werden, ansonsten ist die Website nicht erreichbar!
 - mit ```docker compose up --build -d``` den Server starten
